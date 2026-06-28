@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RunTrack est une plateforme d'entraînement en course à pied qui vous aide à suivre vos performances, planifier vos séances et atteindre vos objectifs de course.">
+    <meta name="author" content="Lucas Baretzki">
+    <meta name="keywords" content="RunTrack, course à pied, entraînement, suivi des performances, planification des séances, objectifs de course">
+    <title>RunTrack — Le test</title>
+    <link rel="icon" href="img/favicon.png" type="image/png">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Tableau de bord</a></li>
+                <li><a href="test.html">Le test</a></li>
+                <li><a href="saisie_seances.html">Saisie des séances</a></li>
+                <li><a href="suivi.html">Suivi des performances</a></li>
+                <li><a href="inscription_connexion.html">Inscription/Connexion</a></li>
+            </ul>
+        </nav>
+        <a href="img/logo_1640x566.png" target="_blank"><img src="img/logo_1640x566.png" alt="Logo RunTrack" class="logo"></a>
+    </header>
+    <h1>Le test de performance</h1>
+    <p>
+        Évaluez votre niveau actuel grâce à notre test de 5 ou 10 km. 
+        Entrez votre temps pour obtenir une estimation de votre niveau de performance et des recommandations pour vos séances d'entraînement. 
+    </p>
+    <h2>Test de performance</h2>
+    <form action="test_performance_traitement.php" method="POST">
+        <label for="distance">Choisissez la distance du test :</label>
+        <select id="distance" name="distance" required>
+            <option value="">--Sélectionnez une distance--</option>
+            <option value="5km">5 km</option>
+            <option value="10km">10 km</option>
+        </select><br><br>
+        <label for="temps">Entrez votre temps (format HH:MM:SS) :</label>
+        <input type="text" id="temps" name="temps" placeholder="00:00:00" required><br><br>
+        <label for="nbseance">Sélectionnez votre nombre de séances par semaine :</label>
+        <input type="number" id="nbseance" name="nbseance" min="1" max="3" placeholder="1 à 3" required><br><br>
+        <input type="submit" value="Valider le test">
+        <input type="reset" value="Réinitialiser">
+    </form>
+    <footer>
+        <p>&copy; 2026 RunTrack. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
