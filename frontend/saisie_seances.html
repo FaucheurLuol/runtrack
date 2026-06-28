@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RunTrack est une plateforme d'entraînement en course à pied qui vous aide à suivre vos performances, planifier vos séances et atteindre vos objectifs de course.">
+    <meta name="author" content="Lucas Baretzki">
+    <meta name="keywords" content="RunTrack, course à pied, entraînement, suivi des performances, planification des séances, objectifs de course">
+    <title>RunTrack — Saisie des séances</title>
+    <link rel="icon" href="img/favicon.png" type="image/png">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Tableau de bord</a></li>
+                <li><a href="test.html">Le test</a></li>
+                <li><a href="saisie_seances.html">Saisie des séances</a></li>
+                <li><a href="suivi.html">Suivi des performances</a></li>
+                <li><a href="inscription_connexion.html">Inscription/Connexion</a></li>
+            </ul>
+        </nav>
+        <a href="img/logo_1640x566.png" target="_blank"><img src="img/logo_1640x566.png" alt="Logo RunTrack" class="logo"></a>
+    </header>
+    <h1>Saisie des séances</h1>
+    <p>
+        Entrez les détails de vos séances d'entraînement.
+    </p>
+    <h2>Saisie des séances</h2>
+    <form action="saisie_seances_traitement.php" method="POST">
+        <label for="semaine">Choisissez la semaine :</label>
+        <select id="semaine" name="semaine" required>
+            <option value="">--Sélectionnez une semaine--</option>
+            <option value="semaine1">Semaine 1</option>
+            <option value="semaine2">Semaine 2</option>
+            <option value="semaine3">Semaine 3</option>
+            <option value="semaine4">Semaine 4</option>
+            <option value="semaine5">Semaine 5</option>
+            <option value="semaine6">Semaine 6</option>
+            <option value="semaine7">Semaine 7</option>
+            <option value="semaine8">Semaine 8</option>
+            <option value="semaine9">Semaine 9</option>
+            <option value="semaine10">Semaine 10</option>
+            <option value="semaine11">Semaine 11</option>
+            <option value="semaine12">Semaine 12</option>
+            <option value="semaine13">Semaine 13</option>
+            <option value="semaine14">Semaine 14</option>
+            <option value="semaine15">Semaine 15</option>
+            <option value="semaine16">Semaine 16</option>
+            <option value="semaine17">Semaine 17</option>
+            <option value="semaine18">Semaine 18</option>
+            <option value="semaine19">Semaine 19</option>
+            <option value="semaine20">Semaine 20</option>
+        </select><br><br>
+        <label for="seance">Choisissez la séance :</label>
+        <select id="seance" name="seance" required> <!--définir les séances à afficher selon le nombre de séances par semaine choisi dans le test -->
+            <option value="">--Sélectionnez une séance--</option>
+            <option value="seance1">Séance 1</option>
+            <option value="seance2">Séance 2</option>
+        </select><br><br>
+        <label for="distance">Entrez votre distance (format km) :</label>
+        <input type="number" id="distance" name="distance" step="0.001" placeholder="0.000" required><br><br>
+        <label for="temps">Entrez votre temps (format HH:MM:SS) :</label>
+        <input type="text" id="temps" name="temps" placeholder="00:00:00" required><br><br>
+        <label for="ressenti">Entrez votre ressenti (1 à 5) :</label>
+        <select id="ressenti" name="ressenti" required>
+            <option value="">--Sélectionnez un ressenti--</option>
+            <option value="1">1 - Très mauvais</option>
+            <option value="2">2 - Mauvais</option>
+            <option value="3">3 - Moyen</option>
+            <option value="4">4 - Bon</option>
+            <option value="5">5 - Excellent</option>
+        </select><br><br>
+        <label for="type">Choisissez le type de séance :</label>
+        <select id="type" name="type" required>
+            <option value="">--Sélectionnez un type de séance--</option>
+            <option value="Séance normale">Séance normale</option>
+            <option value="Test 5km chronométré">Test 5km chronométré</option>
+        </select><br><br>
+        <label for="commentaire">Entrez un commentaire (facultatif) :</label>
+        <textarea id="commentaire" name="commentaire" rows="4" cols="50" placeholder="Votre commentaire..."></textarea><br><br>
+        <input type="submit" value="Valider la séance">
+        <input type="reset" value="Réinitialiser">
+    <footer>
+        <p>&copy; 2026 RunTrack. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
