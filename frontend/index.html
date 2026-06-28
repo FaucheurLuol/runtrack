@@ -4,12 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="RunTrack est une plateforme d'entraînement en course à pied qui vous aide à suivre vos performances, planifier vos séances et atteindre vos objectifs de course.">
-    <meta name=""author" content="Lucas Baretzki">
+    <meta name="author" content="Lucas Baretzki">
     <meta name="keywords" content="RunTrack, course à pied, entraînement, suivi des performances, planification des séances, objectifs de course">
     <title>RunTrack — Plateforme d'entraînement en course à pied</title>
-    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="icon" href="img/favicon.png" type="image/png">
 </head>
 <body>
-    <!-- Ton contenu ici -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Tableau de bord</a></li>
+                <li><a href="test.html">Le test</a></li>
+                <li><a href="saisie_seances.html">Saisie des séances</a></li>
+                <li><a href="suivi.html">Suivi des performances</a></li>
+                <li><a href="inscription_connexion.html">Inscription/Connexion</a></li>
+            </ul>
+        </nav>
+        <a href="img/logo_1640x566.png" target="_blank"><img src="img/logo_1640x566.png" alt="Logo RunTrack" class="logo"></a>
+    </header>
+    <h1>Bienvenue sur RunTrack</h1>
+    <p>
+        RunTrack est votre compagnon idéal pour améliorer vos performances en course à pied.<br>
+        Que vous soyez débutant ou coureur expérimenté, notre plateforme vous offre les outils nécessaires pour suivre vos progrès et atteindre vos objectifs.
+    </p>
+    <button onclick="window.location.href='inscription_connexion.html'">Inscrivez-vous dès maintenant</button>
+    <h2>Fonctionnalités principales :</h2>
+    <ol>
+        <li><a href="test.html">Test de performance</a> : Évaluez votre niveau actuel grâce à notre test de 5 ou 10 km.</li>
+        <li><a href="saisie_seances.html">Saisie des séances</a> : Enregistrez vos séances d'entraînement et suivez vos progrès.</li>
+        <li><a href="suivi.html">Suivi des performances</a> : Enregistrez vos courses, distances et temps pour suivre vos progrès au fil du temps.</li>
+    </ol>
+    <h2>Dashboard</h2> <!-- Afficher un aperçu des séances à venir, des performances récentes et des statistiques globales de l'utilisateur. (Uniquement si connecté) -->
+    <p>Idée pour un dashboard personnalisé :</p>
+    <ul> <!-- Chaque point de la liste est un rectangle distinct -->
+        <li>Séances faites : 15/40 (3% du plan)</li>
+        <li>Objectif 10km : 45-47 minutes</li>
+        <li>Allure course cible : 4'30" - 4'45"</li>
+        <li>Dernier test 5km : 25 minutes</li>
+    </ul>
+    <ul>
+        <li>Barre de progression : 3%</li> <!-- Afficher une barre de progression visuelle indiquant le pourcentage de séances complétées par rapport au plan d'entraînement global. -->
+    </ul>
+    <ul>
+        <li>Prochaine séance</li> <!-- Afficher le détail des 4 prochaines séances avec la possibilités de cliquer sur chaque séance pour la remplir et la valider. -->
+    </ul>
+    <ul>
+        <li>Journal des séances</li> <!-- Afficher un journal des séances passées avec la possibilité de cliquer sur chaque séance pour voir les détails et les performances associées. -->
+    </ul>
+    <footer>
+        <p>&copy; 2026 RunTrack. Tous droits réservés.</p>
+    </footer>
 </body>
 </html>
