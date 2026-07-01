@@ -3,10 +3,10 @@
 }
 
 :root { 
-    --background-color: rgb(251, 242, 237);
-    --primary-color: #f3842f;
-    --secondary-color: #f3a439;
-    --optional-color: #a0914e;
+    --background-color : #dee1c5;
+    --primary-color: #e3520f;
+    --secondary-color: #f08418;
+    --optional-color: #8e8448;
     --text-color: #333;
 }
 
@@ -19,19 +19,24 @@ body {
     padding: 0;
     background-color: var(--background-color);
     font-size: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    padding: 0px 16px;
 }
 
 header {
     background-color: var(--optional-color);
-    padding: 16px;
-    text-align: center;
-    border : 10px solid var(--optional-color);
+    padding: 16px 32px;
 }
 
 nav ul {
     display: flex;
     gap: 24px;
     list-style: none;  /* retire les puces */
+    padding: 0;
 }
 
 nav a {
@@ -45,22 +50,36 @@ nav a:hover {
     text-decoration: underline;
 }
 
-main {
-    padding: 0px 16px;
+.hero {
+    text-align: start;
+    padding: 16px;
 }
 
-.hero a {
+.hero a, .features > a {
     display: inline-block;
     margin-top: 16px;
     padding: 8px 16px;
     background-color: var(--optional-color);
-    color: white;
     text-decoration: none;
     border-radius: 4px;
+    color: var(--text-color);
 }
 
-.hero a:hover {
+.hero a:hover, .features > a:hover {
     color: var(--secondary-color);
+}
+
+h1 {
+    color: var(--primary-color);
+    font-size: 2.5em;
+    margin-bottom: 16px;
+}
+
+h2 {
+    color: var(--secondary-color);
+    font-size: 1.8em;
+    margin-top: 32px;
+    margin-bottom: 16px;
 }
 
 a {
@@ -69,15 +88,131 @@ a {
 }
 
 a:hover {
-    color: var(--primary-color);
+    color: var(--secondary-color);
     text-decoration: underline;
 }
 
 footer {
-    background-image: url('../img/logo_1640x959.jpg');
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: contain;
-    padding: 64px 16px;
+    padding: 16px 32px;
     text-align: start;
+}
+
+.container {
+    display: flex;
+    align-items: flex-start; /* Aligne les éléments en haut */
+    gap: 50px; /* Espace entre les deux sections */
+    max-width: 1690px;
+    padding: 16px;
+}
+
+.features {
+    flex: 1.5; /* Prend environ 2/3 de la largeur */
+}
+
+.logo {
+    flex: 1.5; /* Prend environ 1/3 de la largeur */
+    display: flex;
+    justify-content: center;
+}
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.auth-links {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.inscription, .connexion {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.inscription h1, .connexion h1 {
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.inscription p, .connexion p {
+    max-width: 600px;
+    text-align: center;
+}
+
+.inscription form, .connexion form {
+    width: 100%;
+    max-width: 400px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.inscription label, .connexion label {
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.inscription input[type="email"],
+.inscription input[type="password"],
+.inscription input[type="text"],
+.connexion input[type="email"],
+.connexion input[type="password"],
+.connexion input[type="text"] {
+    padding: 14px;
+    margin-bottom: 22px;
+    border: 1px solid var(--text-color);
+    border-radius: 8px;
+    font-size: 16px;
+    transition: .25s;
+}
+
+.inscription input[type="email"]:focus,
+.inscription input[type="password"]:focus,
+.inscription input[type="text"]:focus,
+.connexion input[type="email"]:focus,
+.connexion input[type="password"]:focus,
+.connexion input[type="text"]:focus {
+    outline: none;
+    border-color: var(--optional-color);
+    box-shadow: 0 0 0 4px rgba(46,134,222,.15);
+}
+
+.inscription input[type="submit"],
+.inscription input[type="reset"],
+.connexion input[type="submit"],
+.connexion input[type="reset"] {
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: .25s;
+    margin-top: 10px;
+}
+
+.inscription input[type="submit"], .connexion input[type="submit"] {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.inscription input[type="submit"]:hover, .connexion input[type="submit"]:hover {
+    background: var(--primary-color);
+}
+
+.inscription input[type="reset"], .connexion input[type="reset"] {
+    background: var(--optional-color);
+    color: var(--text-color);
+}
+
+.inscription input[type="reset"]:hover, .connexion input[type="reset"]:hover {
+
+    background: var(--primary-color);
 }
