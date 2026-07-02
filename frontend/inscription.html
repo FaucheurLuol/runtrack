@@ -27,15 +27,35 @@
         <p>
             Pour accéder à toutes les fonctionnalités de RunTrack, veuillez vous inscrire.
         </p>
-        <form action="inscription_traitement.php" method="POST">
+        <form action="" method="POST"> <!-- Action à remplacer par inscription_traitement.php -->
             <label for="username">Nom d'utilisateur :</label>
             <input class="input-field" type="text" id="username" name="username" required>
+
+            <label for="nom">Nom :</label>
+            <input class="input-field" type="text" id="nom" name="nom" required>
+
+            <label for="prenom">Prénom :</label>
+            <input class="input-field" type="text" id="prenom" name="prenom" required>
+
+            <label for="sexe">Sexe :</label>
+            <select class="input-field" id="sexe" name="sexe" required>
+                <option value="">Sélectionnez votre sexe</option>
+                <option value="homme">Homme</option>
+                <option value="femme">Femme</option>
+                <option value="autre">Autre</option>
+            </select>
+
+            <label for="age">Âge :</label>
+            <input class="input-field" type="number" id="age" name="age" required>
 
             <label for="email">Adresse e-mail :</label>
             <input class="input-field" type="email" id="email" name="email" placeholder="exemple@domaine.com" required>
 
             <label for="password">Mot de passe :</label>
             <input class="input-field" type="password" id="password" name="password" required>
+
+            <label for="confirm_password">Confirmer le mot de passe :</label>
+            <input class="input-field" type="password" id="confirm_password" name="confirm_password" required>
 
             <input class="btn" type="submit" value="S'inscrire">
             <input class="btn" type="reset" value="Réinitialiser">
