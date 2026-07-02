@@ -1,5 +1,11 @@
 const formulaire = document.querySelector('form');
 const errorDiv = document.querySelector('#form-error');
+const burger = document.querySelector('.menu-burger');
+const navLiens = document.querySelector('.nav-liens');
+
+burger.addEventListener('click', () => {
+    navLiens.classList.toggle('ouvert');
+});
 
 function afficherErreur(message) {
     errorDiv.innerHTML = ''; // On vide le contenu précédent
@@ -20,6 +26,7 @@ formulaire.addEventListener('submit', function(event) {
     event.preventDefault(); // Empêche l'envoi du formulaire
 
     const password = document.getElementById('password').value;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/~`])[A-Za-z\d!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/~`]{14,}$/; // Expression régulière pour valider le mot de passe
     const confirmPassword = document.getElementById('confirm_password').value;
     const email = document.querySelector('#email').value;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expression régulière pour valider l'email
@@ -62,6 +69,11 @@ formulaire.addEventListener('submit', function(event) {
     if (sexe === '') {
         afficherErreur('Veuillez sélectionner votre sexe.');
         return;
+    }
+
+    if (!passwordRegex.test(password)) {
+        afficherErreur('Le mot de passe doit contenir au moins 14 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.');
+    return;
     }
 
     if (password !== confirmPassword) {

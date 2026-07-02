@@ -32,11 +32,20 @@ header {
     padding: 16px 32px;
 }
 
+.menu-burger {
+    display: none; /* Masqué par défaut */
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
 nav ul {
     display: flex;
     gap: 24px;
     list-style: none;  /* retire les puces */
     padding: 0;
+    margin: 0;
     flex-wrap: wrap; /* évite le débordement horizontal */
 }
 
@@ -208,11 +217,43 @@ footer {
     background: var(--primary-color);
 }
 
-#form-error {
+.form-error {
     min-height: 0;
 }
 
-#form-error p {
+.form-error p {
+    background-color: #fdecea;
+    color: #c0392b;
+    border: 1px solid #e74c3c;
+    border-left: 5px solid #e74c3c;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.15);
+    animation: apparition 0.25s ease-out;
+}
+
+.form-message {
+    min-height: 0;
+}
+
+.form-message.success p {
+    background-color: #eafaf1;
+    color: #27ae60;
+    border: 1px solid #2ecc71;
+    border-left: 5px solid #2ecc71;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.15);
+    animation: apparition 0.25s ease-out;
+}
+
+.form-message.error p {
     background-color: #fdecea;
     color: #c0392b;
     border: 1px solid #e74c3c;
@@ -311,6 +352,25 @@ footer {
 
     header {
         padding: 12px;
+    }
+
+    .menu-burger {
+        display: block; /* visible sur mobile */
+        background: none;
+        border: none;
+        font-size: 1.8rem;
+        cursor: pointer;
+        color: var(--text-color);
+    }
+
+    .nav-liens {
+        display: none; /* caché par défaut sur mobile */
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .nav-liens.ouvert {
+        display: flex; /* visible quand la classe .ouvert est présente */
     }
 
     .hero {

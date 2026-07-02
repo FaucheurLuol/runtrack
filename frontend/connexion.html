@@ -10,12 +10,12 @@
     <link rel="icon" href="img/favicon.png" type="image/png">
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
-    <script src="js/connexion.js" defer></script>
 </head>
 <body>
     <header>
         <nav>
-            <ul>
+            <button class="menu-burger" aria-label="Ouvrir le menu">☰</button>
+            <ul class="nav-liens">
                 <li><a href="index.html">Accueil</a></li> <!-- Une fois connecté, affiché dashboard.html au lieu de index.html -->
                 <li><a href="inscription.html">Inscription</a></li>
                 <li><a href="connexion.html">Connexion</a></li>
@@ -27,13 +27,14 @@
         <p>
             Pour accéder à toutes les fonctionnalités de RunTrack, veuillez vous connecter.
         </p>
+        <div class="form-message hidden"></div>
         <form action="" method="POST"> <!-- Action à remplacer par connexion_traitement.php -->
 
             <label for="email">Adresse e-mail :</label>
-            <input class="input-field" type="email" id="email" name="email" placeholder="exemple@domaine.com" required>
+            <input class="input-field" type="email" id="email" name="email" placeholder="exemple@domaine.com">
 
             <label for="password">Mot de passe :</label>
-            <input class="input-field" type="password" id="password" name="password" required>
+            <input class="input-field" type="password" id="password" name="password">
             <input class="btn" type="submit" value="Se connecter">
             <input class="btn" type="reset" value="Réinitialiser">
         </form>
@@ -41,5 +42,6 @@
     <footer>
         <p>&copy; 2026 RunTrack. Tous droits réservés.</p>
     </footer>
+    <script src="js/connexion.js"></script>
 </body>
 </html>
