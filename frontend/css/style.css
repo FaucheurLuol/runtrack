@@ -37,6 +37,7 @@ nav ul {
     gap: 24px;
     list-style: none;  /* retire les puces */
     padding: 0;
+    flex-wrap: wrap; /* évite le débordement horizontal */
 }
 
 nav a {
@@ -103,16 +104,19 @@ footer {
     gap: 50px; /* Espace entre les deux sections */
     max-width: 1690px;
     padding: 16px;
+    flex-wrap: wrap; /* permet aux enfants de passer à la ligne si besoin */
 }
 
 .features {
     flex: 1.5; /* Prend environ 2/3 de la largeur */
+    min-width: 280px;
 }
 
 .logo {
     flex: 1.5; /* Prend environ 1/3 de la largeur */
     display: flex;
     justify-content: center;
+    min-width: 200px;
 }
 
 .logo img {
@@ -125,6 +129,7 @@ footer {
     display: flex;
     gap: 16px;
     margin-top: 16px;
+    flex-wrap: wrap;
 }
 
 .inscription, .connexion {
@@ -213,6 +218,112 @@ footer {
 }
 
 .inscription input[type="reset"]:hover, .connexion input[type="reset"]:hover {
-
     background: var(--primary-color);
+}
+
+/* ==========================================================
+   RESPONSIVE — Tablette (≤ 1024px)
+   ========================================================== */
+@media (max-width: 1024px) {
+    .container {
+        gap: 32px;
+    }
+
+    h1 {
+        font-size: 2.2em;
+    }
+
+    h2 {
+        font-size: 1.6em;
+    }
+}
+
+/* ==========================================================
+   RESPONSIVE — Petite tablette / grand mobile (≤ 768px)
+   ========================================================== */
+@media (max-width: 768px) {
+    header {
+        padding: 16px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .container {
+        flex-direction: column;
+        gap: 24px;
+        padding: 16px 8px;
+    }
+
+    .logo {
+        order: -1; /* logo au-dessus du texte sur mobile, à ajuster selon préférence */
+        max-width: 60%;
+        margin: 0 auto;
+    }
+
+    .auth-links {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .auth-links a {
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.5em;
+    }
+}
+
+/* ==========================================================
+   RESPONSIVE — Mobile (≤ 480px)
+   ========================================================== */
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    main {
+        padding: 0 8px;
+    }
+
+    header {
+        padding: 12px;
+    }
+
+    .hero {
+        padding: 8px;
+    }
+
+    h1 {
+        font-size: 1.6em;
+    }
+
+    h2 {
+        font-size: 1.3em;
+    }
+
+    .hero a, .features > a {
+        display: block;
+        text-align: center;
+        width: 100%;
+    }
+
+    .inscription, .connexion {
+        padding: 24px 12px;
+    }
+
+    .inscription form, .connexion form {
+        max-width: 100%;
+    }
+
+    footer {
+        padding: 16px;
+    }
 }
