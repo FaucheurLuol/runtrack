@@ -5,7 +5,7 @@ function Accueil() {
         <>
             <main>
                 <section className="hero">
-                    <h1>Bienvenue sur RunTrack</h1>
+                    <h1>Bienvenue sur <span className="accent">RunTrack</span></h1>
                     <p>
                         RunTrack est votre compagnon idéal pour améliorer vos performances en course à pied.
                         Que vous soyez débutant ou coureur expérimenté, notre plateforme vous offre les outils
