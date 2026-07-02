@@ -10,7 +10,6 @@
     <link rel="icon" href="img/favicon.png" type="image/png">
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
-    <script src="js/inscription.js" defer></script>
 </head>
 <body>
     <header>
@@ -27,6 +26,7 @@
         <p>
             Pour accéder à toutes les fonctionnalités de RunTrack, veuillez vous inscrire.
         </p>
+        <div id="form-error"></div>
         <form action="" method="POST"> <!-- Action à remplacer par inscription_traitement.php -->
             <label for="username">Nom d'utilisateur :</label>
             <input class="input-field" type="text" id="username" name="username" required>
@@ -64,5 +64,6 @@
     <footer>
         <p>&copy; 2026 RunTrack. Tous droits réservés.</p>
     </footer>
+    <script src="js/inscription.js"></script>
 </body>
 </html>
