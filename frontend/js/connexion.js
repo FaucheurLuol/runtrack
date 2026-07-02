@@ -27,6 +27,8 @@ function afficherAccept(message) {
 
 function viderMessage() {
     messageDiv.innerHTML = '';
+    messageDiv.classList.remove('error', 'success');
+    messageDiv.classList.add('hidden');
 }
 
 formulaire.addEventListener('reset', function(event) {

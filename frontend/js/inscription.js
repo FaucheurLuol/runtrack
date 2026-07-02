@@ -1,5 +1,5 @@
 const formulaire = document.querySelector('form');
-const errorDiv = document.querySelector('#form-error');
+const messageDiv = document.querySelector('.form-message');
 const burger = document.querySelector('.menu-burger');
 const navLiens = document.querySelector('.nav-liens');
 
@@ -8,18 +8,22 @@ burger.addEventListener('click', () => {
 });
 
 function afficherErreur(message) {
-    errorDiv.innerHTML = ''; // On vide le contenu précédent
+    messageDiv.innerHTML = ''; // On vide le contenu précédent
+    messageDiv.classList.remove('hidden', 'success');
+    messageDiv.classList.add('error');
     const p = document.createElement('p');
     p.textContent = message;
-    errorDiv.appendChild(p);
+    messageDiv.appendChild(p);
 }
 
-function viderErreur() {
-    errorDiv.innerHTML = '';
+function viderMessage() {
+    messageDiv.innerHTML = '';
+    messageDiv.classList.remove('error');
+    messageDiv.classList.add('hidden');
 }
 
 formulaire.addEventListener('reset', function(event) {
-    viderErreur();
+    viderMessage();
 });
 
 formulaire.addEventListener('submit', function(event) {
@@ -51,12 +55,12 @@ formulaire.addEventListener('submit', function(event) {
         return;
     }
 
-    if (!nameRegex.test(name)) {
+    if (!lastnameRegex.test(lastname)) {
         afficherErreur('Veuillez entrer un nom valide.');
         return;
     }
 
-    if (!surnameRegex.test(surname)) {
+    if (!firstnameRegex.test(firstname)) {
         afficherErreur('Veuillez entrer un prénom valide.');
         return;
     }
@@ -82,13 +86,13 @@ formulaire.addEventListener('submit', function(event) {
     }
 
     // Si toutes les validations passent
-    viderErreur(); // On efface une éventuelle erreur précédente
+    viderMessage(); // On efface une éventuelle erreur précédente
     console.log('Formulaire valide, voici les données :');
     console.log({
         email,
         username,
-        name,
-        surname,
+        lastname,
+        firstname,
         age,
         sexe,
         password
