@@ -73,91 +73,89 @@ function Inscription() {
 
 
     return (
-        <>
-            <main className="inscription">
-                <h1>Inscription</h1>
-                <p>Pour accéder à toutes les fonctionnalités de RunTrack, veuillez vous inscrire.</p>
+        <main className="inscription">
+            <h1>Inscription</h1>
+            <p>Pour accéder à toutes les fonctionnalités de RunTrack, veuillez vous inscrire.</p>
 
-                {message.texte && (
-                    <div className={`form-message ${message.type}`}>
-                        <p>{message.texte}</p>
-                    </div>
-                )}
+            {message.texte && (
+                <div className={`form-message ${message.type}`}>
+                    <p>{message.texte}</p>
+                </div>
+            )}
 
-                <form onSubmit={handleSubmit} onReset={viderMessage}>
-                    <label htmlFor="username">Nom d'utilisateur :</label>
-                    <input
-                        className="input-field"
-                        type="text"
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                    <label htmlFor="lastname">Nom :</label>
-                    <input
-                        className="input-field"
-                        type="text"
-                        id="lastname"
-                        value={lastname}
-                        onChange={(e) => setLastname(e.target.value)}
-                    />
-                    <label htmlFor="firstname">Prénom :</label>
-                    <input
-                        className="input-field"
-                        type="text"
-                        id="firstname"
-                        value={firstname}
-                        onChange={(e) => setFirstname(e.target.value)}
-                    />
-                    <label htmlFor="sexe">Sexe :</label>
-                    <select
-                        className="input-field"
-                        id="sexe"
-                        value={sexe}
-                        onChange={(e) => setSexe(e.target.value)}
-                    >
-                        <option value="">Sélectionnez votre sexe</option>
-                        <option value="homme">Homme</option>
-                        <option value="femme">Femme</option>
-                    </select>
-                    <label htmlFor="age">Âge :</label>
-                    <input
-                        className="input-field"
-                        type="number"
-                        id="age"
-                        value={age}
-                        onChange={(e) => setAge(e.target.value)}
-                    />
-                    <label htmlFor="email">Email :</label>
-                    <input
-                        className="input-field"
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                    <label htmlFor="password">Mot de passe :</label>
-                    <input
-                        className="input-field"
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <label htmlFor="confirmPassword">Confirmer le mot de passe :</label>
-                    <input
-                        className="input-field"
-                        type="password"
-                        id="confirmPassword"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
+            <form onSubmit={handleSubmit} onReset={viderMessage}>
+                <label htmlFor="username">Nom d'utilisateur :</label>
+                <input
+                    className="input-field"
+                    type="text"
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
+                <label htmlFor="lastname">Nom :</label>
+                <input
+                    className="input-field"
+                    type="text"
+                    id="lastname"
+                    value={lastname}
+                    onChange={(e) => setLastname(e.target.value)}
+                />
+                <label htmlFor="firstname">Prénom :</label>
+                <input
+                    className="input-field"
+                    type="text"
+                    id="firstname"
+                    value={firstname}
+                    onChange={(e) => setFirstname(e.target.value)}
+                />
+                <label htmlFor="sexe">Sexe :</label>
+                <select
+                    className="input-field"
+                    id="sexe"
+                    value={sexe}
+                    onChange={(e) => setSexe(e.target.value)}
+                >
+                    <option value="">Sélectionnez votre sexe</option>
+                    <option value="homme">Homme</option>
+                    <option value="femme">Femme</option>
+                </select>
+                <label htmlFor="age">Âge :</label>
+                <input
+                    className="input-field"
+                    type="number"
+                    id="age"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                />
+                <label htmlFor="email">Email :</label>
+                <input
+                    className="input-field"
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+                <label htmlFor="password">Mot de passe :</label>
+                <input
+                    className="input-field"
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <label htmlFor="confirmPassword">Confirmer le mot de passe :</label>
+                <input
+                    className="input-field"
+                    type="password"
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                />
 
-                    <input className="btn" type="submit" value="S'inscrire" />
-                    <input className="btn" type="reset" value="Réinitialiser" />
-                </form>
-            </main>
-        </>
+                <input className="btn" type="submit" value="S'inscrire" />
+                <input className="btn" type="reset" value="Réinitialiser" />
+            </form>
+        </main>
     );
 }
 
