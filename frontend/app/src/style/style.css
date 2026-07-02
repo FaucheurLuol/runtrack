@@ -205,7 +205,7 @@ nav::before {
    ============================================================ */
 .hero {
     position: relative;
-    padding: 5rem 2rem 2rem;
+    padding: 5rem 2rem 1rem;
     max-width: var(--max-width);
     margin: 0 auto;
     overflow: hidden;
@@ -261,7 +261,7 @@ nav::before {
     gap: 4rem;
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0 2rem 2rem;
     align-items: flex-start;
     flex-wrap: wrap;
 }
