@@ -17,9 +17,9 @@ function Accueil() {
                     <section className="features">
                         <h2>Fonctionnalités principales :</h2>
                         <ul>
-                            <li><Link to="/inscription"><strong>Test de performance</strong></Link> : Évaluez votre niveau actuel grâce à notre test de 5 ou 10 km.</li>
-                            <li><Link to="/inscription"><strong>Saisie des séances</strong></Link> : Enregistrez vos séances d'entraînement et suivez vos progrès.</li>
-                            <li><Link to="/inscription"><strong>Suivi des performances</strong></Link> : Enregistrez vos courses, distances et temps pour suivre vos progrès au fil du temps.</li>
+                            <li><strong>Test de performance</strong> : Évaluez votre niveau actuel grâce à notre test de 5 ou 10 km.</li>
+                            <li><strong>Saisie des séances</strong> : Enregistrez vos séances d'entraînement et suivez vos progrès.</li>
+                            <li><strong>Suivi des performances</strong> : Enregistrez vos courses, distances et temps pour suivre vos progrès au fil du temps.</li>
                         </ul>
                         <h2>Comment ça marche ?</h2>
                         <ol>
