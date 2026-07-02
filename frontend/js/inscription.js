@@ -12,6 +12,10 @@ function viderErreur() {
     errorDiv.innerHTML = '';
 }
 
+formulaire.addEventListener('reset', function(event) {
+    viderErreur();
+});
+
 formulaire.addEventListener('submit', function(event) {
     event.preventDefault(); // Empêche l'envoi du formulaire
 
