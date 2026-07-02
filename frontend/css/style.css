@@ -285,9 +285,23 @@ footer {
         padding: 16px;
     }
 
-    nav ul {
+    .menu-burger {
+        display: block; /* visible sur mobile */
+        background: none;
+        border: none;
+        font-size: 1.8rem;
+        cursor: pointer;
+        color: var(--text-color);
+    }
+
+    .nav-liens {
+        display: none; /* caché par défaut sur mobile */
         flex-direction: column;
         gap: 12px;
+    }
+
+    .nav-liens.ouvert {
+        display: flex; /* visible quand la classe .ouvert est présente */
     }
 
     .container {
@@ -334,25 +348,6 @@ footer {
 
     header {
         padding: 12px;
-    }
-
-    .menu-burger {
-        display: block; /* visible sur mobile */
-        background: none;
-        border: none;
-        font-size: 1.8rem;
-        cursor: pointer;
-        color: var(--text-color);
-    }
-
-    .nav-liens {
-        display: none; /* caché par défaut sur mobile */
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .nav-liens.ouvert {
-        display: flex; /* visible quand la classe .ouvert est présente */
     }
 
     .hero {
