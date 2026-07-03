@@ -1,15 +1,21 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { connecter } from '../../api/auth';
+import { useAuth } from '../context/useAuth';
 
 function Connexion() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState({ texte: '', type: '' });
+    const [chargement, setChargement] = useState(false);
+
+    const { connexion } = useAuth();
+    const navigate = useNavigate();
 
     const afficherErreur = (texte) => setMessage({ texte, type: 'error' });
-    const afficherSucces = (texte) => setMessage({ texte, type: 'success' });
     const viderMessage = () => setMessage({ texte: '', type: '' });
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         if (email === '' || password === '') {
@@ -17,7 +23,17 @@ function Connexion() {
             return;
         }
 
-        afficherSucces('Connexion en cours !');
+        setChargement(true);
+
+        try {
+            const data = await connecter(email, password);
+            connexion(data.token, data.utilisateur);
+            navigate('/dashboard'); // redirige après connexion
+        } catch (err) {
+            afficherErreur(err.message);
+        } finally {
+            setChargement(false);
+        }
     };
 
     return (
@@ -39,6 +55,7 @@ function Connexion() {
                     id="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={chargement}
                 />
 
                 <label htmlFor="password">Mot de passe :</label>
@@ -48,10 +65,16 @@ function Connexion() {
                     id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={chargement}
                 />
 
-                <input className="btn" type="submit" value="Se connecter" />
-                <input className="btn" type="reset" value="Réinitialiser" />
+                <input
+                    className="btn"
+                    type="submit"
+                    value={chargement ? 'Connexion...' : 'Se connecter'}
+                    disabled={chargement}
+                />
+                <input className="btn" type="reset" value="Réinitialiser" disabled={chargement} />
             </form>
         </main>
     );
