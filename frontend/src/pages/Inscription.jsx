@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { inscrire } from '../../api/auth';
+import { useAuth } from '../context/useAuth';
 
 function Inscription() {
     const [username, setUsername] = useState('');
@@ -15,9 +18,12 @@ function Inscription() {
     const lastnameRegex = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/;
     const firstnameRegex = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/~`])[A-Za-z\d!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/~`]{14,}$/;
+    const [chargement, setChargement] = useState(false);
+
+    const { connexion } = useAuth();
+    const navigate = useNavigate();
 
     const afficherErreur = (texte) => setMessage({ texte, type: 'error' });
-    const afficherSucces = (texte) => setMessage({ texte, type: 'success' });
     const viderMessage = () => {
         setMessage({ texte: '', type: '' });
         setUsername('');
@@ -30,7 +36,7 @@ function Inscription() {
         setConfirmPassword('');
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         if (username === '' || lastname === '' || firstname === '' || sexe === '' || age === '' || email === '' || password === '' || confirmPassword === '') {
@@ -68,7 +74,25 @@ function Inscription() {
             return;
         }
 
-        afficherSucces('Inscription prise en compte !');
+        setChargement(true);
+
+        try {
+            const data = await inscrire({
+                username,
+                email,
+                password,
+                nom: lastname,
+                prenom: firstname,
+                sexe,
+                age
+            });
+            connexion(data.token, data.utilisateur);
+            navigate('/dashboard');
+        } catch (err) {
+            afficherErreur(err.message);
+        } finally {
+            setChargement(false);
+        }
     };
 
 
@@ -152,7 +176,7 @@ function Inscription() {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                 />
 
-                <input className="btn" type="submit" value="S'inscrire" />
+                <input className="btn" type="submit" value="S'inscrire" disabled={chargement} />
                 <input className="btn" type="reset" value="Réinitialiser" />
             </form>
         </main>
