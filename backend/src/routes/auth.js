@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const pool = require('../db');
 
 // POST /auth/inscription
-router.post('/inscription', async (req, res) => {
+router.post('/inscription', async (req, res, next) => {
     const { username, email, password, nom, prenom, sexe, age } = req.body;
 
-    // Validation basique
     if (!username || !email || !password || !nom || !prenom || !sexe) {
         return res.status(400).json({
             erreur: 'Tous les champs obligatoires doivent être remplis'
@@ -14,58 +15,56 @@ router.post('/inscription', async (req, res) => {
     }
 
     try {
-        // Vérifie si l'email existe déjà
         const emailExistant = await pool.query(
-            'SELECT id FROM utilisateurs WHERE email = $1',
-            [email]
+            'SELECT id FROM utilisateurs WHERE email = $1', [email]
         );
-
         if (emailExistant.rows.length > 0) {
-            return res.status(409).json({
-                erreur: 'Cet email est déjà utilisé'
-            });
+            return res.status(409).json({ erreur: 'Cet email est déjà utilisé' });
         }
 
-        // Vérifie si le username existe déjà
         const usernameExistant = await pool.query(
-            'SELECT id FROM utilisateurs WHERE username = $1',
-            [username]
+            'SELECT id FROM utilisateurs WHERE username = $1', [username]
         );
-
         if (usernameExistant.rows.length > 0) {
-            return res.status(409).json({
-                erreur: 'Ce nom d\'utilisateur est déjà pris'
-            });
+            return res.status(409).json({ erreur: "Ce nom d'utilisateur est déjà pris" });
         }
 
-        // Insère le nouvel utilisateur
-        // ⚠️ Mot de passe stocké en clair temporairement — hashé au Module 11
+        // Hash du mot de passe
+        const passwordHash = await bcrypt.hash(password, 10);
+
         const result = await pool.query(
             `INSERT INTO utilisateurs (username, email, password, nom, prenom, sexe, age)
              VALUES ($1, $2, $3, $4, $5, $6, $7)
              RETURNING id, username, email, nom, prenom, created_at`,
-            [username, email, password, nom, prenom, sexe, age || null]
+            [username, email, passwordHash, nom, prenom, sexe, age || null]
+        );
+
+        const utilisateur = result.rows[0];
+
+        // Génère un token directement à l'inscription
+        const token = jwt.sign(
+            { id: utilisateur.id },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
         );
 
         res.status(201).json({
             message: 'Inscription réussie',
-            utilisateur: result.rows[0]
+            token,
+            utilisateur
         });
 
     } catch (err) {
-        console.error('Erreur inscription :', err.message);
-        res.status(500).json({ erreur: 'Erreur serveur' });
+        next(err);
     }
 });
 
 // POST /auth/connexion
-router.post('/connexion', async (req, res) => {
+router.post('/connexion', async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({
-            erreur: 'Email et mot de passe requis'
-        });
+        return res.status(400).json({ erreur: 'Email et mot de passe requis' });
     }
 
     try {
@@ -75,23 +74,27 @@ router.post('/connexion', async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            // Même message que mot de passe incorrect — on ne révèle pas si l'email existe
-            return res.status(401).json({
-                erreur: 'Email ou mot de passe incorrect'
-            });
+            return res.status(401).json({ erreur: 'Email ou mot de passe incorrect' });
         }
 
         const utilisateur = result.rows[0];
 
-        // ⚠️ Comparaison en clair temporairement — bcrypt au Module 11
-        if (utilisateur.password !== password) {
-            return res.status(401).json({
-                erreur: 'Email ou mot de passe incorrect'
-            });
+        // Compare le mot de passe avec le hash
+        const valide = await bcrypt.compare(password, utilisateur.password);
+
+        if (!valide) {
+            return res.status(401).json({ erreur: 'Email ou mot de passe incorrect' });
         }
+
+        const token = jwt.sign(
+            { id: utilisateur.id },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
 
         res.status(200).json({
             message: 'Connexion réussie',
+            token,
             utilisateur: {
                 id: utilisateur.id,
                 username: utilisateur.username,
@@ -100,8 +103,7 @@ router.post('/connexion', async (req, res) => {
         });
 
     } catch (err) {
-        console.error('Erreur connexion :', err.message);
-        res.status(500).json({ erreur: 'Erreur serveur' });
+        next(err);
     }
 });
 

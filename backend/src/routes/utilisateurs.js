@@ -1,16 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const authentifier = require('../middleware/auth');
 
-// GET /utilisateurs/:id — récupère un utilisateur
-router.get('/:id', async (req, res, next) => {
+// Route protégée — nécessite un token valide
+// GET /utilisateurs/:id — récupère les détails d'un utilisateur
+router.get('/:id', authentifier, async (req, res, next) => {
     const { id } = req.params;
+
+    // Vérifie que l'utilisateur accède à son propre profil
+    if (parseInt(id) !== req.utilisateur.id) {
+        return res.status(403).json({
+            erreur: 'Accès refusé — vous ne pouvez accéder qu\'à votre propre profil'
+        });
+    }
 
     try {
         const result = await pool.query(
             `SELECT id, username, email, nom, prenom, sexe, age, created_at
-             FROM utilisateurs
-             WHERE id = $1`,
+             FROM utilisateurs WHERE id = $1`,
             [id]
         );
 
@@ -21,7 +29,7 @@ router.get('/:id', async (req, res, next) => {
         res.json(result.rows[0]);
 
     } catch (err) {
-        next(err); // transmet au gestionnaire centralisé
+        next(err);
     }
 });
 
