@@ -139,18 +139,6 @@ nav {
     margin: 0 auto;
 }
 
-nav::before {
-    content: 'RunTrack';
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    background: var(--gradient-brand);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    flex-shrink: 0;
-}
-
 .nav-liens {
     display: flex;
     gap: 2rem;
@@ -181,6 +169,48 @@ nav::before {
 }
 
 .nav-liens a:hover::after { width: 100%; }
+
+/* Logo cliquable dans le header */
+.nav-logo {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.nav-logo:hover {
+    opacity: 0.85;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Bouton déconnexion dans le nav */
+.btn-nav-logout {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.7rem 1.5rem;
+    background: var(--gradient-brand);
+    color: #fff !important;
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.34rem;
+    font-weight: 700;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: box-shadow var(--transition), transform var(--transition), opacity var(--transition);
+    box-shadow: 0 2px 8px var(--glow-orange);
+    -webkit-text-fill-color: #fff;
+}
+
+.btn-nav-logout:hover {
+    box-shadow: 0 4px 20px var(--glow-orange), 0 8px 40px var(--glow-orange-lg);
+    transform: translateY(-2px);
+    opacity: 0.92;
+}
 
 .menu-burger {
     display: none;

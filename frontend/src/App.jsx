@@ -5,6 +5,9 @@ import Accueil from './pages/Accueil';
 import Inscription from './pages/Inscription';
 import Connexion from './pages/Connexion';
 import Dashboard from './pages/Dashboard';
+import Saisie from './pages/Saisie';
+import Suivi from './pages/Suivi';
+import Test from './pages/Test';
 
 function App() {
     return (
@@ -14,11 +17,10 @@ function App() {
                     <Route path="/" element={<Accueil />} />
                     <Route path="/inscription" element={<Inscription />} />
                     <Route path="/connexion" element={<Connexion />} />
-                    <Route path="/dashboard" element={
-                        <RouteProtegee>
-                            <Dashboard />
-                        </RouteProtegee>
-                    } />
+                    <Route path="/dashboard" element={<RouteProtegee><Dashboard /></RouteProtegee>} />
+                    <Route path="/saisie" element={<RouteProtegee><Saisie /></RouteProtegee>} />
+                    <Route path="/suivi" element={<RouteProtegee><Suivi /></RouteProtegee>} />
+                    <Route path="/test" element={<RouteProtegee><Test /></RouteProtegee>} />
                 </Route>
             </Routes>
         </BrowserRouter>
