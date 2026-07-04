@@ -41,6 +41,10 @@
     color: var(--ink-muted);
 }
 
+.stat-card.orange  { border-left-color: var(--orange); }
+.stat-card.olive   { border-left-color: var(--olive); }
+.stat-card.amber   { border-left-color: var(--amber); }
+
 /* Historique */
 .historique-liste {
     display: flex;

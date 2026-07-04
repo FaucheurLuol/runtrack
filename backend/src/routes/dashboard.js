@@ -37,6 +37,7 @@ router.get('/', authentifier, async (req, res, next) => {
                 COUNT(sr.id)                          AS seances_realisees,
                 COALESCE(SUM(sr.distance_reelle), 0)  AS km_totaux,
                 COALESCE(AVG(sr.ressenti), 0)         AS ressenti_moyen
+                COALESCE(SUM(sr.duree_reelle), 0)     AS total_minutes
              FROM seances s
              LEFT JOIN seances_realisees sr
                 ON sr.seance_id = s.id AND sr.utilisateur_id = $2
@@ -182,6 +183,61 @@ router.get('/', authentifier, async (req, res, next) => {
             notes:          s.notes,
         }));
 
+        // ── KPI rapides ───────────────────────────────────────────────
+        // Consistency score
+        const consistencyResult = await pool.query(
+            `SELECT
+                COUNT(s.id)  AS total_prevues,
+                COUNT(sr.id) AS total_realisees
+            FROM seances s
+            LEFT JOIN seances_realisees sr
+                ON sr.seance_id = s.id AND sr.utilisateur_id = $2
+            WHERE s.plan_id = $1`,
+            [plan.id, utilisateur_id]
+        );
+
+        const cons = consistencyResult.rows[0];
+        const consistency_score = parseInt(cons.total_prevues) > 0
+            ? Math.round((parseInt(cons.total_realisees) / parseInt(cons.total_prevues)) * 100)
+            : 0;
+
+        // Streak
+        const streakResult = await pool.query(
+            `SELECT DISTINCT s.semaine
+            FROM seances_realisees sr
+            JOIN seances s ON sr.seance_id = s.id
+            WHERE sr.utilisateur_id = $1 AND s.plan_id = $2
+            ORDER BY s.semaine DESC`,
+            [utilisateur_id, plan.id]
+        );
+
+        let streak = 0;
+        const semaines = streakResult.rows.map(r => r.semaine);
+        for (let i = 0; i < semaines.length; i++) {
+            if (i === 0 || semaines[i - 1] - semaines[i] === 1) streak++;
+            else break;
+        }
+
+        // Meilleure allure 5km
+        const meilleureAllureResult = await pool.query(
+            `SELECT sr.allure_reelle_sec, sr.duree_reelle, s.semaine
+            FROM seances_realisees sr
+            JOIN seances s ON sr.seance_id = s.id
+            WHERE sr.utilisateur_id = $1
+            AND s.plan_id = $2
+            AND s.type = 'test'
+            AND sr.allure_reelle_sec IS NOT NULL
+            ORDER BY sr.allure_reelle_sec ASC
+            LIMIT 1`,
+            [utilisateur_id, plan.id]
+        );
+
+        const meilleure_allure_5km = meilleureAllureResult.rows.length > 0 ? {
+            allure:    formatAllure(meilleureAllureResult.rows[0].allure_reelle_sec),
+            duree_min: meilleureAllureResult.rows[0].duree_reelle,
+            semaine:   meilleureAllureResult.rows[0].semaine,
+        } : null;
+
         // ── Réponse ────────────────────────────────────────────────
         res.json({
             plan_actif: {
@@ -205,6 +261,7 @@ router.get('/', authentifier, async (req, res, next) => {
                     ),
                     km_totaux:      parseFloat(prog.km_totaux).toFixed(1),
                     ressenti_moyen: parseFloat(prog.ressenti_moyen).toFixed(1),
+                    total_heures:   Math.round(parseFloat(prog.total_minutes) / 60 * 10) / 10,
                 },
             },
             prochaine_seance: prochaine ? {
@@ -223,6 +280,11 @@ router.get('/', authentifier, async (req, res, next) => {
             deux_semaines,
             allures_reference,
             journal,
+            kpi: {
+                consistency_score,
+                streak,
+                meilleure_allure_5km,
+            },
         });
 
     } catch (err) {

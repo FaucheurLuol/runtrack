@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import '../style/dashboard.css';
+import '../style/suivi.css';
 
 const API_URL = 'http://localhost:3000';
 
@@ -40,6 +41,7 @@ function Dashboard() {
         deux_semaines,
         allures_reference,
         journal,
+        kpi,
     } = donnees;
 
     const { progression } = plan_actif;
@@ -121,6 +123,58 @@ function Dashboard() {
                     </p>
                 </div>
             </section>
+
+            {/* ── KPI rapides ────────────────────────────────────────── */}
+            <div className="stats-grid">
+                <div className="stat-card orange">
+                    <span className="stat-card-label">Kilomètres parcourus</span>
+                    <span className="stat-card-valeur">{plan_actif.progression.km_totaux} km</span>
+                    <span className="stat-card-detail">
+                        Record : {kpi.meilleure_allure_5km
+                            ? `${kpi.meilleure_allure_5km.duree_min} min sur 5km`
+                            : '—'}
+                    </span>
+                </div>
+                <div className="stat-card olive">
+                    <span className="stat-card-label">Temps d'entraînement</span>
+                    <span className="stat-card-valeur">
+                        {Math.round(plan_actif.progression.km_totaux / 10 * 15)}min
+                    </span>
+                    <span className="stat-card-detail">
+                        {plan_actif.progression.realisees} séances réalisées
+                    </span>
+                </div>
+                <div className="stat-card olive">
+                    <span className="stat-card-label">Consistency</span>
+                    <span className="stat-card-valeur">{kpi.consistency_score}%</span>
+                    <span className="stat-card-detail">
+                        {plan_actif.progression.realisees}/{plan_actif.progression.total} séances
+                    </span>
+                </div>
+                <div className="stat-card amber">
+                    <span className="stat-card-label">Streak</span>
+                    <span className="stat-card-valeur">{kpi.streak} sem.</span>
+                    <span className="stat-card-detail">Semaines consécutives</span>
+                </div>
+                <div className="stat-card orange">
+                    <span className="stat-card-label">Ressenti moyen</span>
+                    <span className="stat-card-valeur">{plan_actif.progression.ressenti_moyen}/5</span>
+                    <span className="stat-card-detail">
+                        {['', 'Très difficile', 'Difficile', 'Correct', 'Bien', 'Excellent'][Math.round(plan_actif.progression.ressenti_moyen)]}
+                    </span>
+                </div>
+                <div className="stat-card orange">
+                    <span className="stat-card-label">Meilleure allure 5km</span>
+                    <span className="stat-card-valeur">
+                        {kpi.meilleure_allure_5km ? kpi.meilleure_allure_5km.allure : '—'}
+                    </span>
+                    <span className="stat-card-detail">
+                        {kpi.meilleure_allure_5km
+                            ? `Semaine ${kpi.meilleure_allure_5km.semaine} · ${kpi.meilleure_allure_5km.duree_min} min`
+                            : 'Aucun test réalisé'}
+                    </span>
+                </div>
+            </div>
 
             {/* ── PROCHAINE SÉANCE ───────────────────────────────── */}
             {prochaine_seance && (
