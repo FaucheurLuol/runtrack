@@ -11,7 +11,7 @@ function Saisie() {
     const navigate                   = useNavigate();
 
     // Paramètres depuis l'URL
-    const planId       = searchParams.get('plan') ?? '';
+    const [planIdSelectionne, setPlanIdSelectionne] = useState(searchParams.get('plan') || '');
     const semaine      = searchParams.get('semaine') || '';
     const numeroSeance = searchParams.get('seance')  || '';
 
@@ -64,13 +64,10 @@ function Saisie() {
                 const actifs = data.filter(p => p.actif);
                 setPlans(actifs);
 
-                if (!planId) {
+                if (!planIdSelectionne) {
                     const principal = actifs.find(p => p.est_selectionne);
                     if (principal) {
-                        navigate(
-                            `/saisie?plan=${principal.id}&semaine=${formSemaine}&seance=${formNumero}`,
-                            { replace: true }
-                        );
+                        setPlanIdSelectionne(String(principal.id));
                     }
                 }
             } catch (err) {
@@ -86,7 +83,7 @@ function Saisie() {
 
     // Charge la séance prévue quand semaine/séance change
     useEffect(() => {
-        if (!planId || !formSemaine || !formNumero) return;
+        if (!planIdSelectionne || !formSemaine || !formNumero) return;
 
         const charger = async () => {
             setChargementSeance(true);
@@ -95,7 +92,7 @@ function Saisie() {
 
             try {
                 const data = await recupererSeance(
-                    utilisateur.token, planId, formSemaine, formNumero
+                    utilisateur.token, planIdSelectionne, formSemaine, formNumero
                 );
 
                 if (!data) {
@@ -113,7 +110,7 @@ function Saisie() {
         };
 
         charger();
-    }, [formSemaine, formNumero, planId, utilisateur.token]);
+    }, [formSemaine, formNumero, planIdSelectionne, utilisateur.token]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -135,7 +132,7 @@ function Saisie() {
         setChargement(true);
         try {
             await enregistrerSeance(utilisateur.token, {
-                plan_id:         parseInt(planId),
+                plan_id:         parseInt(planIdSelectionne),
                 semaine:         parseInt(formSemaine),
                 numero_seance:   parseInt(formNumero),
                 duree_reelle:    dureeReelleCalculee,
@@ -173,11 +170,8 @@ function Saisie() {
                         <select
                             className="input-field"
                             id="plan"
-                            value={planId}
-                            onChange={(e) => navigate(
-                                `/saisie?plan=${e.target.value}&semaine=${formSemaine}&seance=${formNumero}`,
-                                { replace: true }
-                            )}
+                            value={planIdSelectionne}
+                            onChange={(e) => setPlanIdSelectionne(e.target.value)}
                         >
                             {plans.map(p => (
                                 <option key={p.id} value={p.id}>
