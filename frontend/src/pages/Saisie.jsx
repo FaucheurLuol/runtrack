@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
-import { recupererSeance, enregistrerSeance } from '../../api/seances';
+import { recupererSeance, enregistrerSeance } from '../api/seances';
 import '../style/dashboard.css';
 
 function Saisie() {

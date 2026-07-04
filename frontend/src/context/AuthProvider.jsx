@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { AuthContext } from './AuthContext';
-import { recupererToken, sauvegarderToken, supprimerToken } from '../../api/token';
+import { recupererToken, sauvegarderToken, supprimerToken } from '../api/token';
 
 function initialiserUtilisateur() {
     const token = recupererToken();

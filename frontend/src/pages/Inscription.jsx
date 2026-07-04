@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { inscrire } from '../../api/auth';
+import { inscrire } from '../api/auth';
 import { useAuth } from '../context/useAuth';
 
 function Inscription() {
