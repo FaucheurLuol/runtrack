@@ -66,6 +66,7 @@ router.get('/', authentifier, async (req, res, next) => {
         let allures_reference = null;
         let allure_course     = 'À définir suite au premier test';
         let dernier_5km       = null;
+        let temps_cible_10km = 'À définir suite au premier test';
 
         if (dernierTest) {
             const temps5km_sec = dernierTest.duree_reelle * 60;
@@ -78,6 +79,13 @@ router.get('/', authentifier, async (req, res, next) => {
                 vo2:       formatAllure(Math.round(allureRace * 0.94)),
             };
             allure_course = formatAllure(allureRace);
+
+            // Temps cible 10km = allureRace (sec/km) × 10
+            const tempsCible_sec = allureRace * 10;
+            const tempsCible_min = Math.floor(tempsCible_sec / 60);
+            const tempsCible_s   = tempsCible_sec % 60;
+            temps_cible_10km = `${tempsCible_min}'${tempsCible_s.toString().padStart(2, '0')}"`;
+
             dernier_5km   = {
                 duree_min:    dernierTest.duree_reelle,
                 date:         dernierTest.date_realisee,
@@ -186,6 +194,8 @@ router.get('/', authentifier, async (req, res, next) => {
                 semaines_restantes,
                 allure_course,
                 dernier_5km,
+                allure_course,
+                temps_cible_10km,
                 progression: {
                     realisees:  parseInt(prog.seances_realisees),
                     total:      parseInt(prog.total_seances),
