@@ -4,6 +4,7 @@ node_modules/
 # Variables d'environnement (contiennent des secrets)
 .env
 .env.local
+.env.production
 
 # Logs
 logs
