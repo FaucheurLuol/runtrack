@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const utilisateursRoutes = require('./routes/utilisateurs');
 const testsRoutes = require('./routes/tests');
 const gestionnaireErreurs = require('./middleware/erreurs');
+const plansRoutes = require('./routes/plans');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/utilisateurs', utilisateursRoutes);
 app.use('/tests', testsRoutes);
+app.use('/plans', plansRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Serveur RunTrack opérationnel' });
