@@ -25,10 +25,12 @@ router.get('/', authentifier, async (req, res, next) => {
         // Semaines restantes
         const aujourd_hui    = new Date();
         const dateFin        = new Date(plan.date_fin);
-        const semaines_restantes = Math.max(
+        const dateDebut = new Date(plan.date_debut);
+        const semaines_ecoulees = Math.max(
             0,
-            Math.ceil((dateFin - aujourd_hui) / (1000 * 60 * 60 * 24 * 7))
+            Math.floor((aujourd_hui - dateDebut) / (1000 * 60 * 60 * 24 * 7))
         );
+        const semaines_restantes = Math.max(0, 20 - semaines_ecoulees);
 
         // Progression globale
         const progressionResult = await pool.query(
@@ -36,7 +38,7 @@ router.get('/', authentifier, async (req, res, next) => {
                 COUNT(s.id)                           AS total_seances,
                 COUNT(sr.id)                          AS seances_realisees,
                 COALESCE(SUM(sr.distance_reelle), 0)  AS km_totaux,
-                COALESCE(AVG(sr.ressenti), 0)         AS ressenti_moyen
+                COALESCE(AVG(sr.ressenti), 0)         AS ressenti_moyen,
                 COALESCE(SUM(sr.duree_reelle), 0)     AS total_minutes
              FROM seances s
              LEFT JOIN seances_realisees sr

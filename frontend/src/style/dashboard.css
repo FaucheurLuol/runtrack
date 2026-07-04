@@ -35,6 +35,16 @@
     margin-top: 0.25rem;
 }
 
+.page-header-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--sand);
+    padding: 1rem 0;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--olive-dark);
+}
+
 /* ── Plan actif ─────────────────────────────────────────────── */
 .plan-actif-grid {
     display: grid;

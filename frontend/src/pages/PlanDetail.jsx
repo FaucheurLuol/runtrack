@@ -47,20 +47,22 @@ function PlanDetail() {
         <main className="dashboard">
 
             {/* En-tête */}
-            <div className="plan-detail-header">
-                <button
-                    className="btn-retour"
-                    onClick={() => navigate('/mes-plans')}
-                >
-                    ← Mes plans
-                </button>
-                <div className="plan-detail-titre">
-                    <h1>Plan {plan.objectif}</h1>
-                    <p>
-                        {capitaliser(plan.niveau)} · {plan.seances_semaine} séance{plan.seances_semaine > 1 ? 's' : ''}/semaine
-                        · Du {new Date(plan.date_debut).toLocaleDateString('fr-FR')}
-                        {' '}au {new Date(plan.date_fin).toLocaleDateString('fr-FR')}
-                    </p>
+            <div className="page-header-sticky">
+                <div className="plan-detail-header">
+                    <button
+                        className="btn-retour"
+                        onClick={() => navigate('/mes-plans')}
+                    >
+                        ← Mes plans
+                    </button>
+                    <div className="plan-detail-titre">
+                        <h1>Plan {plan.objectif}</h1>
+                        <p>
+                            {capitaliser(plan.niveau)} · {plan.seances_semaine} séance{plan.seances_semaine > 1 ? 's' : ''}/semaine
+                            · Du {new Date(plan.date_debut).toLocaleDateString('fr-FR')}
+                            {' '}au {new Date(plan.date_fin).toLocaleDateString('fr-FR')}
+                        </p>
+                    </div>
                 </div>
             </div>
 

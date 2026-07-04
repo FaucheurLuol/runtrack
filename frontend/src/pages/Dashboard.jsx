@@ -33,7 +33,25 @@ function Dashboard() {
     }, [utilisateur.token]);
 
     if (chargement) return <main className="dashboard"><p>Chargement...</p></main>;
-    if (erreur)     return <main className="dashboard"><p>Erreur : {erreur}</p></main>;
+    if (erreur) return (
+        <main className="dashboard">
+            {erreur === 'Aucun plan actif' ? (
+                <>
+                    <h1>Bienvenue sur RunTrack 👋</h1>
+                    <p>Tu n'as pas encore de plan d'entraînement.</p>
+                    <button
+                        className="btn-saisie"
+                        style={{ marginTop: '1rem' }}
+                        onClick={() => navigate('/nouveau-plan')}
+                    >
+                        Créer mon premier plan →
+                    </button>
+                </>
+            ) : (
+                <p>Erreur : {erreur}</p>
+            )}
+        </main>
+    );
 
     const {
         plan_actif,
@@ -138,21 +156,21 @@ function Dashboard() {
                 <div className="stat-card olive">
                     <span className="stat-card-label">Temps d'entraînement</span>
                     <span className="stat-card-valeur">
-                        {Math.round(plan_actif.progression.km_totaux / 10 * 15)}min
+                        {plan_actif.progression.total_heures}h
                     </span>
                     <span className="stat-card-detail">
                         {plan_actif.progression.realisees} séances réalisées
                     </span>
                 </div>
                 <div className="stat-card olive">
-                    <span className="stat-card-label">Consistency</span>
+                    <span className="stat-card-label">Régularité</span>
                     <span className="stat-card-valeur">{kpi.consistency_score}%</span>
                     <span className="stat-card-detail">
                         {plan_actif.progression.realisees}/{plan_actif.progression.total} séances
                     </span>
                 </div>
                 <div className="stat-card amber">
-                    <span className="stat-card-label">Streak</span>
+                    <span className="stat-card-label">Série en cours</span>
                     <span className="stat-card-valeur">{kpi.streak} sem.</span>
                     <span className="stat-card-detail">Semaines consécutives</span>
                 </div>

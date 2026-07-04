@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/useAuth';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import Footer from './Footer';
 
 function Layout() {
     const { utilisateur }                    = useAuth();
@@ -13,6 +14,7 @@ function Layout() {
             <>
                 <Header />
                 <Outlet />
+                <Footer />
             </>
         );
     }
@@ -38,6 +40,7 @@ function Layout() {
                     ☰
                 </button>
                 <Outlet />
+                <Footer />
             </div>
         </div>
     );
