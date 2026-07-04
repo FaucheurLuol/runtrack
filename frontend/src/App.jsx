@@ -9,6 +9,7 @@ import Saisie from './pages/Saisie';
 import Suivi from './pages/Suivi';
 import MesPlans from './pages/MesPlans';
 import NouveauPlan from './pages/NouveauPlan';
+import PlanDetail from './pages/PlanDetail';
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                     <Route path="/suivi"        element={<RouteProtegee><Suivi /></RouteProtegee>} />
                     <Route path="/mes-plans"    element={<RouteProtegee><MesPlans /></RouteProtegee>} />
                     <Route path="/nouveau-plan" element={<RouteProtegee><NouveauPlan /></RouteProtegee>} />
+                    <Route path="/mes-plans/:id" element={<RouteProtegee><PlanDetail /></RouteProtegee>} />
                 </Route>
             </Routes>
         </BrowserRouter>

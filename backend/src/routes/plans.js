@@ -260,4 +260,60 @@ router.put('/:id/reactiver', authentifier, async (req, res, next) => {
     }
 });
 
+// GET /plans/:id/detail — plan complet avec toutes les séances
+router.get('/:id/detail', authentifier, async (req, res, next) => {
+    const { id }         = req.params;
+    const utilisateur_id = req.utilisateur.id;
+
+    try {
+        const planResult = await pool.query(
+            `SELECT p.*, u.plan_selectionne_id = p.id AS est_selectionne
+             FROM plans_entrainement p
+             JOIN utilisateurs u ON u.id = p.utilisateur_id
+             WHERE p.id = $1 AND p.utilisateur_id = $2`,
+            [id, utilisateur_id]
+        );
+
+        if (planResult.rows.length === 0) {
+            return res.status(404).json({ erreur: 'Plan non trouvé' });
+        }
+
+        const seancesResult = await pool.query(
+            `SELECT
+                s.*,
+                sr.duree_reelle,
+                sr.distance_reelle,
+                sr.allure_reelle_sec,
+                sr.ressenti,
+                sr.notes,
+                sr.date_realisee,
+                CASE WHEN sr.id IS NOT NULL THEN true ELSE false END AS realisee
+             FROM seances s
+             LEFT JOIN seances_realisees sr
+                ON sr.seance_id = s.id AND sr.utilisateur_id = $2
+             WHERE s.plan_id = $1
+             ORDER BY s.semaine, s.jour`,
+            [id, utilisateur_id]
+        );
+
+        // Groupe par semaine
+        const parSemaine = seancesResult.rows.reduce((acc, seance) => {
+            const sem = seance.semaine;
+            if (!acc[sem]) acc[sem] = [];
+            acc[sem].push(seance);
+            return acc;
+        }, {});
+
+        res.json({
+            plan: planResult.rows[0],
+            semaines: parSemaine,
+            total:    seancesResult.rows.length,
+            realisees: seancesResult.rows.filter(s => s.realisee).length,
+        });
+
+    } catch (err) {
+        next(err);
+    }
+});
+
 module.exports = router;

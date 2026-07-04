@@ -438,6 +438,179 @@ textarea.input-field {
     line-height: 1.5;
 }
 
+/* ── Mes plans ──────────────────────────────────────────────── */
+.plans-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.plan-carte {
+    border-left: 3px solid var(--olive-dark);
+}
+
+.plan-carte.plan-principal {
+    border-left-color: var(--orange);
+    background: rgba(227, 82, 15, 0.03);
+}
+
+.plan-carte.plan-archive {
+    opacity: 0.7;
+    border-left-color: var(--ink-muted);
+}
+
+.plan-carte-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.plan-carte-titre {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.plan-carte-objectif {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.plan-carte-detail {
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+}
+
+.plan-carte-dates {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+}
+
+.plan-carte-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 10px;
+    border-radius: 99px;
+}
+
+.tag-principal {
+    background: var(--gradient-brand);
+    color: #fff;
+}
+
+.tag-actif {
+    background: rgba(142, 132, 72, 0.15);
+    color: var(--olive-dark);
+    border: 1px solid var(--olive-dark);
+}
+
+.tag-archive {
+    background: rgba(138, 135, 120, 0.1);
+    color: var(--ink-muted);
+    border: 1px solid var(--ink-muted);
+}
+
+.plan-carte-progression {
+    margin-bottom: 1rem;
+}
+
+.plan-carte-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-voir {
+    padding: 0.5rem 1rem;
+    background: var(--gradient-brand);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: 0 2px 8px var(--glow-orange);
+}
+
+.btn-voir:hover {
+    box-shadow: 0 4px 16px var(--glow-orange);
+    transform: translateY(-1px);
+}
+
+.btn-selectionner {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--olive-dark);
+    border: 1.5px solid var(--olive-dark);
+    border-radius: var(--radius-md);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-selectionner:hover {
+    border-color: var(--olive);
+    color: var(--olive);
+}
+
+.btn-archiver {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--ink-muted);
+    border: 1.5px solid var(--ink-muted);
+    border-radius: var(--radius-md);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-archiver:hover {
+    border-color: var(--orange);
+    color: var(--orange);
+}
+
+.btn-reactiver {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1.5px solid var(--olive-dark);
+    border-radius: var(--radius-md);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-reactiver:hover {
+    border-color: var(--olive);
+    color: var(--olive);
+}
+
+.btn-selectionner:disabled,
+.btn-archiver:disabled,
+.btn-reactiver:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .allures-grid {
