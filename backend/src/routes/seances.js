@@ -6,7 +6,7 @@ const { calculerAllures, formatAllure } = require('../services/planGenerator');
 
 // POST /seances/realiser — enregistre une séance réalisée
 router.post('/realiser', authentifier, async (req, res, next) => {
-    const { duree_reelle, distance_reelle, ressenti, notes, date_realisee } = req.body;
+    const { plan_id, semaine, numero_seance, duree_reelle, distance_reelle, ressenti, notes, date_realisee } = req.body;
 
     const utilisateur_id = req.utilisateur.id;
 
