@@ -631,6 +631,28 @@ footer p {
 }
 
 /* ============================================================
+   NOT FOUND PAGE
+   ============================================================ */
+.not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 1rem;
+    text-align: center;
+}
+
+.not-found h1 {
+    font-size: 6rem;
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0;
+}
+
+/* ============================================================
    RESPONSIVE — Tablette (≤ 1024px)
    ============================================================ */
 @media (max-width: 1024px) {

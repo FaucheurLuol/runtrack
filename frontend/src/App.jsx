@@ -10,6 +10,8 @@ import Suivi from './pages/Suivi';
 import MesPlans from './pages/MesPlans';
 import NouveauPlan from './pages/NouveauPlan';
 import PlanDetail from './pages/PlanDetail';
+import NotFound from './pages/NotFound';
+
 
 function App() {
     return (
@@ -25,6 +27,7 @@ function App() {
                     <Route path="/mes-plans"    element={<RouteProtegee><MesPlans /></RouteProtegee>} />
                     <Route path="/nouveau-plan" element={<RouteProtegee><NouveauPlan /></RouteProtegee>} />
                     <Route path="/mes-plans/:id" element={<RouteProtegee><PlanDetail /></RouteProtegee>} />
+                    <Route path="*" element={<NotFound />} />
                 </Route>
             </Routes>
         </BrowserRouter>
