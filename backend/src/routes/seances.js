@@ -6,15 +6,7 @@ const { calculerAllures, formatAllure } = require('../services/planGenerator');
 
 // POST /seances/realiser — enregistre une séance réalisée
 router.post('/realiser', authentifier, async (req, res, next) => {
-    const {
-        plan_id,
-        semaine,
-        numero_seance,
-        duree_reelle,
-        distance_reelle,
-        ressenti,
-        notes
-    } = req.body;
+    const { duree_reelle, distance_reelle, ressenti, notes, date_realisee } = req.body;
 
     const utilisateur_id = req.utilisateur.id;
 
@@ -75,12 +67,13 @@ router.post('/realiser', authentifier, async (req, res, next) => {
         const result = await pool.query(
             `INSERT INTO seances_realisees
                 (seance_id, utilisateur_id, date_realisee,
-                 duree_reelle, distance_reelle, ressenti, notes, allure_reelle_sec)
-             VALUES ($1, $2, NOW(), $3, $4, $5, $6, $7)
-             RETURNING *`,
+                duree_reelle, distance_reelle, ressenti, notes, allure_reelle_sec)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING *`,
             [
                 seance.id,
                 utilisateur_id,
+                donnees.date_realisee || new Date(),
                 duree_reelle,
                 distance_reelle,
                 ressenti,

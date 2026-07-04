@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import { recupererSeance, enregistrerSeance } from '../api/seances';
+import { recupererMesPlans } from '../api/plans';
 import '../style/dashboard.css';
 
 function Saisie() {
@@ -28,6 +29,42 @@ function Saisie() {
 
     const [chargement,       setChargement]        = useState(false);
     const [message,          setMessage]           = useState({ texte: '', type: '' });
+
+    const [plans,          setPlans]          = useState([]);
+    const [chargementPlans, setChargementPlans] = useState(true);
+    const [erreur, setErreur] = useState(null);
+
+    const [dateSeance, setDateSeance] = useState(
+        new Date().toISOString().split('T')[0] // format YYYY-MM-DD
+    );
+
+    // Charge les plans actifs de l'utilisateur
+    useEffect(() => {
+        const chargerPlans = async () => {
+            try {
+                const data   = await recupererMesPlans(utilisateur.token);
+                const actifs = data.filter(p => p.actif);
+                setPlans(actifs);
+
+                if (!planId) {
+                    const principal = actifs.find(p => p.est_selectionne);
+                    if (principal) {
+                        navigate(
+                            `/saisie?plan=${principal.id}&semaine=${formSemaine}&seance=${formNumero}`,
+                            { replace: true }
+                        );
+                    }
+                }
+            } catch (err) {
+                setErreur(err.message);
+            } finally {
+                setChargementPlans(false);
+            }
+        };
+
+        chargerPlans();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [utilisateur.token]);
 
     // Charge la séance prévue quand semaine/séance change
     useEffect(() => {
@@ -71,13 +108,14 @@ function Saisie() {
         setChargement(true);
         try {
             await enregistrerSeance(utilisateur.token, {
-                plan_id:          parseInt(planId),
-                semaine:          parseInt(formSemaine),
-                numero_seance:    parseInt(formNumero),
-                duree_reelle:     parseFloat(dureeReelle),
-                distance_reelle:  parseFloat(distanceReelle),
+                plan_id:         parseInt(planId),
+                semaine:         parseInt(formSemaine),
+                numero_seance:   parseInt(formNumero),
+                duree_reelle:    parseFloat(dureeReelle),
+                distance_reelle: parseFloat(distanceReelle),
                 ressenti,
-                notes: notes || null,
+                notes:           notes || null,
+                date_realisee:   dateSeance,
             });
 
             setMessage({ texte: 'Séance enregistrée avec succès !', type: 'success' });
@@ -94,6 +132,47 @@ function Saisie() {
         <main className="dashboard">
             <section className="dashboard-card">
                 <h1>Saisie d'une séance</h1>
+                
+                {erreur && (
+                    <div className="form-message error">
+                        <p>{erreur}</p>
+                    </div>
+                )}
+
+                {/* Sélecteur de plan */}
+                {!chargementPlans && (
+                    <div className="saisie-champ">
+                        <label htmlFor="plan" className="label">Plan</label>
+                        <select
+                            className="input-field"
+                            id="plan"
+                            value={planId}
+                            onChange={(e) => navigate(
+                                `/saisie?plan=${e.target.value}&semaine=${formSemaine}&seance=${formNumero}`,
+                                { replace: true }
+                            )}
+                        >
+                            {plans.map(p => (
+                                <option key={p.id} value={p.id}>
+                                    {p.objectif} — {p.seances_semaine} séance{p.seances_semaine > 1 ? 's' : ''}/sem
+                                    {p.est_selectionne ? ' (principal)' : ''}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+
+                <div className="saisie-champ">
+                    <label htmlFor="date" className="label">Date de la séance</label>
+                    <input
+                        className="input-field"
+                        type="date"
+                        id="date"
+                        value={dateSeance}
+                        max={new Date().toISOString().split('T')[0]}
+                        onChange={(e) => setDateSeance(e.target.value)}
+                    />
+                </div>
 
                 {/* Sélection semaine / séance */}
                 <div className="saisie-selection">
