@@ -294,6 +294,19 @@ nav {
     color: var(--ink-muted);
 }
 
+.sidebar-username-link {
+    color: var(--ink-muted);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color var(--transition);
+    -webkit-text-fill-color: var(--ink-muted);
+}
+
+.sidebar-username-link:hover {
+    color: var(--orange);
+    -webkit-text-fill-color: var(--orange);
+}
+
 .sidebar-deconnexion {
     display: flex;
     align-items: center;
@@ -310,6 +323,36 @@ nav {
 }
 
 .sidebar-deconnexion:hover { color: var(--orange); }
+
+.sidebar-user-bloc {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sidebar-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--olive-dark);
+}
+
+.sidebar-avatar-initiales {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
 
 /* Burger mobile */
 .burger-mobile {

@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import {
     LayoutDashboard,
     PenLine,
@@ -59,7 +59,23 @@ function Sidebar({ ouverte, fermer }) {
 
             {/* Déconnexion */}
             <div className="sidebar-footer">
-                <span className="sidebar-username">{utilisateur?.username}</span>
+                {/* Dans le sidebar-footer, remplace le bloc username */}
+                <div className="sidebar-user-bloc">
+                    {utilisateur?.photo_url ? (
+                        <img
+                            src={utilisateur.photo_url}
+                            alt="Photo de profil"
+                            className="sidebar-avatar"
+                        />
+                    ) : (
+                        <div className="sidebar-avatar-initiales">
+                            {utilisateur?.prenom?.[0]}{utilisateur?.nom?.[0]}
+                        </div>
+                    )}
+                    <Link to="/profil" className="sidebar-username-link">
+                        {utilisateur?.username}
+                    </Link>
+                </div>
                 <button
                     className="sidebar-deconnexion"
                     onClick={handleDeconnexion}

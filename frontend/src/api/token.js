@@ -10,6 +10,7 @@ export const recupererToken = () => {
 
 export const supprimerToken = () => {
     localStorage.removeItem(CLE);
+    localStorage.removeItem('runtrack_user');
 };
 
 export const estConnecte = () => {

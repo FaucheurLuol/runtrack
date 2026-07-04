@@ -34,14 +34,13 @@ router.post('/inscription', async (req, res, next) => {
 
         const result = await pool.query(
             `INSERT INTO utilisateurs (username, email, password, nom, prenom, sexe, age)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)
-             RETURNING id, username, email, nom, prenom, created_at`,
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING id, username, email, nom, prenom, photo_url, created_at`,
             [username, email, passwordHash, nom, prenom, sexe, age || null]
         );
 
         const utilisateur = result.rows[0];
 
-        // Génère un token directement à l'inscription
         const token = jwt.sign(
             { id: utilisateur.id },
             process.env.JWT_SECRET,
@@ -51,7 +50,14 @@ router.post('/inscription', async (req, res, next) => {
         res.status(201).json({
             message: 'Inscription réussie',
             token,
-            utilisateur
+            utilisateur: {
+                id:        utilisateur.id,
+                username:  utilisateur.username,
+                email:     utilisateur.email,
+                nom:       utilisateur.nom,
+                prenom:    utilisateur.prenom,
+                photo_url: utilisateur.photo_url,
+            }
         });
 
     } catch (err) {
@@ -69,7 +75,8 @@ router.post('/connexion', async (req, res, next) => {
 
     try {
         const result = await pool.query(
-            'SELECT id, username, email, password FROM utilisateurs WHERE email = $1',
+            `SELECT id, username, email, password, photo_url, nom, prenom
+            FROM utilisateurs WHERE email = $1`,
             [email]
         );
 
@@ -96,9 +103,12 @@ router.post('/connexion', async (req, res, next) => {
             message: 'Connexion réussie',
             token,
             utilisateur: {
-                id: utilisateur.id,
-                username: utilisateur.username,
-                email: utilisateur.email
+                id:        utilisateur.id,
+                username:  utilisateur.username,
+                email:     utilisateur.email,
+                photo_url: utilisateur.photo_url,
+                nom:       utilisateur.nom,
+                prenom:    utilisateur.prenom,
             }
         });
 
