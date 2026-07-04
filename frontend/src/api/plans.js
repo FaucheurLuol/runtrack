@@ -47,3 +47,17 @@ export const reactiverPlan = async (token, planId) => {
     if (!res.ok) throw new Error(data.erreur);
     return data;
 };
+
+export const genererPlan = async (token, donnees) => {
+    const res  = await fetch(`${API_URL}/plans/generer`, {
+        method:  'POST',
+        headers: {
+            'Content-Type':  'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(donnees)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erreur);
+    return data;
+};

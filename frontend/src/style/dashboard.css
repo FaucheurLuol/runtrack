@@ -756,12 +756,89 @@ textarea.input-field {
     padding-bottom: 1.25rem;
 }
 
+/* ── Nouveau plan ───────────────────────────────────────────── */
+.nouveau-plan-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.nouveau-plan-form h2 {
+    margin-top: 0;
+}
+
+.radio-groupe {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.radio-carte {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    background: var(--sand);
+    border: 1.5px solid var(--olive-dark);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    transition: all var(--transition);
+}
+
+.radio-carte input[type="radio"] {
+    display: none;
+}
+
+.radio-carte:hover {
+    border-color: var(--olive);
+    color: var(--ink);
+}
+
+.radio-carte.active {
+    border-color: var(--orange);
+    background: rgba(227, 82, 15, 0.06);
+    color: var(--orange);
+}
+
+.temps-saisie {
+    margin-top: 1.25rem;
+}
+
+.temps-desktop {
+    display: flex;
+    gap: 1rem;
+}
+
+.temps-mobile {
+    display: none;
+}
+
+.info-debutant {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(142, 132, 72, 0.08);
+    border-left: 3px solid var(--olive);
+    border-radius: var(--radius-md);
+}
+
+.info-debutant p {
+    font-size: 0.88rem;
+    max-width: none;
+}
+
+.apercu-allures h2 { margin-top: 0; }
+
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-    .allures-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    .allures-grid { grid-template-columns: repeat(3, 1fr); }
+    .temps-desktop { display: none; }
+    .temps-mobile  { display: block; }
 }
+
 
 @media (max-width: 768px) {
     .dashboard {
