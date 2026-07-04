@@ -22,8 +22,7 @@ function Saisie() {
     const [chargementSeance, setChargementSeance]  = useState(false);
     const [erreurSeance,     setErreurSeance]      = useState(null);
 
-    const [dureeReelle,      setDureeReelle]       = useState('');
-    const [distanceReelle,   setDistanceReelle]    = useState('');
+    const [distance,         setDistance] = useState('');
     const [ressenti,         setRessenti]          = useState(0);
     const [notes,            setNotes]             = useState('');
 
@@ -33,6 +32,25 @@ function Saisie() {
     const [plans,          setPlans]          = useState([]);
     const [chargementPlans, setChargementPlans] = useState(true);
     const [erreur, setErreur] = useState(null);
+
+    const [dureeMinutes, setDureeMinutes] = useState('');
+    const [dureeSecondes, setDureeSecondes] = useState('');
+    const [dureeTexte, setDureeTexte] = useState('');
+
+    const handleDureeMinChange = (val) => {
+        setDureeMinutes(val);
+        setDureeTexte(`${val.padStart(2,'0')}:${dureeSecondes.padStart(2,'0')}`);
+    };
+    const handleDureeSecChange = (val) => {
+        setDureeSecondes(val);
+        setDureeTexte(`${dureeMinutes.padStart(2,'0')}:${val.padStart(2,'0')}`);
+    };
+    const handleDureeTexteChange = (val) => {
+        setDureeTexte(val);
+        const parties = val.split(':');
+        if (parties[0] !== undefined) setDureeMinutes(parties[0]);
+        if (parties[1] !== undefined) setDureeSecondes(parties[1]);
+    };
 
     const [dateSeance, setDateSeance] = useState(
         new Date().toISOString().split('T')[0] // format YYYY-MM-DD
@@ -100,7 +118,16 @@ function Saisie() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!dureeReelle || !distanceReelle || ressenti === 0) {
+        const min = parseInt(dureeMinutes) || 0;
+        const sec = parseInt(dureeSecondes) || 0;
+        const dureeReelleCalculee = min + sec / 60;
+
+        if (!dureeReelleCalculee || dureeReelleCalculee <= 0) {
+            setMessage({ texte: 'Veuillez saisir une durée valide.', type: 'error' });
+            return;
+        }
+
+        if (!distance || ressenti === 0) {
             setMessage({ texte: 'Veuillez remplir tous les champs obligatoires.', type: 'error' });
             return;
         }
@@ -111,8 +138,8 @@ function Saisie() {
                 plan_id:         parseInt(planId),
                 semaine:         parseInt(formSemaine),
                 numero_seance:   parseInt(formNumero),
-                duree_reelle:    parseFloat(dureeReelle),
-                distance_reelle: parseFloat(distanceReelle),
+                duree_reelle:    dureeReelleCalculee,
+                distance_reelle: parseFloat(distance),
                 ressenti,
                 notes:           notes || null,
                 date_realisee:   dateSeance,
@@ -251,33 +278,60 @@ function Saisie() {
                     <form onSubmit={handleSubmit} className="saisie-form">
                         <h2>Ce que tu as fait</h2>
 
-                        <div className="saisie-selection">
-                            <div className="saisie-champ">
-                                <label htmlFor="duree" className="label">Durée réelle (min) *</label>
+                        <div className="saisie-champ">
+                            <label className="label">Durée réelle *</label>
+                            {/* Desktop */}
+                            <div className="temps-desktop" style={{ gap: '1rem' }}>
+                                <div className="saisie-champ">
+                                    <label className="label">Minutes</label>
+                                    <input
+                                        className="input-field"
+                                        type="number"
+                                        min="0"
+                                        max="300"
+                                        value={dureeMinutes}
+                                        onChange={(e) => handleDureeMinChange(e.target.value)}
+                                        placeholder="34"
+                                    />
+                                </div>
+                                <div className="saisie-champ">
+                                    <label className="label">Secondes</label>
+                                    <input
+                                        className="input-field"
+                                        type="number"
+                                        min="0"
+                                        max="59"
+                                        value={dureeSecondes}
+                                        onChange={(e) => handleDureeSecChange(e.target.value)}
+                                        placeholder="30"
+                                    />
+                                </div>
+                            </div>
+                            {/* Mobile */}
+                            <div className="temps-mobile">
                                 <input
                                     className="input-field"
-                                    type="number"
-                                    id="duree"
-                                    min="1"
-                                    step="0.5"
-                                    value={dureeReelle}
-                                    onChange={(e) => setDureeReelle(e.target.value)}
-                                    placeholder="ex: 34"
+                                    type="text"
+                                    value={dureeTexte}
+                                    onChange={(e) => handleDureeTexteChange(e.target.value)}
+                                    placeholder="34:30"
+                                    pattern="\d{1,3}:\d{2}"
                                 />
                             </div>
-                            <div className="saisie-champ">
-                                <label htmlFor="distance" className="label">Distance réelle (km) *</label>
-                                <input
-                                    className="input-field"
-                                    type="number"
-                                    id="distance"
-                                    min="0.1"
-                                    step="0.1"
-                                    value={distanceReelle}
-                                    onChange={(e) => setDistanceReelle(e.target.value)}
-                                    placeholder="ex: 3.8"
-                                />
-                            </div>
+                        </div>
+
+                        <div className="saisie-champ">
+                            <label htmlFor="distance" className="label">Distance réelle (km) *</label>
+                            <input
+                                className="input-field"
+                                type="number"
+                                id="distance"
+                                min="0.1"
+                                step="0.1"
+                                value={distance}
+                                onChange={(e) => setDistance(e.target.value)}
+                                placeholder="ex: 3.8"
+                            />
                         </div>
 
                         {/* Ressenti en étoiles */}
