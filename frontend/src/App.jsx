@@ -7,20 +7,22 @@ import Connexion from './pages/Connexion';
 import Dashboard from './pages/Dashboard';
 import Saisie from './pages/Saisie';
 import Suivi from './pages/Suivi';
-import Test from './pages/Test';
+import MesPlans from './pages/MesPlans';
+import NouveauPlan from './pages/NouveauPlan';
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
                 <Route element={<Layout />}>
-                    <Route path="/" element={<Accueil />} />
-                    <Route path="/inscription" element={<Inscription />} />
-                    <Route path="/connexion" element={<Connexion />} />
-                    <Route path="/dashboard" element={<RouteProtegee><Dashboard /></RouteProtegee>} />
-                    <Route path="/saisie" element={<RouteProtegee><Saisie /></RouteProtegee>} />
-                    <Route path="/suivi" element={<RouteProtegee><Suivi /></RouteProtegee>} />
-                    <Route path="/test" element={<RouteProtegee><Test /></RouteProtegee>} />
+                    <Route path="/"             element={<Accueil />} />
+                    <Route path="/inscription"  element={<Inscription />} />
+                    <Route path="/connexion"    element={<Connexion />} />
+                    <Route path="/dashboard"    element={<RouteProtegee><Dashboard /></RouteProtegee>} />
+                    <Route path="/saisie"       element={<RouteProtegee><Saisie /></RouteProtegee>} />
+                    <Route path="/suivi"        element={<RouteProtegee><Suivi /></RouteProtegee>} />
+                    <Route path="/mes-plans"    element={<RouteProtegee><MesPlans /></RouteProtegee>} />
+                    <Route path="/nouveau-plan" element={<RouteProtegee><NouveauPlan /></RouteProtegee>} />
                 </Route>
             </Routes>
         </BrowserRouter>
