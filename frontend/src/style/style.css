@@ -68,7 +68,7 @@ img { max-width: 100%; height: auto; display: block; }
    TYPOGRAPHIE
    ============================================================ */
 h1 {
-    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-size: clamp(1.8rem, 4vw, 3rem);
     font-weight: 800;
     line-height: 1.08;
     letter-spacing: -0.03em;
@@ -84,7 +84,7 @@ h1 .accent {
 }
 
 h2 {
-    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    font-size: clamp(1.1rem, 1.8vw, 1.3rem);
     font-weight: 700;
     color: var(--ink);
     letter-spacing: -0.01em;

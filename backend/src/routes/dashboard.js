@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const authentifier = require('../middleware/auth');
-const { formatAllure } = require('../services/planGenerator');
+const { formatAllure, PROFILS } = require('../services/planGenerator');
 
 router.get('/', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
@@ -188,6 +188,7 @@ router.get('/', authentifier, async (req, res, next) => {
                 id:                plan.id,
                 objectif:          plan.objectif,
                 niveau:            plan.niveau,
+                niveau_label:      PROFILS[plan.niveau]?.label || null,
                 seances_semaine:   plan.seances_semaine,
                 date_debut:        plan.date_debut,
                 date_fin:          plan.date_fin,

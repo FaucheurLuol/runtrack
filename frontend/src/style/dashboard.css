@@ -1,0 +1,381 @@
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+
+.dashboard {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.dashboard h2 {
+    margin-top: 0;
+}
+
+/* Carte générique */
+.dashboard-card {
+    background: var(--sand-light);
+    border: 1px solid var(--olive-dark);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-card);
+}
+
+.carte-asterisque {
+    font-size: 0.72rem;
+    color: var(--ink-muted);
+    font-style: italic;
+    margin: 0;
+    max-width: none;
+    border-top: 1px solid var(--olive-dark);
+    padding-top: 0.4rem;
+    margin-top: 0.25rem;
+}
+
+/* ── Plan actif ─────────────────────────────────────────────── */
+.plan-actif-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.plan-actif-carte {
+    background: var(--sand);
+    border: 1px solid var(--olive-dark);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-left: 3px solid var(--orange);
+}
+
+.plan-actif-carte .carte-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--olive);
+}
+
+.plan-actif-carte .carte-valeur {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--orange);
+    line-height: 1.2;
+}
+
+.plan-actif-carte .carte-detail {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    margin: 0;
+    max-width: none;
+}
+
+.plan-actif-carte .non-defini {
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+    font-style: italic;
+}
+
+/* Barre de progression */
+.progression-container {
+    border-top: 1px solid var(--olive-dark);
+    padding-top: 1rem;
+}
+
+.progression-texte {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--ink-soft);
+}
+
+.progression-barre {
+    width: 100%;
+    height: 8px;
+    background: var(--sand-dark);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.progression-fill {
+    height: 100%;
+    background: var(--gradient-brand);
+    border-radius: 99px;
+    transition: width 0.6s ease;
+}
+
+.progression-detail {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    margin-top: 0.4rem;
+    max-width: none;
+}
+
+/* ── Prochaine séance ───────────────────────────────────────── */
+.prochaine-header {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.badge-phase {
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: var(--gradient-brand);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 99px;
+}
+
+.badge-semaine {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+}
+
+.prochaine-titre {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+}
+
+.prochaine-description {
+    font-size: 0.88rem;
+    margin-bottom: 1rem;
+}
+
+.prochaine-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.25rem;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.stat strong {
+    font-size: 1.1rem;
+}
+
+.btn-saisie {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.25rem;
+    background: var(--gradient-brand);
+    color: #fff;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: box-shadow var(--transition), transform var(--transition);
+    box-shadow: 0 2px 8px var(--glow-orange);
+}
+
+.btn-saisie:hover {
+    box-shadow: 0 4px 20px var(--glow-orange);
+    transform: translateY(-1px);
+}
+
+/* ── Deux semaines ──────────────────────────────────────────── */
+.deux-semaines {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.semaine-bloc h2 {
+    margin-bottom: 1rem;
+}
+
+.vide {
+    color: var(--ink-muted);
+    font-style: italic;
+    font-size: 0.88rem;
+}
+
+.seance-resume {
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.5rem;
+    border-left: 3px solid var(--olive-dark);
+}
+
+.seance-resume.realisee {
+    border-left-color: var(--orange);
+    background: rgba(227, 82, 15, 0.05);
+}
+
+.seance-resume.a-faire {
+    background: var(--sand);
+}
+
+.seance-resume-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
+.seance-resume-titre {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.seance-resume-valeurs {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+}
+
+.ressenti-inline {
+    color: var(--amber);
+    letter-spacing: 1px;
+}
+
+/* ── Allures de référence ───────────────────────────────────── */
+.allures-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-top: 0.75rem;
+}
+
+.allure-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.allure-item strong {
+    font-size: 1rem;
+    color: var(--orange);
+}
+
+/* ── Journal ────────────────────────────────────────────────── */
+.journal-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.journal-entree {
+    display: grid;
+    grid-template-columns: 80px 1fr auto auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--sand);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--olive-dark);
+}
+
+.journal-date {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+    font-weight: 600;
+}
+
+.journal-titre {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--ink);
+    margin-bottom: 0.1rem;
+}
+
+.journal-phase {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+}
+
+.journal-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    font-weight: 600;
+}
+
+.journal-ressenti {
+    display: flex;
+    gap: 1px;
+}
+
+.etoile {
+    color: var(--sand-dark);
+    font-size: 1rem;
+}
+
+.etoile.active {
+    color: var(--amber);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .allures-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        padding: 1.25rem;
+    }
+
+    .plan-actif-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .deux-semaines {
+        grid-template-columns: 1fr;
+    }
+
+    .allures-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .prochaine-stats {
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .journal-entree {
+        grid-template-columns: 70px 1fr;
+        grid-template-rows: auto auto;
+    }
+
+    .journal-stats,
+    .journal-ressenti {
+        grid-column: 2;
+    }
+}
+
+@media (max-width: 480px) {
+    .plan-actif-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .allures-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

@@ -141,4 +141,4 @@ function genererPlan({ seances_semaine, temps5km_sec }) {
     };
 }
 
-module.exports = { genererPlan, calculerAllures, determinerProfil, formatAllure };
+module.exports = { genererPlan, calculerAllures, determinerProfil, formatAllure, PROFILS };
