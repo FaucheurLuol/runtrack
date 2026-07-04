@@ -150,7 +150,7 @@ function Dashboard() {
                     </div>
                     <button
                         className="btn-saisie"
-                        onClick={() => navigate('/saisie')}
+                        onClick={() => navigate(`/saisie?semaine=${prochaine_seance.semaine}&seance=${prochaine_seance.numero_seance}&plan=${plan_actif.id}`)}
                     >
                         Saisir cette séance →
                     </button>

@@ -329,6 +329,115 @@
     color: var(--amber);
 }
 
+/* ── Saisie ─────────────────────────────────────────────────── */
+.saisie-selection {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.saisie-champ {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 140px;
+}
+
+.saisie-notes {
+    flex: 1 1 100%;
+}
+
+.seance-prevue-recap {
+    background: var(--sand);
+    border: 1px solid var(--olive-dark);
+    border-left: 3px solid var(--orange);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.saisie-form {
+    border-top: 1px solid var(--olive-dark);
+    padding-top: 1.5rem;
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.saisie-form h2 {
+    margin-top: 0;
+}
+
+.saisie-ressenti {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.etoiles-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.etoile-pick {
+    font-size: 2rem;
+    color: var(--sand-dark);
+    cursor: pointer;
+    transition: color var(--transition), transform var(--transition);
+    line-height: 1;
+}
+
+.etoile-pick.active {
+    color: var(--amber);
+}
+
+.etoile-pick:hover {
+    transform: scale(1.2);
+}
+
+.ressenti-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-left: 0.5rem;
+}
+
+.saisie-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.btn-annuler {
+    background: transparent;
+    border: 1.5px solid var(--olive-dark);
+    border-radius: var(--radius-md);
+    color: var(--ink-muted);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-annuler:hover {
+    border-color: var(--olive);
+    color: var(--ink-soft);
+}
+
+textarea.input-field {
+    resize: vertical;
+    min-height: 80px;
+    font-family: 'Manrope', sans-serif;
+    line-height: 1.5;
+}
+
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .allures-grid {
