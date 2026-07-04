@@ -187,7 +187,7 @@ router.get('/', authentifier, async (req, res, next) => {
             plan_id: plan.id,
             stats_globales: {
                 total_km:              Math.round(total_km * 10) / 10,
-                total_heures:          Math.round(parseFloat(progression.total_minutes) / 3600 * 10) / 10,
+                total_heures:          Math.round(total_minutes / 3600 * 10) / 10,
                 total_seances_realisees: total_seances,
                 total_seances_prevues:   total_prevues,
                 consistency_score:     consistency,

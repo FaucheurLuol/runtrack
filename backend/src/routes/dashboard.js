@@ -69,12 +69,16 @@ router.get('/', authentifier, async (req, res, next) => {
         let allures_reference = null;
         let allure_course     = 'À définir suite au premier test';
         let dernier_5km       = null;
-        let temps_cible_10km = 'À définir suite au premier test';
+        let temps_cible_10km  = 'À définir suite au premier test';
 
-        if (dernierTest) {
-            const temps5km_sec = parseFloat(dernierTest.duree_reelle);
-            const allureRace   = parseFloat(dernierTest.duree_reelle)
-            allures_reference  = {
+        // Utilise le dernier test réalisé, sinon le temps initial du plan
+        const tempsReference = dernierTest
+            ? parseFloat(dernierTest.duree_reelle)
+            : plan.temps5km_initial || null;
+
+        if (tempsReference) {
+            const allureRace = Math.round((tempsReference / 5) * 1.06);
+            allures_reference = {
                 easy:      formatAllure(Math.round(allureRace * 1.32)),
                 aerobic:   formatAllure(Math.round(allureRace * 1.20)),
                 threshold: formatAllure(Math.round(allureRace * 1.05)),
@@ -83,16 +87,17 @@ router.get('/', authentifier, async (req, res, next) => {
             };
             allure_course = formatAllure(allureRace);
 
-            // Temps cible 10km = allureRace (sec/km) × 10
             const tempsCible_sec = allureRace * 10;
             const tempsCible_min = Math.floor(tempsCible_sec / 60);
             const tempsCible_s   = tempsCible_sec % 60;
             temps_cible_10km = `${tempsCible_min}'${tempsCible_s.toString().padStart(2, '0')}"`;
 
-            dernier_5km   = {
-                duree_min:    dernierTest.duree_reelle,
-                date:         dernierTest.date_realisee,
-            };
+            if (dernierTest) {
+                dernier_5km = {
+                    duree_min: dernierTest.duree_reelle,
+                    date:      dernierTest.date_realisee,
+                };
+            }
         }
 
         // ── 2. Prochaine séance ────────────────────────────────────

@@ -34,16 +34,17 @@ CREATE TABLE IF NOT EXISTS tests_performance (
 
 -- Plans d'entraînement
 CREATE TABLE IF NOT EXISTS plans_entrainement (
-    id              SERIAL PRIMARY KEY,
-    utilisateur_id  INTEGER     NOT NULL REFERENCES utilisateurs(id) ON DELETE CASCADE,
-    test_id         INTEGER     REFERENCES tests_performance(id),
-    objectif        VARCHAR(20) NOT NULL,
-    niveau          VARCHAR(20) NOT NULL,
-    seances_semaine INTEGER     NOT NULL CHECK (seances_semaine BETWEEN 1 AND 7),
-    date_debut      DATE        NOT NULL,
-    date_fin        DATE        NOT NULL,
-    actif           BOOLEAN     DEFAULT TRUE,
-    created_at      TIMESTAMP   DEFAULT NOW()
+    id               SERIAL PRIMARY KEY,
+    utilisateur_id   INTEGER     NOT NULL REFERENCES utilisateurs(id) ON DELETE CASCADE,
+    test_id          INTEGER     REFERENCES tests_performance(id),
+    objectif         VARCHAR(20) NOT NULL,
+    niveau           VARCHAR(20) NOT NULL,
+    seances_semaine  INTEGER     NOT NULL CHECK (seances_semaine BETWEEN 1 AND 7),
+    date_debut       DATE        NOT NULL,
+    date_fin         DATE        NOT NULL,
+    actif            BOOLEAN     DEFAULT TRUE,
+    created_at       TIMESTAMP   DEFAULT NOW(),
+    temps5km_initial INTEGER
 );
 
 -- Clé étrangère plan_selectionne_id (après création de plans_entrainement)

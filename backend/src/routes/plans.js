@@ -33,10 +33,10 @@ router.post('/generer', authentifier, async (req, res, next) => {
         // Sauvegarde le plan en base
         const planResult = await pool.query(
             `INSERT INTO plans_entrainement
-                (utilisateur_id, objectif, niveau, seances_semaine, date_debut, date_fin)
-             VALUES ($1, $2, $3, $4, $5, $6)
-             RETURNING id`,
-            [utilisateur_id, '10km', plan.profil, seances_semaine, date_debut, dateFin]
+                (utilisateur_id, objectif, niveau, seances_semaine, date_debut, date_fin, temps5km_initial)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING id`,
+            [utilisateur_id, '10km', plan.profil, seances_semaine, date_debut, dateFin, temps5km_sec || null]
         );
 
         const plan_id = planResult.rows[0].id;
