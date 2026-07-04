@@ -1,0 +1,104 @@
+/* ============================================================
+   SUIVI
+   ============================================================ */
+
+/* Stats globales */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.stat-card {
+    background: var(--sand-light);
+    border: 1px solid var(--olive-dark);
+    border-left: 3px solid var(--orange);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    box-shadow: var(--shadow-card);
+}
+
+.stat-card-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--olive);
+}
+
+.stat-card-valeur {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.1;
+}
+
+.stat-card-detail {
+    font-size: 0.78rem;
+    color: var(--ink-muted);
+}
+
+/* Historique */
+.historique-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.historique-carte {
+    background: var(--sand);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--olive-dark);
+}
+
+.historique-carte.seance-test {
+    border-left-color: var(--amber);
+}
+
+.historique-carte-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.25rem;
+}
+
+.historique-date {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-muted);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.historique-titre {
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+}
+
+.graphique-description {
+    font-size: 1rem;
+    color: var(--ink-muted);
+    margin-bottom: 0.5rem;
+    max-width: none;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
