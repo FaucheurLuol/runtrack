@@ -250,6 +250,17 @@ router.get('/', authentifier, async (req, res, next) => {
             allure:    formatAllure(meilleureAllureResult.rows[0].allure_reelle_sec),
             duree_min: meilleureAllureResult.rows[0].duree_reelle,
             semaine:   meilleureAllureResult.rows[0].semaine,
+        } : plan.temps5km_initial ? {
+            // Utilise le temps initial du plan si pas encore de test réalisé
+            allure:    formatAllure(Math.round((plan.temps5km_initial / 5) * 1.06)),
+            duree_min: plan.temps5km_initial,
+            semaine:   'initial',
+        } : null;
+
+        const meilleure_allure_5km = meilleureAllureResult.rows.length > 0 ? {
+            allure:    formatAllure(meilleureAllureResult.rows[0].allure_reelle_sec),
+            duree_min: meilleureAllureResult.rows[0].duree_reelle,
+            semaine:   meilleureAllureResult.rows[0].semaine,
         } : null;
 
         // ── Réponse ────────────────────────────────────────────────

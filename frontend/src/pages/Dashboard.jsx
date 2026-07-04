@@ -195,7 +195,9 @@ function Dashboard() {
                     </span>
                     <span className="stat-card-detail">
                         {kpi.meilleure_allure_5km
-                            ? `Semaine ${kpi.meilleure_allure_5km.semaine} · ${secToAffichage(kpi.meilleure_allure_5km.duree_min)} min`
+                            ? kpi.meilleure_allure_5km.semaine === 'initial'
+                                ? `Test initial · ${secToAffichage(kpi.meilleure_allure_5km.duree_min)}`
+                                : `Semaine ${kpi.meilleure_allure_5km.semaine} · ${secToAffichage(kpi.meilleure_allure_5km.duree_min)}`
                             : 'Aucun test réalisé'}
                     </span>
                 </div>
