@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth }             from '../context/useAuth';
 import { recupererSuivi }      from '../api/suivi';
 import {
@@ -27,6 +28,7 @@ function Suivi() {
     const [donnees,    setDonnees]    = useState(null);
     const [chargement, setChargement] = useState(true);
     const [erreur,     setErreur]     = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const charger = async () => {
@@ -43,7 +45,25 @@ function Suivi() {
     }, [utilisateur.token]);
 
     if (chargement) return <main className="dashboard"><p>Chargement...</p></main>;
-    if (erreur)     return <main className="dashboard"><p>Erreur : {erreur}</p></main>;
+    if (erreur) return (
+        <main className="dashboard">
+            {erreur === 'Aucun plan actif' ? (
+                <>
+                    <h1>Aucune donnée disponible 📊</h1>
+                    <p>Tu n'as pas encore de plan actif. Crée ton premier plan pour commencer à suivre tes progrès.</p>
+                    <button
+                        className="btn-saisie"
+                        style={{ marginTop: '1rem' }}
+                        onClick={() => navigate('/nouveau-plan')}
+                    >
+                        Créer mon premier plan →
+                    </button>
+                </>
+            ) : (
+                <p>Erreur : {erreur}</p>
+            )}
+        </main>
+    );
 
     const { stats_globales, par_semaine, progression_tests, historique } = donnees;
 
