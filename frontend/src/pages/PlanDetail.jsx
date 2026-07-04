@@ -15,6 +15,13 @@ const formatAllure = (sec) => {
     return `${min}'${s.toString().padStart(2, '0')}"/km`;
 };
 
+const secToAffichage = (sec) => {
+    if (!sec) return '—';
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return s > 0 ? `${m}min ${s}s` : `${m}min`;
+};
+
 function PlanDetail() {
     const { id }                      = useParams();
     const { utilisateur }             = useAuth();
@@ -154,7 +161,7 @@ function PlanDetail() {
                                             <div className="plan-detail-stats">
                                                 <div className="stat">
                                                     <span className="label">Durée</span>
-                                                    <strong>{seance.duree_reelle} min</strong>
+                                                    <strong>{secToAffichage(seance.duree_reelle)} min</strong>
                                                 </div>
                                                 <div className="stat">
                                                     <span className="label">Distance</span>

@@ -60,8 +60,7 @@ router.post('/realiser', authentifier, async (req, res, next) => {
         }
 
         // Calcule l'allure réelle en sec/km
-        const duree_reelle_sec    = duree_reelle * 60;
-        const allure_reelle_sec   = Math.round(duree_reelle_sec / distance_reelle);
+        const allure_reelle_sec = Math.round(parseFloat(duree_reelle) / parseFloat(distance_reelle));
 
         // Enregistre la séance réalisée
         const result = await pool.query(
@@ -108,7 +107,7 @@ router.post('/realiser', authentifier, async (req, res, next) => {
         // Si c'est un test → recalibrer les allures des séances futures
         if (seance.type === 'test') {
             // Pour un test 5km : temps = durée réelle en secondes
-            const temps5km_sec    = duree_reelle * 60;
+            const temps5km_sec    = parseFloat(duree_reelle);
             const nouvellesAllures = calculerAllures(temps5km_sec);
 
             await pool.query(

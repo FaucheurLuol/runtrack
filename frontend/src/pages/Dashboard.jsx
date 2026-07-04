@@ -6,6 +6,13 @@ import '../style/suivi.css';
 
 import { API_URL } from '../api/config';
 
+const secToAffichage = (sec) => {
+    if (!sec) return '—';
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return s > 0 ? `${m}min ${s}s` : `${m}min`;
+};
+
 function Dashboard() {
     const { utilisateur } = useAuth();
     const navigate        = useNavigate();
@@ -110,7 +117,7 @@ function Dashboard() {
                         {plan_actif.dernier_5km ? (
                             <>
                                 <span className="carte-valeur">
-                                    {plan_actif.dernier_5km.duree_min} min
+                                    {secToAffichage(plan_actif.dernier_5km.duree_min)}
                                 </span>
                                 <p className="carte-detail">
                                     {new Date(plan_actif.dernier_5km.date).toLocaleDateString('fr-FR')}
@@ -149,7 +156,7 @@ function Dashboard() {
                     <span className="stat-card-valeur">{plan_actif.progression.km_totaux} km</span>
                     <span className="stat-card-detail">
                         Record : {kpi.meilleure_allure_5km
-                            ? `${kpi.meilleure_allure_5km.duree_min} min sur 5km`
+                            ? `${secToAffichage(kpi.meilleure_allure_5km.duree_min)} sur 5km`
                             : '—'}
                     </span>
                 </div>
@@ -188,7 +195,7 @@ function Dashboard() {
                     </span>
                     <span className="stat-card-detail">
                         {kpi.meilleure_allure_5km
-                            ? `Semaine ${kpi.meilleure_allure_5km.semaine} · ${kpi.meilleure_allure_5km.duree_min} min`
+                            ? `Semaine ${kpi.meilleure_allure_5km.semaine} · ${secToAffichage(kpi.meilleure_allure_5km.duree_min)} min`
                             : 'Aucun test réalisé'}
                     </span>
                 </div>
@@ -350,7 +357,7 @@ function SeanceResume({ seance }) {
             <div className="seance-resume-valeurs">
                 {seance.realisee ? (
                     <>
-                        <span>{seance.realise.duree_min} min</span>
+                        <span>{secToAffichage(seance.realise.duree_min)} min</span>
                         <span>{parseFloat(seance.realise.distance_km).toFixed(1)} km</span>
                         <span>{seance.realise.allure}</span>
                         <span className="ressenti-inline">

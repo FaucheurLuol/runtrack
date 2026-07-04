@@ -157,9 +157,9 @@ router.get('/', authentifier, async (req, res, next) => {
         const progression_tests = tests
             .sort((a, b) => a.semaine - b.semaine)
             .map(t => ({
-                semaine:        t.semaine,
-                duree_min:      t.duree_reelle,
-                allure_sec_km:  t.allure_reelle_sec,
+                semaine:          t.semaine,
+                duree_sec:        t.duree_reelle, 
+                allure_sec_km:    t.allure_reelle_sec,
                 allure_affichage: t.allure_reelle_sec
                     ? formatAllure(t.allure_reelle_sec)
                     : null,

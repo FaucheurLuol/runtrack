@@ -62,8 +62,8 @@ function Saisie() {
             try {
                 const data   = await recupererMesPlans(utilisateur.token);
                 const actifs = data.filter(p => p.actif);
-                console.log('Plans actifs:', actifs);                              // ← ici
-                console.log('Plan principal:', actifs.find(p => p.est_selectionne)); // ← ici
+                console.log('Plans actifs:', actifs);
+                console.log('Plan principal:', actifs.find(p => p.est_selectionne)); 
                 setPlans(actifs);
 
                 if (!planIdSelectionne) {
@@ -119,7 +119,7 @@ function Saisie() {
 
         const min = parseInt(dureeMinutes) || 0;
         const sec = parseInt(dureeSecondes) || 0;
-        const dureeReelleCalculee = min + sec / 60;
+        const dureeReelleCalculee = min * 60 + sec;
 
         if (!dureeReelleCalculee || dureeReelleCalculee <= 0) {
             setMessage({ texte: 'Veuillez saisir une durée valide.', type: 'error' });

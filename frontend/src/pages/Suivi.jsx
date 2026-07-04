@@ -13,6 +13,13 @@ import '../style/suivi.css';
 const RESSENTI_LABEL = ['', 'Très difficile', 'Difficile', 'Correct', 'Bien', 'Excellent'];
 const RESSENTI_COULEUR = ['', '#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e'];
 
+const secToAffichage = (sec) => {
+    if (!sec) return '—';
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return s > 0 ? `${m}min ${s}s` : `${m}min`;
+};
+
 function StatCard({ label, valeur, detail, couleur }) {
     return (
         <div className="stat-card" style={{ borderLeftColor: couleur || 'var(--orange)' }}>
@@ -321,7 +328,7 @@ function Suivi() {
                                 <div className="plan-detail-stats" style={{ marginTop: '0.5rem' }}>
                                     <div className="stat">
                                         <span className="label">Durée</span>
-                                        <strong>{s.duree_reelle} min</strong>
+                                        <strong>{secToAffichage(s.duree_reelle)}</strong>
                                     </div>
                                     <div className="stat">
                                         <span className="label">Distance</span>

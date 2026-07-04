@@ -72,7 +72,7 @@ router.get('/', authentifier, async (req, res, next) => {
         let temps_cible_10km = 'À définir suite au premier test';
 
         if (dernierTest) {
-            const temps5km_sec = dernierTest.duree_reelle * 60;
+            const temps5km_sec = parseFloat(dernierTest.duree_reelle);
             const allureRace   = Math.round((temps5km_sec / 5) * 1.06);
             allures_reference  = {
                 easy:      formatAllure(Math.round(allureRace * 1.32)),
