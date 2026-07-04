@@ -73,7 +73,7 @@ router.get('/', authentifier, async (req, res, next) => {
 
         if (dernierTest) {
             const temps5km_sec = parseFloat(dernierTest.duree_reelle);
-            const allureRace   = Math.round((temps5km_sec / 5) * 1.06);
+            const allureRace   = parseFloat(dernierTest.duree_reelle)
             allures_reference  = {
                 easy:      formatAllure(Math.round(allureRace * 1.32)),
                 aerobic:   formatAllure(Math.round(allureRace * 1.20)),
@@ -263,7 +263,7 @@ router.get('/', authentifier, async (req, res, next) => {
                     ),
                     km_totaux:      parseFloat(prog.km_totaux).toFixed(1),
                     ressenti_moyen: parseFloat(prog.ressenti_moyen).toFixed(1),
-                    total_heures:   Math.round(parseFloat(prog.total_minutes) / 60 * 10) / 10,
+                    total_heures:   Math.round(parseFloat(prog.total_minutes) / 3600 * 10) / 10,
                 },
             },
             prochaine_seance: prochaine ? {
