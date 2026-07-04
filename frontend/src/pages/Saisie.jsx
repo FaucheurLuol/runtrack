@@ -62,6 +62,8 @@ function Saisie() {
             try {
                 const data   = await recupererMesPlans(utilisateur.token);
                 const actifs = data.filter(p => p.actif);
+                console.log('Plans actifs:', actifs);                              // ← ici
+                console.log('Plan principal:', actifs.find(p => p.est_selectionne)); // ← ici
                 setPlans(actifs);
 
                 if (!planIdSelectionne) {
