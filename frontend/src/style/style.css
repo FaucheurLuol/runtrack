@@ -1,8 +1,8 @@
-/* ============================================================
+/* ============================================================================
    RUNTRACK — Design System
    Ambiance : sable moderne / chaud & épuré
    Palette : beige #dee1c5 · orange #e3520f · ambre #f08418 · olive #8e8448
-   ============================================================ */
+   ============================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
 
@@ -10,31 +10,31 @@
    TOKENS
    ============================================================ */
 :root {
-    --sand:             #dee1c5;
-    --sand-dark:        #cdd0b2;
-    --sand-light:       #ecefd9;
-    --orange:           #e3520f;
-    --amber:            #f08418;
-    --olive:            #8e8448;
-    --olive-dark:       #6b6336;
-    --ink:              #1e1c18;
-    --ink-soft:         #4a4740;
-    --ink-muted:        #8a8778;
+    --sand:              #dee1c5;
+    --sand-dark:         #cdd0b2;
+    --sand-light:        #ecefd9;
+    --orange:            #e3520f;
+    --amber:             #f08418;
+    --olive:             #8e8448;
+    --olive-dark:        #6b6336;
+    --ink:               #1e1c18;
+    --ink-soft:          #4a4740;
+    --ink-muted:         #8a8778;
 
-    --gradient-brand:   linear-gradient(135deg, #e3520f 0%, #f08418 100%);
-    --gradient-hero:    radial-gradient(ellipse 70% 50% at 60% 50%, rgba(240,132,24,0.12) 0%, transparent 70%);
+    --gradient-brand:    linear-gradient(135deg, #e3520f 0%, #f08418 100%);
+    --gradient-hero:     radial-gradient(ellipse 70% 50% at 60% 50%, rgba(240,132,24,0.12) 0%, transparent 70%);
 
-    --glow-orange:      rgba(227, 82, 15, 0.2);
-    --glow-orange-lg:   rgba(227, 82, 15, 0.1);
-    --shadow-card:      0 2px 12px rgba(30, 28, 24, 0.08);
-    --shadow-card-hover:0 8px 32px rgba(30, 28, 24, 0.14);
+    --glow-orange:       rgba(227, 82, 15, 0.2);
+    --glow-orange-lg:    rgba(227, 82, 15, 0.1);
+    --shadow-card:       0 2px 12px rgba(30, 28, 24, 0.08);
+    --shadow-card-hover: 0 8px 32px rgba(30, 28, 24, 0.14);
 
-    --radius-sm:        6px;
-    --radius-md:        10px;
-    --radius-lg:        16px;
-    --radius-xl:        24px;
-    --transition:       0.2s ease;
-    --max-width:        1600px;
+    --radius-sm:         6px;
+    --radius-md:         10px;
+    --radius-lg:         16px;
+    --radius-xl:         24px;
+    --transition:        0.2s ease;
+    --max-width:         1600px;
 }
 
 /* ============================================================
@@ -62,7 +62,7 @@ body {
 }
 
 main { flex: 1; }
-img { max-width: 100%; height: auto; display: block; }
+img  { max-width: 100%; height: auto; display: block; }
 
 /* ============================================================
    TYPOGRAPHIE
@@ -105,14 +105,8 @@ h2::before {
     flex-shrink: 0;
 }
 
-p { color: var(--ink-soft); }
-
-a {
-    color: var(--orange);
-    text-decoration: none;
-    transition: color var(--transition);
-}
-
+p      { color: var(--ink-soft); }
+a      { color: var(--orange); text-decoration: none; transition: color var(--transition); }
 a:hover { color: var(--amber); }
 strong { font-weight: 700; color: var(--ink); }
 
@@ -175,9 +169,7 @@ nav {
     padding-bottom: 2px;
 }
 
-.nav-liens a:hover {
-    color: var(--orange);
-}
+.nav-liens a:hover { color: var(--orange); }
 
 .nav-liens a::after {
     content: '';
@@ -191,14 +183,11 @@ nav {
     transition: width var(--transition);
 }
 
-.nav-liens a:hover::after {
-    width: 100%;
-}
+.nav-liens a:hover::after { width: 100%; }
 
 /* ============================================================
    SIDEBAR LAYOUT
    ============================================================ */
-
 .app-layout {
     display: flex;
     min-height: 100vh;
@@ -211,7 +200,7 @@ nav {
     transition: margin var(--transition);
 }
 
-/* ── Sidebar ────────────────────────────────────────────────── */
+/* Sidebar */
 .sidebar {
     position: fixed;
     top: 0;
@@ -226,11 +215,10 @@ nav {
     padding: 1.5rem 0;
 }
 
-/* Logo */
+/* Logo sidebar */
 .sidebar-logo {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
     padding: 0 1.25rem 1.5rem;
     border-bottom: 1px solid var(--olive-dark);
     margin-bottom: 1rem;
@@ -238,13 +226,13 @@ nav {
 }
 
 .sidebar-favicon {
-    width: 28px;
-    height: 28px;
+    width: 50px;
+    height: 50px;
     object-fit: contain;
 }
 
 .sidebar-logo span {
-    font-size: 1.1rem;
+    font-size: 2rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     background: var(--gradient-brand);
@@ -253,13 +241,12 @@ nav {
     background-clip: text;
 }
 
-/* Navigation */
+/* Navigation sidebar */
 .sidebar-nav {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
     padding: 0 0.75rem;
-    flex: 1;
 }
 
 .sidebar-lien {
@@ -270,7 +257,7 @@ nav {
     border-radius: var(--radius-md);
     text-decoration: none;
     color: var(--ink-soft);
-    font-size: 0.9rem;
+    font-size: 1.34rem;
     font-weight: 500;
     transition: background var(--transition), color var(--transition);
     border-left: 3px solid transparent;
@@ -289,12 +276,11 @@ nav {
     font-weight: 700;
 }
 
-.sidebar-lien.actif svg {
-    color: var(--orange);
-}
+.sidebar-lien.actif svg { color: var(--orange); }
 
-/* Footer */
+/* Footer sidebar */
 .sidebar-footer {
+    margin-top: auto;
     padding: 1rem 1.25rem 0;
     border-top: 1px solid var(--olive-dark);
     display: flex;
@@ -303,7 +289,7 @@ nav {
 }
 
 .sidebar-username {
-    font-size: 0.82rem;
+    font-size: 1.34rem;
     font-weight: 600;
     color: var(--ink-muted);
 }
@@ -316,152 +302,18 @@ nav {
     border: none;
     color: var(--ink-soft);
     font-family: 'Manrope', sans-serif;
-    font-size: 0.9rem;
+    font-size: 1.34rem;
     font-weight: 500;
     cursor: pointer;
     padding: 0.5rem 0;
     transition: color var(--transition);
 }
 
-.sidebar-deconnexion:hover {
-    color: var(--orange);
-}
-
-/* ============================================================
-   SIDEBAR LAYOUT
-   ============================================================ */
-
-.app-layout {
-    display: flex;
-    min-height: 100vh;
-}
-
-.app-content {
-    flex: 1;
-    margin-left: 240px;
-    min-height: 100vh;
-    transition: margin var(--transition);
-}
-
-/* ── Sidebar ────────────────────────────────────────────────── */
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 240px;
-    height: 100vh;
-    background: var(--sand-light);
-    border-right: 1px solid var(--olive-dark);
-    display: flex;
-    flex-direction: column;
-    z-index: 200;
-    padding: 1.5rem 0;
-}
-
-/* Logo */
-.sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0 1.25rem 1.5rem;
-    border-bottom: 1px solid var(--olive-dark);
-    margin-bottom: 1rem;
-    text-decoration: none;
-}
-
-.sidebar-favicon {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-}
-
-.sidebar-logo span {
-    font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    background: var(--gradient-brand);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-/* Navigation */
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    padding: 0 0.75rem;
-    flex: 1;
-}
-
-.sidebar-lien {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.65rem 0.75rem;
-    border-radius: var(--radius-md);
-    text-decoration: none;
-    color: var(--ink-soft);
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: background var(--transition), color var(--transition);
-    border-left: 3px solid transparent;
-}
-
-.sidebar-lien:hover {
-    background: var(--sand);
-    color: var(--ink);
-    text-decoration: none;
-}
-
-.sidebar-lien.actif {
-    background: rgba(227, 82, 15, 0.08);
-    color: var(--orange);
-    border-left-color: var(--orange);
-    font-weight: 700;
-}
-
-.sidebar-lien.actif svg {
-    color: var(--orange);
-}
-
-/* Footer */
-.sidebar-footer {
-    padding: 1rem 1.25rem 0;
-    border-top: 1px solid var(--olive-dark);
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.sidebar-username {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--ink-muted);
-}
-
-.sidebar-deconnexion {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: none;
-    border: none;
-    color: var(--ink-soft);
-    font-family: 'Manrope', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0.5rem 0;
-    transition: color var(--transition);
-}
-
-.sidebar-deconnexion:hover {
-    color: var(--orange);
-}
+.sidebar-deconnexion:hover { color: var(--orange); }
 
 /* Burger mobile */
 .burger-mobile {
-    display: none;  /* ← caché par défaut sur desktop */
+    display: none;
     position: fixed;
     top: 1rem;
     left: 1rem;
@@ -479,6 +331,16 @@ nav {
 .burger-mobile:hover {
     border-color: var(--orange);
     color: var(--orange);
+}
+
+/* Overlay mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 28, 24, 0.5);
+    z-index: 190;
+    backdrop-filter: blur(2px);
 }
 
 /* ============================================================
@@ -535,7 +397,7 @@ nav {
 }
 
 /* ============================================================
-   CONTAINER & LAYOUT
+   CONTAINER & LAYOUT PAGE D'ACCUEIL
    ============================================================ */
 .container {
     display: flex;
@@ -563,9 +425,7 @@ nav {
     line-height: 1.65;
 }
 
-.features p {
-    margin-bottom: 2rem;
-}
+.features p { margin-bottom: 2rem; }
 
 .logo {
     flex: 1.5;
@@ -774,8 +634,9 @@ footer p {
    RESPONSIVE — Tablette (≤ 1024px)
    ============================================================ */
 @media (max-width: 1024px) {
-    .app-content { 
-        margin-left: 0; 
+    .app-content {
+        margin-left: 0;
+        padding-top: 3.5rem;
     }
 
     .container {
@@ -786,12 +647,11 @@ footer p {
 
     .logo {
         order: -1;
+        max-width: 100%;
+        margin: 0 auto;
     }
 
-    .logo img { 
-        max-width: 100%; 
-        margin: 0 auto; 
-    }
+    .logo img { max-width: 100%; }
 
     .burger-mobile {
         display: flex;
@@ -799,9 +659,7 @@ footer p {
         justify-content: center;
     }
 
-    .sidebar-overlay {
-        display: block;
-    }
+    .sidebar-overlay { display: block; }
 
     .sidebar {
         transform: translateX(-100%);
@@ -809,19 +667,13 @@ footer p {
         box-shadow: 4px 0 20px rgba(30, 28, 24, 0.15);
     }
 
-    .sidebar.ouverte {
-        transform: translateX(0);
-    }
+    .sidebar.ouverte { transform: translateX(0); }
 }
 
 /* ============================================================
    RESPONSIVE — Mobile (≤ 768px)
    ============================================================ */
 @media (max-width: 768px) {
-    .app-content {
-        padding-top: 3.5rem;
-    }
-
     .hero { padding: 3.5rem 1.5rem 1.5rem; }
 
     .inscription,
@@ -836,6 +688,7 @@ footer p {
    ============================================================ */
 @media (max-width: 480px) {
     body { font-size: 1.25rem; }
+
     .hero { padding: 2.5rem 1rem 1rem; }
 
     .hero a,
