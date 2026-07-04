@@ -73,7 +73,7 @@ router.post('/realiser', authentifier, async (req, res, next) => {
             [
                 seance.id,
                 utilisateur_id,
-                donnees.date_realisee || new Date(),
+                date_realisee || new Date(),  
                 duree_reelle,
                 distance_reelle,
                 ressenti,
