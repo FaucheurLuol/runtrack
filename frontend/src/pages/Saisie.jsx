@@ -11,7 +11,7 @@ function Saisie() {
     const navigate                   = useNavigate();
 
     // Paramètres depuis l'URL
-    const planId       = searchParams.get('plan')    || '';
+    const planId       = searchParams.get('plan') ?? '';
     const semaine      = searchParams.get('semaine') || '';
     const numeroSeance = searchParams.get('seance')  || '';
 
