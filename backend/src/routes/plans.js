@@ -41,6 +41,14 @@ router.post('/generer', authentifier, async (req, res, next) => {
 
         const plan_id = planResult.rows[0].id;
 
+        // Devient automatiquement le plan sélectionné
+        await pool.query(
+            `UPDATE utilisateurs
+            SET plan_selectionne_id = $1
+            WHERE id = $2`,
+            [plan_id, utilisateur_id]
+        );
+
         // Sauvegarde chaque séance
         for (const seance of plan.seances) {
             await pool.query(
@@ -108,6 +116,144 @@ router.get('/mon-plan', authentifier, async (req, res, next) => {
             plan,
             seances: seancesResult.rows,
         });
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+// GET /plans/mes-plans — liste tous les plans de l'utilisateur
+router.get('/mes-plans', authentifier, async (req, res, next) => {
+    const utilisateur_id = req.utilisateur.id;
+
+    try {
+        const result = await pool.query(
+            `SELECT
+                p.*,
+                COUNT(s.id)                  AS total_seances,
+                COUNT(sr.id)                 AS seances_realisees,
+                u.plan_selectionne_id = p.id AS est_selectionne
+             FROM plans_entrainement p
+             LEFT JOIN seances s ON s.plan_id = p.id
+             LEFT JOIN seances_realisees sr
+                ON sr.seance_id = s.id AND sr.utilisateur_id = p.utilisateur_id
+             JOIN utilisateurs u ON u.id = p.utilisateur_id
+             WHERE p.utilisateur_id = $1
+             GROUP BY p.id, u.plan_selectionne_id
+             ORDER BY p.created_at DESC`,
+            [utilisateur_id]
+        );
+
+        res.json(result.rows);
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+// PUT /plans/:id/selectionner — change le plan sélectionné
+router.put('/:id/selectionner', authentifier, async (req, res, next) => {
+    const { id }         = req.params;
+    const utilisateur_id = req.utilisateur.id;
+
+    try {
+        // Vérifie que le plan appartient à l'utilisateur
+        const planResult = await pool.query(
+            `SELECT id, actif FROM plans_entrainement
+             WHERE id = $1 AND utilisateur_id = $2`,
+            [id, utilisateur_id]
+        );
+
+        if (planResult.rows.length === 0) {
+            return res.status(404).json({ erreur: 'Plan non trouvé' });
+        }
+
+        if (!planResult.rows[0].actif) {
+            return res.status(400).json({
+                erreur: 'Impossible de sélectionner un plan archivé'
+            });
+        }
+
+        await pool.query(
+            `UPDATE utilisateurs
+             SET plan_selectionne_id = $1
+             WHERE id = $2`,
+            [id, utilisateur_id]
+        );
+
+        res.json({ message: 'Plan sélectionné', plan_id: parseInt(id) });
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+// PUT /plans/:id/archiver — archive un plan
+router.put('/:id/archiver', authentifier, async (req, res, next) => {
+    const { id }         = req.params;
+    const utilisateur_id = req.utilisateur.id;
+
+    try {
+        const planResult = await pool.query(
+            `SELECT id FROM plans_entrainement
+             WHERE id = $1 AND utilisateur_id = $2`,
+            [id, utilisateur_id]
+        );
+
+        if (planResult.rows.length === 0) {
+            return res.status(404).json({ erreur: 'Plan non trouvé' });
+        }
+
+        // Vérifie que ce n'est pas le plan sélectionné
+        const userResult = await pool.query(
+            `SELECT plan_selectionne_id FROM utilisateurs WHERE id = $1`,
+            [utilisateur_id]
+        );
+
+        if (userResult.rows[0].plan_selectionne_id === parseInt(id)) {
+            return res.status(400).json({
+                erreur: 'Impossible d\'archiver le plan actuellement sélectionné'
+            });
+        }
+
+        await pool.query(
+            `UPDATE plans_entrainement
+             SET actif = false
+             WHERE id = $1`,
+            [id]
+        );
+
+        res.json({ message: 'Plan archivé', plan_id: parseInt(id) });
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+// PUT /plans/:id/reactiver — réactive un plan archivé
+router.put('/:id/reactiver', authentifier, async (req, res, next) => {
+    const { id }         = req.params;
+    const utilisateur_id = req.utilisateur.id;
+
+    try {
+        const planResult = await pool.query(
+            `SELECT id FROM plans_entrainement
+             WHERE id = $1 AND utilisateur_id = $2`,
+            [id, utilisateur_id]
+        );
+
+        if (planResult.rows.length === 0) {
+            return res.status(404).json({ erreur: 'Plan non trouvé' });
+        }
+
+        await pool.query(
+            `UPDATE plans_entrainement
+             SET actif = true
+             WHERE id = $1`,
+            [id]
+        );
+
+        res.json({ message: 'Plan réactivé', plan_id: parseInt(id) });
 
     } catch (err) {
         next(err);

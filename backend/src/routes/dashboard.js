@@ -1,0 +1,251 @@
+const express = require('express');
+const router = express.Router();
+const pool = require('../db');
+const authentifier = require('../middleware/auth');
+const { formatAllure } = require('../services/planGenerator');
+
+router.get('/', authentifier, async (req, res, next) => {
+    const utilisateur_id = req.utilisateur.id;
+
+    try {
+        // ── 1. Plan actif ──────────────────────────────────────────
+        const planResult = await pool.query(
+            `SELECT p.* FROM plans_entrainement p
+            JOIN utilisateurs u ON u.plan_selectionne_id = p.id
+            WHERE u.id = $1`,
+            [utilisateur_id]
+        );
+
+        if (planResult.rows.length === 0) {
+            return res.status(404).json({ erreur: 'Aucun plan actif' });
+        }
+
+        const plan = planResult.rows[0];
+
+        // Semaines restantes
+        const aujourd_hui    = new Date();
+        const dateFin        = new Date(plan.date_fin);
+        const semaines_restantes = Math.max(
+            0,
+            Math.ceil((dateFin - aujourd_hui) / (1000 * 60 * 60 * 24 * 7))
+        );
+
+        // Progression globale
+        const progressionResult = await pool.query(
+            `SELECT
+                COUNT(s.id)                           AS total_seances,
+                COUNT(sr.id)                          AS seances_realisees,
+                COALESCE(SUM(sr.distance_reelle), 0)  AS km_totaux,
+                COALESCE(AVG(sr.ressenti), 0)         AS ressenti_moyen
+             FROM seances s
+             LEFT JOIN seances_realisees sr
+                ON sr.seance_id = s.id AND sr.utilisateur_id = $2
+             WHERE s.plan_id = $1`,
+            [plan.id, utilisateur_id]
+        );
+
+        const prog = progressionResult.rows[0];
+
+        // Dernier test réalisé
+        const dernierTestResult = await pool.query(
+            `SELECT sr.duree_reelle, sr.distance_reelle, sr.date_realisee,
+                    sr.allure_reelle_sec
+             FROM seances_realisees sr
+             JOIN seances s ON sr.seance_id = s.id
+             WHERE sr.utilisateur_id = $1
+             AND s.type = 'test'
+             AND s.plan_id = $2
+             ORDER BY s.semaine DESC
+             LIMIT 1`,
+            [utilisateur_id, plan.id]
+        );
+
+        const dernierTest = dernierTestResult.rows[0] || null;
+
+        // Allures de référence
+        let allures_reference = null;
+        let allure_course     = 'À définir suite au premier test';
+        let dernier_5km       = null;
+
+        if (dernierTest) {
+            const temps5km_sec = dernierTest.duree_reelle * 60;
+            const allureRace   = Math.round((temps5km_sec / 5) * 1.06);
+            allures_reference  = {
+                easy:      formatAllure(Math.round(allureRace * 1.32)),
+                aerobic:   formatAllure(Math.round(allureRace * 1.20)),
+                threshold: formatAllure(Math.round(allureRace * 1.05)),
+                race:      formatAllure(allureRace),
+                vo2:       formatAllure(Math.round(allureRace * 0.94)),
+            };
+            allure_course = formatAllure(allureRace);
+            dernier_5km   = {
+                duree_min:    dernierTest.duree_reelle,
+                date:         dernierTest.date_realisee,
+            };
+        }
+
+        // ── 2. Prochaine séance ────────────────────────────────────
+        const prochaineResult = await pool.query(
+            `SELECT s.*
+             FROM seances s
+             LEFT JOIN seances_realisees sr
+                ON sr.seance_id = s.id AND sr.utilisateur_id = $2
+             WHERE s.plan_id = $1
+             AND sr.id IS NULL
+             AND s.type != 'race'
+             ORDER BY s.semaine, s.jour
+             LIMIT 1`,
+            [plan.id, utilisateur_id]
+        );
+
+        const prochaine = prochaineResult.rows[0] || null;
+
+        // ── 3. Deux semaines ───────────────────────────────────────
+        let deux_semaines = { semaine_precedente: [], semaine_courante: [] };
+
+        if (prochaine) {
+            const semCourante  = prochaine.semaine;
+            const semPrecedente = semCourante - 1;
+
+            const deuxSemainesResult = await pool.query(
+                `SELECT
+                    s.id, s.semaine, s.jour AS numero_seance,
+                    s.phase, s.type, s.titre, s.description,
+                    s.duree_min       AS duree_prevue,
+                    s.distance_km     AS distance_prevue,
+                    s.allure_sec_km   AS allure_prevue_sec,
+                    sr.duree_reelle,
+                    sr.distance_reelle,
+                    sr.allure_reelle_sec,
+                    sr.ressenti,
+                    sr.notes,
+                    CASE WHEN sr.id IS NOT NULL THEN true ELSE false END AS realisee
+                 FROM seances s
+                 LEFT JOIN seances_realisees sr
+                    ON sr.seance_id = s.id AND sr.utilisateur_id = $3
+                 WHERE s.plan_id = $1
+                 AND s.semaine IN ($2, $4)
+                 ORDER BY s.semaine, s.jour`,
+                [plan.id, semPrecedente, utilisateur_id, semCourante]
+            );
+
+            deux_semaines = {
+                semaine_precedente: deuxSemainesResult.rows
+                    .filter(s => s.semaine === semPrecedente)
+                    .map(s => formaterSeance(s)),
+                semaine_courante: deuxSemainesResult.rows
+                    .filter(s => s.semaine === semCourante)
+                    .map(s => formaterSeance(s)),
+            };
+        }
+
+        // ── 4. Journal 4 dernières séances ────────────────────────
+        const journalResult = await pool.query(
+            `SELECT
+                sr.date_realisee,
+                sr.duree_reelle,
+                sr.distance_reelle,
+                sr.allure_reelle_sec,
+                sr.ressenti,
+                sr.notes,
+                s.titre,
+                s.phase,
+                s.type
+             FROM seances_realisees sr
+             JOIN seances s ON sr.seance_id = s.id
+             WHERE sr.utilisateur_id = $1
+             AND s.plan_id = $2
+             ORDER BY sr.date_realisee DESC
+             LIMIT 4`,
+            [utilisateur_id, plan.id]
+        );
+
+        const journal = journalResult.rows.map(s => ({
+            date:           s.date_realisee,
+            titre:          s.titre,
+            phase:          s.phase,
+            type:           s.type,
+            duree_reelle:   s.duree_reelle,
+            distance_reelle: s.distance_reelle,
+            allure_reelle:  s.allure_reelle_sec
+                ? formatAllure(s.allure_reelle_sec)
+                : null,
+            ressenti:       s.ressenti,
+            notes:          s.notes,
+        }));
+
+        // ── Réponse ────────────────────────────────────────────────
+        res.json({
+            plan_actif: {
+                id:                plan.id,
+                objectif:          plan.objectif,
+                niveau:            plan.niveau,
+                seances_semaine:   plan.seances_semaine,
+                date_debut:        plan.date_debut,
+                date_fin:          plan.date_fin,
+                semaines_restantes,
+                allure_course,
+                dernier_5km,
+                progression: {
+                    realisees:  parseInt(prog.seances_realisees),
+                    total:      parseInt(prog.total_seances),
+                    pourcentage: Math.round(
+                        (prog.seances_realisees / prog.total_seances) * 100
+                    ),
+                    km_totaux:      parseFloat(prog.km_totaux).toFixed(1),
+                    ressenti_moyen: parseFloat(prog.ressenti_moyen).toFixed(1),
+                },
+            },
+            prochaine_seance: prochaine ? {
+                semaine:         prochaine.semaine,
+                numero_seance:   prochaine.jour,
+                phase:           prochaine.phase,
+                type:            prochaine.type,
+                titre:           prochaine.titre,
+                description:     prochaine.description,
+                duree_prevue:    prochaine.duree_min,
+                distance_prevue: prochaine.distance_km,
+                allure_prevue:   prochaine.allure_sec_km
+                    ? formatAllure(prochaine.allure_sec_km)
+                    : 'Effort maximal',
+            } : null,
+            deux_semaines,
+            allures_reference,
+            journal,
+        });
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Formate une séance pour l'affichage
+function formaterSeance(s) {
+    return {
+        semaine:          s.semaine,
+        numero_seance:    s.numero_seance,
+        phase:            s.phase,
+        type:             s.type,
+        titre:            s.titre,
+        description:      s.description,
+        realisee:         s.realisee,
+        prevu: {
+            duree_min:    s.duree_prevue,
+            distance_km:  s.distance_prevue,
+            allure:       s.allure_prevue_sec
+                ? formatAllure(s.allure_prevue_sec)
+                : 'Effort maximal',
+        },
+        realise: s.realisee ? {
+            duree_min:    s.duree_reelle,
+            distance_km:  s.distance_reelle,
+            allure:       s.allure_reelle_sec
+                ? formatAllure(s.allure_reelle_sec)
+                : null,
+            ressenti:     s.ressenti,
+            notes:        s.notes,
+        } : null,
+    };
+}
+
+module.exports = router;
