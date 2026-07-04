@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000';
+import { API_URL } from './config';
 
 // Récupère une séance prévue depuis semaine + numéro
 export const recupererSeance = async (token, planId, semaine, numeroSeance) => {
