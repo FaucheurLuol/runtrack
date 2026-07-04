@@ -4,7 +4,7 @@ import { useAuth } from '../context/useAuth';
 import '../style/dashboard.css';
 import '../style/suivi.css';
 
-const API_URL = 'http://localhost:3000';
+import { API_URL } from '../api/config';
 
 function Dashboard() {
     const { utilisateur } = useAuth();
