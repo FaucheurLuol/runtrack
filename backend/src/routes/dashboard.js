@@ -257,12 +257,6 @@ router.get('/', authentifier, async (req, res, next) => {
             semaine:   'initial',
         } : null;
 
-        const meilleure_allure_5km = meilleureAllureResult.rows.length > 0 ? {
-            allure:    formatAllure(meilleureAllureResult.rows[0].allure_reelle_sec),
-            duree_min: meilleureAllureResult.rows[0].duree_reelle,
-            semaine:   meilleureAllureResult.rows[0].semaine,
-        } : null;
-
         // ── Réponse ────────────────────────────────────────────────
         res.json({
             plan_actif: {
