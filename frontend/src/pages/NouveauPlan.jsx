@@ -336,19 +336,6 @@ function NouveauPlan() {
                             style={{ maxWidth: '220px' }}
                         />
                     </div>
-
-                    <div className="saisie-champ">
-                        <label htmlFor="dateDebut" className="label">Date de début</label>
-                        <input
-                            className="input-field"
-                            type="date"
-                            id="dateDebut"
-                            value={dateDebut}
-                            min={new Date().toISOString().split('T')[0]}
-                            onChange={(e) => setDateDebut(e.target.value)}
-                            style={{ maxWidth: '220px' }}
-                        />
-                    </div>
                 </section>
 
                 {/* Messages */}
