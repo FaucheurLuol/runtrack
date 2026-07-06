@@ -54,6 +54,14 @@ function NouveauPlan() {
     );
     const [objectif,       setObjectif]       = useState('10km');
     const [niveau,         setNiveau]         = useState('intermediaire');
+    const PLANS_DISPONIBLES = [
+        { niveau: 'debutant',      objectif: '10km', seances: 1 },
+        { niveau: 'intermediaire', objectif: '10km', seances: 2 },
+        { niveau: 'intermediaire', objectif: '10km', seances: 3 },
+    ];
+    const combinaisonDisponible = PLANS_DISPONIBLES.some(
+        p => p.niveau === niveau && p.seances === seancesSemaine && p.objectif === objectif
+    );
 
     // Plans existants (pour l'avertissement)
     const [aDejaUnPlan,  setADejaUnPlan]  = useState(false);
@@ -108,7 +116,6 @@ function NouveauPlan() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('aPeuCouru:', aPeuCouru);
 
         if (aPeuCouru === null) {
             setMessage({ texte: 'Veuillez indiquer si vous avez déjà couru 5km.', type: 'error' });
@@ -140,7 +147,16 @@ function NouveauPlan() {
             navigate(`/mes-plans/${data.plan_id}`);
 
         } catch (err) {
-            setMessage({ texte: err.message, type: 'error' });
+            // Message technique → message utilisateur
+            if (err.message.includes('Aucun plan disponible')) {
+                setMessage({
+                    texte: `Cette combinaison n'est pas encore disponible. 
+                            Essaie une autre combinaison niveau / séances par semaine.`,
+                    type: 'error'
+                });
+            } else {
+                setMessage({ texte: err.message, type: 'error' });
+            }
         } finally {
             setChargement(false);
         }
@@ -301,34 +317,50 @@ function NouveauPlan() {
                     </div>
 
                     {/* Niveau */}
-                    <div className="saisie-champ" style={{ marginBottom: '1.25rem' }}>
-                        <span className="label">Niveau</span>
-                        <div className="radio-groupe">
-                            {[
-                                { value: 'debutant',      label: 'Débutant' },
-                                { value: 'intermediaire', label: 'Intermédiaire' },
-                                { value: 'avance',        label: 'Avancé' },
-                            ].map(n => (
-                                <label key={n.value} className={`radio-carte ${niveau === n.value ? 'active' : ''}`}>
-                                    <input type="radio" name="niveau" onChange={() => setNiveau(n.value)} />
-                                    <span>{n.label}</span>
-                                </label>
-                            ))}
-                        </div>
-                    </div>
+                    {[
+                        { value: 'debutant',      label: 'Débutant' },
+                        { value: 'intermediaire', label: 'Intermédiaire' },
+                        { value: 'avance',        label: 'Avancé' },
+                    ].map(n => {
+                        const disponible = PLANS_DISPONIBLES.some(
+                            p => p.niveau === n.value && p.objectif === objectif
+                        );
+                        return (
+                            <label
+                                key={n.value}
+                                className={`radio-carte ${niveau === n.value ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="niveau"
+                                    disabled={!disponible}
+                                    onChange={() => disponible && setNiveau(n.value)}
+                                />
+                                <span>{n.label} {!disponible && '(bientôt)'}</span>
+                            </label>
+                        );
+                    })}
 
                     {/* Séances par semaine */}
-                    <div className="saisie-champ" style={{ marginBottom: '1.25rem' }}>
-                        <span className="label">Séances par semaine</span>
-                        <div className="radio-groupe">
-                            {[1, 2, 3].map(n => (
-                                <label key={n} className={`radio-carte ${seancesSemaine === n ? 'active' : ''}`}>
-                                    <input type="radio" name="seances" onChange={() => setSeancesSemaine(n)} />
-                                    <span>{n} séance{n > 1 ? 's' : ''} / semaine</span>
-                                </label>
-                            ))}
-                        </div>
-                    </div>
+                    {[1, 2, 3].map(n => {
+                        const disponible = PLANS_DISPONIBLES.some(
+                            p => p.niveau === niveau && p.seances === n && p.objectif === objectif
+                        );
+                        return (
+                            <label
+                                key={n}
+                                className={`radio-carte ${seancesSemaine === n ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="seances"
+                                    disabled={!disponible}
+                                    onChange={() => disponible && setSeancesSemaine(n)}
+                                />
+                                <span>{n} séance{n > 1 ? 's' : ''} / semaine {!disponible && '(bientôt)'}</span>
+                            </label>
+                        );
+                    })}
 
                     {/* Date de début */}
                     <div className="saisie-champ">
@@ -344,6 +376,15 @@ function NouveauPlan() {
                         />
                     </div>
                 </section>
+
+                {!combinaisonDisponible && (
+                    <div className="form-message error" style={{ maxWidth: '100%' }}>
+                        <p>
+                            Cette combinaison n'est pas encore disponible.
+                            Plans actuels : Débutant 1 séance · Intermédiaire 2 ou 3 séances · sur 10km.
+                        </p>
+                    </div>
+                )}
 
                 {/* Bouton */}
                 <div className="saisie-actions">

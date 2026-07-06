@@ -814,6 +814,17 @@ textarea.input-field {
     color: var(--orange);
 }
 
+.radio-carte.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-style: dashed;
+}
+
+.radio-carte.disabled:hover {
+    border-color: var(--olive-dark);
+    color: var(--ink-soft);
+}
+
 .temps-saisie {
     margin-top: 1.25rem;
 }
