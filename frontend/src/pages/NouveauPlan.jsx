@@ -42,7 +42,7 @@ function NouveauPlan() {
     const navigate                     = useNavigate();
 
     // Test 5km
-    const [aPeuCouru,    setAPeuCouru]    = useState(null); // true/false/null
+    const [aPeuCouru,    setAPeuCouru]    = useState(null);
     const [minutes,      setMinutes]      = useState('');
     const [secondes,     setSecondes]     = useState('');
     const [tempsTexte,   setTempsTexte]   = useState('');
@@ -108,6 +108,7 @@ function NouveauPlan() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('aPeuCouru:', aPeuCouru);
 
         if (aPeuCouru === null) {
             setMessage({ texte: 'Veuillez indiquer si vous avez déjà couru 5km.', type: 'error' });
@@ -159,8 +160,14 @@ function NouveauPlan() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="nouveau-plan-form">
+            {/* Messages */}
+            {message.texte && (
+                <div className={`form-message ${message.type}`} style={{ maxWidth: '100%' }}>
+                    <p>{message.texte}</p>
+                </div>
+            )}
 
+            <form onSubmit={handleSubmit} className="nouveau-plan-form">
                 {/* ── Test 5km ── */}
                 <section className="dashboard-card">
                     <h2>Ton test 5km</h2>
@@ -337,13 +344,6 @@ function NouveauPlan() {
                         />
                     </div>
                 </section>
-
-                {/* Messages */}
-                {message.texte && (
-                    <div className={`form-message ${message.type}`} style={{ maxWidth: '100%' }}>
-                        <p>{message.texte}</p>
-                    </div>
-                )}
 
                 {/* Bouton */}
                 <div className="saisie-actions">
