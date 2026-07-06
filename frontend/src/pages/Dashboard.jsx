@@ -222,7 +222,7 @@ function Dashboard() {
                         </div>
                         <div className="stat">
                             <span className="label">Distance</span>
-                            <strong>{parseFloat(prochaine_seance.distance_prevue).toFixed(1)} km</strong>
+                            <strong>{parseFloat(prochaine_seance.distance_prevue).toFixed(2)} km</strong>
                         </div>
                         <div className="stat">
                             <span className="label">Allure</span>
@@ -323,7 +323,7 @@ function Dashboard() {
                                     <p className="journal-phase">{entree.phase}</p>
                                 </div>
                                 <div className="journal-stats">
-                                    <span>{parseFloat(entree.distance_reelle).toFixed(1)} km</span>
+                                    <span>{parseFloat(entree.distance_reelle).toFixed(2)} km</span>
                                     <span>{entree.allure_reelle}</span>
                                 </div>
                                 <div className="journal-ressenti">
@@ -360,7 +360,7 @@ function SeanceResume({ seance }) {
                 {seance.realisee ? (
                     <>
                         <span>{secToAffichage(seance.realise.duree_min)} min</span>
-                        <span>{parseFloat(seance.realise.distance_km).toFixed(1)} km</span>
+                        <span>{parseFloat(seance.realise.distance_km).toFixed(2)} km</span>
                         <span>{seance.realise.allure}</span>
                         <span className="ressenti-inline">
                             {'★'.repeat(seance.realise.ressenti)}{'☆'.repeat(5 - seance.realise.ressenti)}
@@ -369,7 +369,7 @@ function SeanceResume({ seance }) {
                 ) : (
                     <>
                         <span>{seance.prevu.duree_min} min prévu</span>
-                        <span>{parseFloat(seance.prevu.distance_km).toFixed(1)} km prévu</span>
+                        <span>{parseFloat(seance.prevu.distance_km).toFixed(2)} km prévu</span>
                         <span>{seance.prevu.allure}</span>
                     </>
                 )}

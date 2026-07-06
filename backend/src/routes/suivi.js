@@ -175,7 +175,7 @@ router.get('/', authentifier, async (req, res, next) => {
                 phase:            s.phase,
                 type:             s.type,
                 duree_reelle:     s.duree_reelle,
-                distance_reelle:  parseFloat(s.distance_reelle).toFixed(1),
+                distance_reelle:  parseFloat(s.distance_reelle).toFixed(2),
                 allure_reelle:    s.allure_reelle_sec ? formatAllure(s.allure_reelle_sec) : null,
                 allure_prevue:    s.allure_prevue_sec ? formatAllure(s.allure_prevue_sec) : null,
                 ressenti:         s.ressenti,

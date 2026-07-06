@@ -278,7 +278,7 @@ router.get('/', authentifier, async (req, res, next) => {
                     pourcentage: Math.round(
                         (prog.seances_realisees / prog.total_seances) * 100
                     ),
-                    km_totaux:      parseFloat(prog.km_totaux).toFixed(1),
+                    km_totaux:      parseFloat(prog.km_totaux).toFixed(2),
                     ressenti_moyen: parseFloat(prog.ressenti_moyen).toFixed(1),
                     total_heures:   Math.round(parseFloat(prog.total_minutes) / 3600 * 10) / 10,
                 },

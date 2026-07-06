@@ -253,7 +253,7 @@ function Saisie() {
                                 <span className="label">Distance prévue</span>
                                 <strong>
                                     {seancePrevue.distance_prevue
-                                        ? `${parseFloat(seancePrevue.distance_prevue).toFixed(1)} km`
+                                        ? `${parseFloat(seancePrevue.distance_prevue).toFixed(2)} km`
                                         : '—'}
                                 </strong>
                             </div>
@@ -322,8 +322,8 @@ function Saisie() {
                                 className="input-field"
                                 type="number"
                                 id="distance"
-                                min="0.1"
-                                step="0.1"
+                                min="0.01"
+                                step="0.01"
                                 value={distance}
                                 onChange={(e) => setDistance(e.target.value)}
                                 placeholder="ex: 3.8"
