@@ -350,7 +350,7 @@ function NouveauPlan() {
                     <button
                         type="submit"
                         className="btn-saisie"
-                        disabled={chargement || aPeuCouru === null}
+                        disabled={chargement}
                     >
                         {chargement ? 'Génération en cours...' : 'Générer mon plan →'}
                     </button>
