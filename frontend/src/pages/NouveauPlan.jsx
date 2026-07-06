@@ -304,63 +304,56 @@ function NouveauPlan() {
                     <h2>Préférences</h2>
 
                     {/* Objectif */}
-                    <div className="saisie-champ">
+                    <div className="nouveau-plan-groupe">
                         <span className="label">Objectif</span>
                         <div className="radio-groupe">
-                            {['5km', '10km', 'semi', 'marathon'].map(obj => (
-                                <label key={obj} className={`radio-carte ${objectif === obj ? 'active' : ''}`}>
-                                    <input type="radio" name="objectif" onChange={() => setObjectif(obj)} />
-                                    <span>{obj === 'semi' ? 'Semi-marathon' : obj === 'marathon' ? 'Marathon' : obj}</span>
-                                </label>
-                            ))}
+                            {['5km', '10km', 'semi', 'marathon'].map(obj => {
+                                const disponible = PLANS_DISPONIBLES.some(p => p.objectif === obj);
+                                return (
+                                    <label key={obj} className={`radio-carte ${objectif === obj ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}>
+                                        <input type="radio" name="objectif" disabled={!disponible} onChange={() => disponible && setObjectif(obj)} />
+                                        <span>{obj === 'semi' ? 'Semi-marathon' : obj === 'marathon' ? 'Marathon' : obj}{!disponible && ' (bientôt)'}</span>
+                                    </label>
+                                );
+                            })}
                         </div>
                     </div>
 
                     {/* Niveau */}
-                    {[
-                        { value: 'debutant',      label: 'Débutant' },
-                        { value: 'intermediaire', label: 'Intermédiaire' },
-                        { value: 'avance',        label: 'Avancé' },
-                    ].map(n => {
-                        const disponible = PLANS_DISPONIBLES.some(
-                            p => p.niveau === n.value && p.objectif === objectif
-                        );
-                        return (
-                            <label
-                                key={n.value}
-                                className={`radio-carte ${niveau === n.value ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}
-                            >
-                                <input
-                                    type="radio"
-                                    name="niveau"
-                                    disabled={!disponible}
-                                    onChange={() => disponible && setNiveau(n.value)}
-                                />
-                                <span>{n.label} {!disponible && '(bientôt)'}</span>
-                            </label>
-                        );
-                    })}
+                    <div className="nouveau-plan-groupe">
+                        <span className="label">Niveau</span>
+                        <div className="radio-groupe">
+                            {[
+                                { value: 'debutant',      label: 'Débutant' },
+                                { value: 'intermediaire', label: 'Intermédiaire' },
+                                { value: 'avance',        label: 'Avancé' },
+                            ].map(n => {
+                                const disponible = PLANS_DISPONIBLES.some(p => p.niveau === n.value && p.objectif === objectif);
+                                return (
+                                    <label key={n.value} className={`radio-carte ${niveau === n.value ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}>
+                                        <input type="radio" name="niveau" disabled={!disponible} onChange={() => disponible && setNiveau(n.value)} />
+                                        <span>{n.label}{!disponible && ' (bientôt)'}</span>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                    </div>
 
-                    {/* Séances par semaine */}
-                    {[1, 2, 3].map(n => {
-                        const disponible = PLANS_DISPONIBLES.some(
-                            p => p.niveau === niveau && p.seances === n && p.objectif === objectif
-                        );
-                        return (
-                            <label
-                                key={n}
-                                className={`radio-carte ${seancesSemaine === n ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}
-                            >
-                                <input
-                                    type="radio"
-                                    name="seances"
-                                    disabled={!disponible}
-                                    onChange={() => disponible && setSeancesSemaine(n)}
-                                />
-                                <span>{n} séance{n > 1 ? 's' : ''} / semaine {!disponible && '(bientôt)'}</span>
-                            </label>
-                        );
-                    })}
+                    {/* Séances */}
+                    <div className="nouveau-plan-groupe">
+                        <span className="label">Séances par semaine</span>
+                        <div className="radio-groupe">
+                            {[1, 2, 3].map(n => {
+                                const disponible = PLANS_DISPONIBLES.some(p => p.niveau === niveau && p.seances === n && p.objectif === objectif);
+                                return (
+                                    <label key={n} className={`radio-carte ${seancesSemaine === n ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}>
+                                        <input type="radio" name="seances" disabled={!disponible} onChange={() => disponible && setSeancesSemaine(n)} />
+                                        <span>{n} séance{n > 1 ? 's' : ''} / semaine{!disponible && ' (bientôt)'}</span>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                    </div>
 
                     {/* Date de début */}
                     <div className="saisie-champ">
