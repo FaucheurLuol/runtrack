@@ -770,7 +770,7 @@ textarea.input-field {
 .nouveau-plan-form {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.5rem;
 }
 
 .nouveau-plan-form h2 {
@@ -780,12 +780,12 @@ textarea.input-field {
 .radio-groupe {
     display: flex;
     gap: 1rem;
-    margin-top: 1rem;
+    margin-top: 0.75rem;
     flex-wrap: wrap;
 }
 
 .radio-carte {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.65rem 1.25rem;
@@ -797,6 +797,7 @@ textarea.input-field {
     font-size: 0.9rem;
     color: var(--ink-soft);
     transition: all var(--transition);
+    white-space: nowrap;
 }
 
 .radio-carte input[type="radio"] {

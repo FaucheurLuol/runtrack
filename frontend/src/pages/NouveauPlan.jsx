@@ -304,7 +304,7 @@ function NouveauPlan() {
                     <h2>Préférences</h2>
 
                     {/* Objectif */}
-                    <div className="saisie-champ" style={{ marginBottom: '1.25rem' }}>
+                    <div className="saisie-champ">
                         <span className="label">Objectif</span>
                         <div className="radio-groupe">
                             {['5km', '10km', 'semi', 'marathon'].map(obj => (
