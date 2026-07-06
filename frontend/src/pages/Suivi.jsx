@@ -128,13 +128,13 @@ function Suivi() {
                     detail={`${stats_globales.total_seances_realisees} séances réalisées`}
                 />
                 <StatCard
-                    label="Consistency"
+                    label="Régularité"
                     valeur={`${stats_globales.consistency_score}%`}
                     detail={`${stats_globales.total_seances_realisees}/${stats_globales.total_seances_prevues} séances`}
                     couleur="var(--olive)"
                 />
                 <StatCard
-                    label="Streak"
+                    label="Série en cours"
                     valeur={`${stats_globales.streak} sem.`}
                     detail="Semaines consécutives"
                     couleur="var(--amber)"
