@@ -6,7 +6,7 @@ const { genererPlan } = require('../services/planGenerator');
 
 // POST /plans/generer — génère et sauvegarde un plan
 router.post('/generer', authentifier, async (req, res, next) => {
-    const { seances_semaine, temps5km_sec, date_debut } = req.body;
+    const { seances_semaine, temps5km_sec, date_debut, niveau } = req.body;
     const utilisateur_id = req.utilisateur.id;
 
     if (!seances_semaine || !date_debut) {
@@ -23,7 +23,7 @@ router.post('/generer', authentifier, async (req, res, next) => {
 
     try {
         // Génère le plan
-        const plan = genererPlan({ seances_semaine, temps5km_sec });
+        const plan = genererPlan({ seances_semaine, temps5km_sec, niveau });
 
         // Calcule la date de fin (20 semaines)
         const dateDebut = new Date(date_debut);

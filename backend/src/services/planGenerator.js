@@ -1,5 +1,7 @@
-const plan_debutant_1s      = require('../plan/plan_debutant_1s');
-const plan_intermediaire_2s = require('../plan/plan_intermediaire_2s');
+const plan_debutant_10km_1s             = require('../plan/plan_debutant_10km_1s');
+const plan_intermediaire_10km_2s        = require('../plan/plan_intermediaire_10km_2s');
+const plan_intermediaire_10km_3s        = require('../plan/plan_intermediaire_10km_3s');
+
 
 // ============================================================
 // PROFILS (dashboard et labels)
@@ -60,12 +62,20 @@ function formatAllure(sec) {
 // ============================================================
 // GÉNÉRATION DU PLAN
 // ============================================================
-function genererPlan({ seances_semaine, temps5km_sec }) {
+function genererPlan({ seances_semaine, temps5km_sec, niveau }) {
 
     // 1. Sélection du template
-    const template = seances_semaine === 2
-        ? plan_intermediaire_2s
-        : plan_debutant_1s;
+    let template;
+
+    if (seances_semaine === 1) {
+        template = plan_debutant_10km_1s;
+    } else if (seances_semaine === 2) {
+        template = plan_intermediaire_10km_2s;
+    } else if (seances_semaine === 3) {
+        template = plan_intermediaire_10km_3s;
+    } else {
+        template = plan_debutant_10km_1s; // fallback
+    }
 
     // 2. Calcul des allures personnalisées (si test fourni)
     const alluresPersonnalisees = temps5km_sec

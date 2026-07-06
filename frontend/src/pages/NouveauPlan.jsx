@@ -296,6 +296,14 @@ function NouveauPlan() {
                                 />
                                 <span>2 séances / semaine</span>
                             </label>
+                            <label className={`radio-carte ${seancesSemaine === 3 ? 'active' : ''}`}>
+                                <input
+                                    type="radio"
+                                    name="seances"
+                                    onChange={() => setSeancesSemaine(3)}
+                                />
+                                <span>3 séances / semaine</span>
+                            </label>
                         </div>
                     </div>
 
