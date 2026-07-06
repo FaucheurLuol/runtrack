@@ -1,17 +1,32 @@
-# RunTrack
+# RunTrack 🏃‍♂️
 
-Plateforme SaaS d'entraînement en course à pied.
+Plateforme SaaS de suivi et génération de plans d'entraînement 
+pour coureurs. Disponible sur https://runtrack-virid.vercel.app
 
-## Description
+## Stack technique
 
-Application web permettant de générer et suivre des plans d'entraînement
-personnalisés selon le niveau et les objectifs du coureur.
+- **Frontend** : React 19, Vite, React Router, Recharts
+- **Backend** : Node.js, Express 5
+- **Base de données** : PostgreSQL 18
+- **Authentification** : JWT + bcrypt
+- **Déploiement** : Vercel (frontend) + Railway (backend + BDD)
+- **Stockage photos** : Cloudinary
 
-## Technologies
+## Fonctionnalités
 
-- Frontend : HTML, CSS, JavaScript, React
-- Backend : Node.js, Express
-- Base de données : PostgreSQL
+- Génération de plans d'entraînement personnalisés (10km)
+- Calcul dynamique des allures depuis un test 5km
+- Recalibrage automatique des allures après chaque test
+- Suivi des séances avec statistiques et graphiques
+- Gestion multi-plans (actif, archivé)
+- Profil utilisateur avec photo
 
-## Disclaimer
-Je débute et l'évolution de ce projet sera lente alors n'hésitez pas à me suivre.
+## Déploiement
+
+- Frontend : Vercel (root directory: frontend)
+- Backend : Railway (root directory: backend)
+- BDD : Railway PostgreSQL
+
+## Auteur
+
+Lucas Baretzki — Ingénieur cybersécurité 
