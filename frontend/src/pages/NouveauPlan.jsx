@@ -52,6 +52,8 @@ function NouveauPlan() {
     const [dateDebut,      setDateDebut]      = useState(
         new Date().toISOString().split('T')[0]
     );
+    const [objectif,       setObjectif]       = useState('10km');
+    const [niveau,         setNiveau]         = useState('intermediaire');
 
     // Plans existants (pour l'avertissement)
     const [aDejaUnPlan,  setADejaUnPlan]  = useState(false);
@@ -130,6 +132,8 @@ function NouveauPlan() {
                 seances_semaine: seancesSemaine,
                 temps5km_sec,
                 date_debut: dateDebut,
+                niveau,
+                objectif,
             });
 
             navigate(`/mes-plans/${data.plan_id}`);
@@ -276,35 +280,61 @@ function NouveauPlan() {
                 <section className="dashboard-card">
                     <h2>Préférences</h2>
 
+                    {/* Objectif */}
+                    <div className="saisie-champ" style={{ marginBottom: '1.25rem' }}>
+                        <span className="label">Objectif</span>
+                        <div className="radio-groupe">
+                            {['5km', '10km', 'semi', 'marathon'].map(obj => (
+                                <label key={obj} className={`radio-carte ${objectif === obj ? 'active' : ''}`}>
+                                    <input type="radio" name="objectif" onChange={() => setObjectif(obj)} />
+                                    <span>{obj === 'semi' ? 'Semi-marathon' : obj === 'marathon' ? 'Marathon' : obj}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Niveau */}
+                    <div className="saisie-champ" style={{ marginBottom: '1.25rem' }}>
+                        <span className="label">Niveau</span>
+                        <div className="radio-groupe">
+                            {[
+                                { value: 'debutant',      label: 'Débutant' },
+                                { value: 'intermediaire', label: 'Intermédiaire' },
+                                { value: 'avance',        label: 'Avancé' },
+                            ].map(n => (
+                                <label key={n.value} className={`radio-carte ${niveau === n.value ? 'active' : ''}`}>
+                                    <input type="radio" name="niveau" onChange={() => setNiveau(n.value)} />
+                                    <span>{n.label}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Séances par semaine */}
                     <div className="saisie-champ" style={{ marginBottom: '1.25rem' }}>
                         <span className="label">Séances par semaine</span>
                         <div className="radio-groupe">
-                            <label className={`radio-carte ${seancesSemaine === 1 ? 'active' : ''}`}>
-                                <input
-                                    type="radio"
-                                    name="seances"
-                                    onChange={() => setSeancesSemaine(1)}
-                                />
-                                <span>1 séance / semaine</span>
-                            </label>
-                            <label className={`radio-carte ${seancesSemaine === 2 ? 'active' : ''}`}>
-                                <input
-                                    type="radio"
-                                    name="seances"
-                                    defaultChecked
-                                    onChange={() => setSeancesSemaine(2)}
-                                />
-                                <span>2 séances / semaine</span>
-                            </label>
-                            <label className={`radio-carte ${seancesSemaine === 3 ? 'active' : ''}`}>
-                                <input
-                                    type="radio"
-                                    name="seances"
-                                    onChange={() => setSeancesSemaine(3)}
-                                />
-                                <span>3 séances / semaine</span>
-                            </label>
+                            {[1, 2, 3].map(n => (
+                                <label key={n} className={`radio-carte ${seancesSemaine === n ? 'active' : ''}`}>
+                                    <input type="radio" name="seances" onChange={() => setSeancesSemaine(n)} />
+                                    <span>{n} séance{n > 1 ? 's' : ''} / semaine</span>
+                                </label>
+                            ))}
                         </div>
+                    </div>
+
+                    {/* Date de début */}
+                    <div className="saisie-champ">
+                        <label htmlFor="dateDebut" className="label">Date de début</label>
+                        <input
+                            className="input-field"
+                            type="date"
+                            id="dateDebut"
+                            value={dateDebut}
+                            min={new Date().toISOString().split('T')[0]}
+                            onChange={(e) => setDateDebut(e.target.value)}
+                            style={{ maxWidth: '220px' }}
+                        />
                     </div>
 
                     <div className="saisie-champ">

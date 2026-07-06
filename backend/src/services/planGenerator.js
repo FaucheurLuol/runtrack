@@ -4,6 +4,16 @@ const plan_intermediaire_10km_3s        = require('../plan/plan_intermediaire_10
 
 
 // ============================================================
+// Dictionnaire des plans disponibles
+// Clé : niveau_objectif_nbSeances
+// ============================================================
+const PLANS = {
+    'debutant_10km_1s':      plan_debutant_10km_1s,
+    'intermediaire_10km_2s': plan_intermediaire_10km_2s,
+    'intermediaire_10km_3s': plan_intermediaire_10km_3s,
+};
+
+// ============================================================
 // PROFILS (dashboard et labels)
 // ============================================================
 const PROFILS = {
@@ -64,17 +74,14 @@ function formatAllure(sec) {
 // ============================================================
 function genererPlan({ seances_semaine, temps5km_sec, niveau }) {
 
-    // 1. Sélection du template
-    let template;
+     // 1. Construction de la clé et sélection du template
+    const cle      = `${niveau}_${objectif}_${seances_semaine}s`;
+    const template = PLANS[cle];
 
-    if (seances_semaine === 1) {
-        template = plan_debutant_10km_1s;
-    } else if (seances_semaine === 2) {
-        template = plan_intermediaire_10km_2s;
-    } else if (seances_semaine === 3) {
-        template = plan_intermediaire_10km_3s;
-    } else {
-        template = plan_debutant_10km_1s; // fallback
+    if (!template) {
+        throw new Error(
+            `Aucun plan disponible pour : ${niveau} · ${objectif} · ${seances_semaine} séance(s)/semaine`
+        );
     }
 
     // 2. Calcul des allures personnalisées (si test fourni)

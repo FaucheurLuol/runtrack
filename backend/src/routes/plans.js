@@ -6,8 +6,11 @@ const { genererPlan } = require('../services/planGenerator');
 
 // POST /plans/generer — génère et sauvegarde un plan
 router.post('/generer', authentifier, async (req, res, next) => {
-    const { seances_semaine, temps5km_sec, date_debut, niveau } = req.body;
+    const { seances_semaine, temps5km_sec, date_debut, niveau, objectif } = req.body;
     const utilisateur_id = req.utilisateur.id;
+    // Valeurs acceptées
+    const niveauxValides  = ['debutant', 'intermediaire', 'avance'];
+    const objectifsValides = ['5km', '10km', 'semi', 'marathon'];
 
     if (!seances_semaine || !date_debut) {
         return res.status(400).json({
@@ -21,9 +24,27 @@ router.post('/generer', authentifier, async (req, res, next) => {
         });
     }
 
+    if (!seances_semaine || !date_debut || !niveau || !objectif) {
+        return res.status(400).json({
+            erreur: 'seances_semaine, date_debut, niveau et objectif sont obligatoires'
+        });
+    }
+
+    if (!niveauxValides.includes(niveau)) {
+        return res.status(400).json({ 
+            erreur: `Niveau invalide. Valeurs : ${niveauxValides.join(', ')}` 
+        });
+    }
+
+    if (!objectifsValides.includes(objectif)) {
+        return res.status(400).json({ 
+            erreur: `Objectif invalide. Valeurs : ${objectifsValides.join(', ')}` 
+        });
+    }
+
     try {
         // Génère le plan
-        const plan = genererPlan({ seances_semaine, temps5km_sec, niveau });
+        const plan = genererPlan({ seances_semaine, temps5km_sec, niveau, objectif });
 
         // Calcule la date de fin (20 semaines)
         const dateDebut = new Date(date_debut);
@@ -36,7 +57,7 @@ router.post('/generer', authentifier, async (req, res, next) => {
                 (utilisateur_id, objectif, niveau, seances_semaine, date_debut, date_fin, temps5km_initial)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id`,
-            [utilisateur_id, '10km', plan.profil, seances_semaine, date_debut, dateFin, temps5km_sec || null]
+            [utilisateur_id, objectif, niveau, seances_semaine, date_debut, dateFin, temps5km_sec || null]
         );
 
         const plan_id = planResult.rows[0].id;
