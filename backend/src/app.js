@@ -44,6 +44,7 @@ const limiterAuth = rateLimit({
     legacyHeaders: false,
 });
 
+const basicAuth = require('express-basic-auth');
 const swaggerUi   = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger');
 
@@ -75,7 +76,15 @@ app.get('/', (req, res) => {
     res.json({ message: 'Serveur RunTrack opérationnel' });
 });
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs',
+    basicAuth({
+        users: { [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD },
+        challenge: true,
+        realm: 'RunTrack API Docs',
+    }),
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec)
+);
 
 // Surveillance backend RunTrack
 Sentry.setupExpressErrorHandler(app);
