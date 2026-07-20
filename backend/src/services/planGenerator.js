@@ -74,7 +74,7 @@ function formatAllure(sec) {
 // ============================================================
 // GÉNÉRATION DU PLAN
 // ============================================================
-function genererPlan({ seances_semaine, temps5km_sec, niveau }) {
+function genererPlan({ seances_semaine, temps5km_sec, niveau, objectif }) {
 
      // 1. Construction de la clé et sélection du template
     const cle      = `${niveau}_${objectif}_${seances_semaine}s`;
