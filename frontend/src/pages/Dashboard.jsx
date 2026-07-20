@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
 import '../style/dashboard.css';
 import '../style/suivi.css';
 
@@ -14,7 +13,6 @@ const secToAffichage = (sec) => {
 };
 
 function Dashboard() {
-    const { utilisateur } = useAuth();
     const navigate        = useNavigate();
 
     const [donnees,     setDonnees]     = useState(null);
@@ -25,7 +23,7 @@ function Dashboard() {
         const charger = async () => {
             try {
                 const res  = await fetch(`${API_URL}/dashboard`, {
-                    headers: { 'Authorization': `Bearer ${utilisateur.token}` }
+                    credentials: 'include',
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.erreur);
@@ -37,7 +35,7 @@ function Dashboard() {
             }
         };
         charger();
-    }, [utilisateur.token]);
+    }, []);
 
     if (chargement) return <main className="dashboard"><p>Chargement...</p></main>;
     if (erreur) return (

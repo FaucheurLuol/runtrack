@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
 import { recupererPlanDetail } from '../api/plans';
 import '../style/dashboard.css';
 
@@ -24,7 +23,6 @@ const secToAffichage = (sec) => {
 
 function PlanDetail() {
     const { id }                      = useParams();
-    const { utilisateur }             = useAuth();
     const navigate                    = useNavigate();
     const [donnees,    setDonnees]    = useState(null);
     const [chargement, setChargement] = useState(true);
@@ -33,7 +31,7 @@ function PlanDetail() {
     useEffect(() => {
         const charger = async () => {
             try {
-                const data = await recupererPlanDetail(utilisateur.token, id);
+                const data = await recupererPlanDetail(id);
                 setDonnees(data);
             } catch (err) {
                 setErreur(err.message);
@@ -42,7 +40,7 @@ function PlanDetail() {
             }
         };
         charger();
-    }, [utilisateur.token, id]);
+    }, [id]);
 
     if (chargement) return <main className="dashboard"><p>Chargement...</p></main>;
     if (erreur)     return <main className="dashboard"><p>Erreur : {erreur}</p></main>;

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate }         from 'react-router-dom';
-import { useAuth }             from '../context/useAuth';
 import { genererPlan, recupererMesPlans } from '../api/plans';
 import '../style/dashboard.css';
 
@@ -38,8 +37,7 @@ function formatTempsCible(allureRace) {
 }
 
 function NouveauPlan() {
-    const { utilisateur }              = useAuth();
-    const navigate                     = useNavigate();
+    const navigate = useNavigate();
 
     // Test 5km
     const [aPeuCouru,    setAPeuCouru]    = useState(null);
@@ -54,36 +52,38 @@ function NouveauPlan() {
     );
     const [objectif,       setObjectif]       = useState('10km');
     const [niveau,         setNiveau]         = useState('intermediaire');
+
     const PLANS_DISPONIBLES = [
         { niveau: 'debutant',      objectif: '10km', seances: 1 },
         { niveau: 'intermediaire', objectif: '10km', seances: 2 },
         { niveau: 'intermediaire', objectif: '10km', seances: 3 },
     ];
+
     const combinaisonDisponible = PLANS_DISPONIBLES.some(
         p => p.niveau === niveau && p.seances === seancesSemaine && p.objectif === objectif
     );
 
     // Plans existants (pour l'avertissement)
-    const [aDejaUnPlan,  setADejaUnPlan]  = useState(false);
+    const [aDejaUnPlan, setADejaUnPlan] = useState(false);
 
     // UI
-    const [chargement,   setChargement]   = useState(false);
-    const [message,      setMessage]      = useState({ texte: '', type: '' });
+    const [chargement, setChargement] = useState(false);
+    const [message,    setMessage]    = useState({ texte: '', type: '' });
 
     // Charge les plans existants
     useEffect(() => {
         const charger = async () => {
             try {
-                const data = await recupererMesPlans(utilisateur.token);
+                const data = await recupererMesPlans();
                 setADejaUnPlan(data.some(p => p.actif));
             } catch {
                 // silencieux
             }
         };
         charger();
-    }, [utilisateur.token]);
+    }, []);
 
-    // Calcul de l'aperçu directement dans le composant (pas de useEffect)
+    // Calcul de l'aperçu directement dans le composant
     const apercu = (() => {
         if (!aPeuCouru || !minutes) return null;
         const min   = parseInt(minutes)  || 0;
@@ -95,7 +95,6 @@ function NouveauPlan() {
         return { allures, profil, allureRace: allures.race };
     })();
 
-    // Synchronise champ texte → min/sec
     const handleTempsTexteChange = (valeur) => {
         setTempsTexte(valeur);
         const parties = valeur.split(':');
@@ -103,7 +102,6 @@ function NouveauPlan() {
         if (parties[1] !== undefined) setSecondes(parties[1]);
     };
 
-    // Synchronise min/sec → champ texte
     const handleMinChange = (val) => {
         setMinutes(val);
         setTempsTexte(`${val.padStart(2, '0')}:${secondes.padStart(2, '0')}`);
@@ -136,7 +134,7 @@ function NouveauPlan() {
 
         setChargement(true);
         try {
-            const data = await genererPlan(utilisateur.token, {
+            const data = await genererPlan({
                 seances_semaine: seancesSemaine,
                 temps5km_sec,
                 date_debut: dateDebut,
@@ -147,7 +145,6 @@ function NouveauPlan() {
             navigate(`/mes-plans/${data.plan_id}`);
 
         } catch (err) {
-            // Message technique → message utilisateur
             if (err.message.includes('Aucun plan disponible')) {
                 setMessage({
                     texte: `Cette combinaison n'est pas encore disponible. 

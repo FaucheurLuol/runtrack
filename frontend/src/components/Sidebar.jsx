@@ -21,10 +21,9 @@ function Sidebar({ ouverte, fermer }) {
     const { utilisateur, deconnexion } = useAuth();
     const navigate                     = useNavigate();
 
-    const handleDeconnexion = () => {
-        fermer();
+    const handleDeconnexion = async () => {
         navigate('/');
-        deconnexion();
+        await deconnexion();
     };
 
     return (

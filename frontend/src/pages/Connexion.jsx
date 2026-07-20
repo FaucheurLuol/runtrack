@@ -27,7 +27,7 @@ function Connexion() {
 
         try {
             const data = await connecter(email, password);
-            connexion(data.token, data.utilisateur);
+            connexion(data.utilisateur);
             navigate('/dashboard'); // redirige après connexion
         } catch (err) {
             afficherErreur(err.message);

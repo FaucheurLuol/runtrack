@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth }             from '../context/useAuth';
 import { recupererSuivi }      from '../api/suivi';
 import {
     BarChart, Bar, LineChart, Line,
@@ -31,7 +30,6 @@ function StatCard({ label, valeur, detail, couleur }) {
 }
 
 function Suivi() {
-    const { utilisateur }              = useAuth();
     const [donnees,    setDonnees]    = useState(null);
     const [chargement, setChargement] = useState(true);
     const [erreur,     setErreur]     = useState(null);
@@ -40,7 +38,7 @@ function Suivi() {
     useEffect(() => {
         const charger = async () => {
             try {
-                const data = await recupererSuivi(utilisateur.token);
+                const data = await recupererSuivi();
                 setDonnees(data);
             } catch (err) {
                 setErreur(err.message);
@@ -49,7 +47,7 @@ function Suivi() {
             }
         };
         charger();
-    }, [utilisateur.token]);
+    }, []);
 
     if (chargement) return <main className="dashboard"><p>Chargement...</p></main>;
     if (erreur) return (

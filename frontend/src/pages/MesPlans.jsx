@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate }         from 'react-router-dom';
-import { useAuth }             from '../context/useAuth';
 import {
     recupererMesPlans,
     selectionnerPlan,
@@ -12,7 +11,6 @@ import '../style/dashboard.css';
 const capitaliser = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 function MesPlans() {
-    const { utilisateur }             = useAuth();
     const navigate                    = useNavigate();
     const [plans,       setPlans]     = useState([]);
     const [chargement,  setChargement] = useState(true);
@@ -22,7 +20,7 @@ function MesPlans() {
     useEffect(() => {
         const charger = async () => {
             try {
-                const data = await recupererMesPlans(utilisateur.token);
+                const data = await recupererMesPlans();
                 setPlans(data);
             } catch (err) {
                 setErreur(err.message);
@@ -30,15 +28,14 @@ function MesPlans() {
                 setChargement(false);
             }
         };
-
         charger();
-    }, [utilisateur.token]);
+    }, []);
 
     const handleSelectionner = async (planId) => {
         setAction(planId);
         try {
-            await selectionnerPlan(utilisateur.token, planId);
-            const data = await recupererMesPlans(utilisateur.token);
+            await selectionnerPlan(planId);
+            const data = await recupererMesPlans();
             setPlans(data);
         } catch (err) {
             setErreur(err.message);
@@ -47,12 +44,11 @@ function MesPlans() {
         }
     };
 
-
     const handleArchiver = async (planId) => {
         setAction(planId);
         try {
-            await archiverPlan(utilisateur.token, planId);
-            const data = await recupererMesPlans(utilisateur.token);
+            await archiverPlan(planId);
+            const data = await recupererMesPlans();
             setPlans(data);
         } catch (err) {
             setErreur(err.message);
@@ -64,8 +60,8 @@ function MesPlans() {
     const handleReactiver = async (planId) => {
         setAction(planId);
         try {
-            await reactiverPlan(utilisateur.token, planId);
-            const data = await recupererMesPlans(utilisateur.token);
+            await reactiverPlan(planId);
+            const data = await recupererMesPlans();
             setPlans(data);
         } catch (err) {
             setErreur(err.message);

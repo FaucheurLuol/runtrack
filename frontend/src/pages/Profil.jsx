@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAuth }   from '../context/useAuth';
 import {
     recupererProfil,
     mettreAJourProfil,
@@ -18,8 +17,7 @@ const RAISONS = [
 ];
 
 function Profil() {
-    const { utilisateur }  = useAuth();
-    const inputPhotoRef    = useRef(null);
+    const inputPhotoRef = useRef(null);
 
     const [profil,      setProfil]      = useState(null);
     const [chargement,  setChargement]  = useState(true);
@@ -34,9 +32,9 @@ function Profil() {
     const [objectifPerso, setObjectifPerso] = useState('');
 
     // Mot de passe
-    const [ancienMdp,   setAncienMdp]   = useState('');
-    const [nouveauMdp,  setNouveauMdp]  = useState('');
-    const [confirmMdp,  setConfirmMdp]  = useState('');
+    const [ancienMdp,  setAncienMdp]  = useState('');
+    const [nouveauMdp, setNouveauMdp] = useState('');
+    const [confirmMdp, setConfirmMdp] = useState('');
 
     // Messages
     const [msgProfil, setMsgProfil] = useState({ texte: '', type: '' });
@@ -48,13 +46,13 @@ function Profil() {
     useEffect(() => {
         const charger = async () => {
             try {
-                const data = await recupererProfil(utilisateur.token);
+                const data = await recupererProfil();
                 setProfil(data);
-                setNom(data.nom           || '');
-                setPrenom(data.prenom     || '');
-                setAge(data.age           || '');
-                setSexe(data.sexe         || '');
-                setRaison(data.raison     || '');
+                setNom(data.nom                  || '');
+                setPrenom(data.prenom            || '');
+                setAge(data.age                  || '');
+                setSexe(data.sexe                || '');
+                setRaison(data.raison            || '');
                 setObjectifPerso(data.objectif_perso || '');
             } catch (err) {
                 setErreur(err.message);
@@ -63,12 +61,12 @@ function Profil() {
             }
         };
         charger();
-    }, [utilisateur.token]);
+    }, []);
 
     const handleSauvegarderProfil = async (e) => {
         e.preventDefault();
         try {
-            const data = await mettreAJourProfil(utilisateur.token, {
+            const data = await mettreAJourProfil({
                 nom, prenom, age: parseInt(age), sexe, raison, objectif_perso: objectifPerso
             });
             setProfil(prev => ({ ...prev, ...data.utilisateur }));
@@ -84,7 +82,7 @@ function Profil() {
 
         setUploadEnCours(true);
         try {
-            const data = await uploadPhoto(utilisateur.token, fichier);
+            const data = await uploadPhoto(fichier);
             setProfil(prev => ({ ...prev, photo_url: data.photo_url }));
             setMsgPhoto({ texte: 'Photo mise à jour !', type: 'success' });
         } catch (err) {
@@ -101,7 +99,7 @@ function Profil() {
             return;
         }
         try {
-            await changerMotDePasse(utilisateur.token, ancienMdp, nouveauMdp);
+            await changerMotDePasse(ancienMdp, nouveauMdp);
             setMsgMdp({ texte: 'Mot de passe mis à jour !', type: 'success' });
             setAncienMdp('');
             setNouveauMdp('');

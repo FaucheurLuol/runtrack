@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
 import { recupererSeance, enregistrerSeance } from '../api/seances';
 import { recupererMesPlans } from '../api/plans';
 import '../style/dashboard.css';
 
 function Saisie() {
-    const { utilisateur }            = useAuth();
     const [searchParams]             = useSearchParams();
     const navigate                   = useNavigate();
 
@@ -22,20 +20,20 @@ function Saisie() {
     const [chargementSeance, setChargementSeance]  = useState(false);
     const [erreurSeance,     setErreurSeance]      = useState(null);
 
-    const [distance,         setDistance] = useState('');
-    const [ressenti,         setRessenti]          = useState(0);
-    const [notes,            setNotes]             = useState('');
+    const [distance,  setDistance] = useState('');
+    const [ressenti,  setRessenti] = useState(0);
+    const [notes,     setNotes]    = useState('');
 
-    const [chargement,       setChargement]        = useState(false);
-    const [message,          setMessage]           = useState({ texte: '', type: '' });
+    const [chargement, setChargement] = useState(false);
+    const [message,    setMessage]    = useState({ texte: '', type: '' });
 
-    const [plans,          setPlans]          = useState([]);
+    const [plans,           setPlans]           = useState([]);
     const [chargementPlans, setChargementPlans] = useState(true);
-    const [erreur, setErreur] = useState(null);
+    const [erreur,          setErreur]          = useState(null);
 
-    const [dureeMinutes, setDureeMinutes] = useState('');
+    const [dureeMinutes,  setDureeMinutes]  = useState('');
     const [dureeSecondes, setDureeSecondes] = useState('');
-    const [dureeTexte, setDureeTexte] = useState('');
+    const [dureeTexte,    setDureeTexte]    = useState('');
 
     const handleDureeMinChange = (val) => {
         setDureeMinutes(val);
@@ -53,21 +51,19 @@ function Saisie() {
     };
 
     const [dateSeance, setDateSeance] = useState(
-        new Date().toISOString().split('T')[0] // format YYYY-MM-DD
+        new Date().toISOString().split('T')[0]
     );
 
-    // Charge les plans actifs de l'utilisateur
+    // Charge les plans actifs
     useEffect(() => {
         const chargerPlans = async () => {
             try {
-                const data   = await recupererMesPlans(utilisateur.token);
+                const data   = await recupererMesPlans();
                 const actifs = data.filter(p => p.actif);
-                console.log('Plans actifs:', actifs);
-                console.log('Plan principal:', actifs.find(p => p.est_selectionne)); 
                 setPlans(actifs);
 
                 if (!planIdSelectionne) {
-                    const principal = actifs.find(p => p.est_selectionne);
+                    const principal = actifs.find(p => p.est_selectionne) || actifs[0];
                     if (principal) {
                         setPlanIdSelectionne(String(principal.id));
                     }
@@ -81,7 +77,7 @@ function Saisie() {
 
         chargerPlans();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [utilisateur.token]);
+    }, []);
 
     // Charge la séance prévue quand semaine/séance change
     useEffect(() => {
@@ -94,7 +90,7 @@ function Saisie() {
 
             try {
                 const data = await recupererSeance(
-                    utilisateur.token, planIdSelectionne, formSemaine, formNumero
+                    planIdSelectionne, formSemaine, formNumero
                 );
 
                 if (!data) {
@@ -112,7 +108,7 @@ function Saisie() {
         };
 
         charger();
-    }, [formSemaine, formNumero, planIdSelectionne, utilisateur.token]);
+    }, [formSemaine, formNumero, planIdSelectionne]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -133,7 +129,7 @@ function Saisie() {
 
         setChargement(true);
         try {
-            await enregistrerSeance(utilisateur.token, {
+            await enregistrerSeance({
                 plan_id:         parseInt(planIdSelectionne),
                 semaine:         parseInt(formSemaine),
                 numero_seance:   parseInt(formNumero),

@@ -86,7 +86,7 @@ function Inscription() {
                 sexe,
                 age
             });
-            connexion(data.token, data.utilisateur);
+            connexion(data.utilisateur);
             navigate('/dashboard');
         } catch (err) {
             afficherErreur(err.message);
