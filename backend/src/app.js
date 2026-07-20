@@ -1,3 +1,11 @@
+const Sentry = require('@sentry/node');
+
+Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: 1.0,
+});
+
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -15,6 +23,8 @@ const suiviRoutes = require('./routes/suivi');
 const profilRoutes = require('./routes/profil');
 
 const app = express();
+
+Sentry.setupExpressErrorHandler(app);
 
 const rateLimit = require('express-rate-limit');
 
@@ -62,6 +72,10 @@ app.use('/profil', profilRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Serveur RunTrack opérationnel' });
+});
+
+app.get('/debug-sentry', (req, res) => {
+    throw new Error('Test Sentry backend');
 });
 
 app.use(gestionnaireErreurs);
