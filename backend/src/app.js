@@ -15,7 +15,30 @@ const profilRoutes = require('./routes/profil');
 
 const app = express();
 
+const rateLimit = require('express-rate-limit');
+
+// Rate limiting global — toutes les routes
+const limiterGlobal = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100,                  // 100 requêtes max par IP
+    message: { erreur: 'Trop de requêtes, réessayez dans 15 minutes.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// Rate limiting strict — routes d'authentification
+const limiterAuth = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10,                   // 10 tentatives max par IP
+    message: { erreur: 'Trop de tentatives de connexion, réessayez dans 15 minutes.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
 app.use(helmet());
+
+app.use(limiterGlobal);
+app.use('/auth', limiterAuth);
 
 // CORS — autorise uniquement le frontend React
 app.use(cors({
