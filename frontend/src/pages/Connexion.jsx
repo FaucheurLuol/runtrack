@@ -28,6 +28,7 @@ function Connexion() {
         try {
             const data = await connecter(email, password);
             connexion(data.utilisateur);
+            await new Promise(resolve => setTimeout(resolve, 100));
             navigate('/dashboard'); // redirige après connexion
         } catch (err) {
             afficherErreur(err.message);
