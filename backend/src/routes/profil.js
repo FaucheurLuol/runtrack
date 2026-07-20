@@ -6,6 +6,18 @@ const authentifier = require('../middleware/auth');
 const { upload, cloudinary } = require('../config/cloudinary');
 
 // GET /profil — récupère le profil
+/**
+ * @swagger
+ * /profil:
+ *   get:
+ *     summary: Récupérer son profil complet
+ *     tags: [Profil]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Données du profil
+ */
 router.get('/', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
 
@@ -29,6 +41,30 @@ router.get('/', authentifier, async (req, res, next) => {
 });
 
 // PUT /profil — met à jour le profil
+/**
+ * @swagger
+ * /profil:
+ *   put:
+ *     summary: Modifier son profil
+ *     tags: [Profil]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nom: { type: string }
+ *               prenom: { type: string }
+ *               age: { type: integer }
+ *               sexe: { type: string }
+ *               raison: { type: string }
+ *               objectif_perso: { type: string }
+ *     responses:
+ *       200:
+ *         description: Profil mis à jour
+ */
 router.put('/', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
     const { nom, prenom, age, sexe, raison, objectif_perso } = req.body;
@@ -59,6 +95,29 @@ router.put('/', authentifier, async (req, res, next) => {
 });
 
 // PUT /profil/photo
+/**
+ * @swagger
+ * /profil/photo:
+ *   put:
+ *     summary: Uploader une photo de profil
+ *     tags: [Profil]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               photo:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Photo mise à jour
+ *       400:
+ *         description: Aucun fichier fourni
+ */
 router.put('/photo', authentifier, upload.single('photo'), async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
 
@@ -117,6 +176,30 @@ router.put('/photo', authentifier, upload.single('photo'), async (req, res, next
 });
 
 // PUT /profil/mot-de-passe — change le mot de passe
+/**
+ * @swagger
+ * /profil/mot-de-passe:
+ *   put:
+ *     summary: Changer le mot de passe
+ *     tags: [Profil]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [ancien_mdp, nouveau_mdp]
+ *             properties:
+ *               ancien_mdp: { type: string }
+ *               nouveau_mdp: { type: string, minLength: 14 }
+ *     responses:
+ *       200:
+ *         description: Mot de passe mis à jour
+ *       401:
+ *         description: Ancien mot de passe incorrect
+ */
 router.put('/mot-de-passe', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
     const { ancien_mdp, nouveau_mdp } = req.body;

@@ -13,6 +13,20 @@ const FACTEURS_INTENSITE = {
     vo2:       3,
 };
 
+/**
+ * @swagger
+ * /suivi:
+ *   get:
+ *     summary: Statistiques complètes et historique des séances
+ *     tags: [Suivi]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Stats globales, volume hebdomadaire, historique
+ *       404:
+ *         description: Aucun plan actif
+ */
 router.get('/', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
 

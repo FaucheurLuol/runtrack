@@ -5,6 +5,33 @@ const authentifier = require('../middleware/auth');
 const { genererPlan } = require('../services/planGenerator');
 
 // POST /plans/generer — génère et sauvegarde un plan
+/**
+ * @swagger
+ * /plans/generer:
+ *   post:
+ *     summary: Générer un nouveau plan d'entraînement
+ *     tags: [Plans]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [seances_semaine, date_debut, niveau, objectif]
+ *             properties:
+ *               seances_semaine: { type: integer, example: 2 }
+ *               temps5km_sec: { type: integer, example: 1423, nullable: true }
+ *               date_debut: { type: string, format: date, example: 2026-09-01 }
+ *               niveau: { type: string, enum: [debutant, intermediaire, avance] }
+ *               objectif: { type: string, enum: ['5km', '10km', semi, marathon] }
+ *     responses:
+ *       201:
+ *         description: Plan généré avec succès
+ *       400:
+ *         description: Combinaison de plan non disponible
+ */
 router.post('/generer', authentifier, async (req, res, next) => {
     const { seances_semaine, temps5km_sec, date_debut, niveau, objectif } = req.body;
     const utilisateur_id = req.utilisateur.id;
@@ -109,6 +136,20 @@ router.post('/generer', authentifier, async (req, res, next) => {
 });
 
 // GET /plans/mon-plan — récupère le plan actif de l'utilisateur
+/**
+ * @swagger
+ * /plans/mon-plan:
+ *   get:
+ *     summary: Récupère le plan actif de l'utilisateur avec ses séances
+ *     tags: [Plans]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Plan et séances
+ *       404:
+ *         description: Aucun plan actif trouvé
+ */
 router.get('/mon-plan', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
 
@@ -144,6 +185,18 @@ router.get('/mon-plan', authentifier, async (req, res, next) => {
 });
 
 // GET /plans/mes-plans — liste tous les plans de l'utilisateur
+/**
+ * @swagger
+ * /plans/mes-plans:
+ *   get:
+ *     summary: Liste tous les plans de l'utilisateur
+ *     tags: [Plans]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des plans
+ */
 router.get('/mes-plans', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
 
@@ -173,6 +226,25 @@ router.get('/mes-plans', authentifier, async (req, res, next) => {
 });
 
 // PUT /plans/:id/selectionner — change le plan sélectionné
+/**
+ * @swagger
+ * /plans/{id}/selectionner:
+ *   put:
+ *     summary: Sélectionner ce plan comme plan principal
+ *     tags: [Plans]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Plan sélectionné
+ *       404:
+ *         description: Plan non trouvé
+ */
 router.put('/:id/selectionner', authentifier, async (req, res, next) => {
     const { id }         = req.params;
     const utilisateur_id = req.utilisateur.id;
@@ -210,6 +282,25 @@ router.put('/:id/selectionner', authentifier, async (req, res, next) => {
 });
 
 // PUT /plans/:id/archiver — archive un plan
+/**
+ * @swagger
+ * /plans/{id}/archiver:
+ *   put:
+ *     summary: Archiver un plan (impossible si sélectionné)
+ *     tags: [Plans]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Plan archivé
+ *       400:
+ *         description: Impossible d'archiver le plan sélectionné
+ */
 router.put('/:id/archiver', authentifier, async (req, res, next) => {
     const { id }         = req.params;
     const utilisateur_id = req.utilisateur.id;
@@ -252,6 +343,23 @@ router.put('/:id/archiver', authentifier, async (req, res, next) => {
 });
 
 // PUT /plans/:id/reactiver — réactive un plan archivé
+/**
+ * @swagger
+ * /plans/{id}/reactiver:
+ *   put:
+ *     summary: Réactiver un plan archivé
+ *     tags: [Plans]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Plan réactivé
+ */
 router.put('/:id/reactiver', authentifier, async (req, res, next) => {
     const { id }         = req.params;
     const utilisateur_id = req.utilisateur.id;
@@ -282,6 +390,25 @@ router.put('/:id/reactiver', authentifier, async (req, res, next) => {
 });
 
 // GET /plans/:id/detail — plan complet avec toutes les séances
+/**
+ * @swagger
+ * /plans/{id}/detail:
+ *   get:
+ *     summary: Détail complet d'un plan avec toutes les séances
+ *     tags: [Plans]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Détail du plan
+ *       404:
+ *         description: Plan non trouvé
+ */
 router.get('/:id/detail', authentifier, async (req, res, next) => {
     const { id }         = req.params;
     const utilisateur_id = req.utilisateur.id;

@@ -17,6 +17,35 @@ const valider = (req, res, next) => {
 };
 
 // POST /auth/inscription
+/**
+ * @swagger
+ * /auth/inscription:
+ *   post:
+ *     summary: Créer un nouveau compte
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, email, password, nom, prenom, sexe]
+ *             properties:
+ *               username: { type: string, example: lucas_rt }
+ *               email: { type: string, example: lucas@runtrack.fr }
+ *               password: { type: string, example: MotDePasse123! }
+ *               nom: { type: string, example: Baretzki }
+ *               prenom: { type: string, example: Lucas }
+ *               sexe: { type: string, enum: [homme, femme, autre] }
+ *               age: { type: integer, example: 32 }
+ *     responses:
+ *       201:
+ *         description: Compte créé, cookie httpOnly défini
+ *       400:
+ *         description: Validation échouée
+ *       409:
+ *         description: Email ou username déjà utilisé
+ */
 router.post('/inscription',
     [
         body('username')
@@ -214,6 +243,16 @@ router.post('/connexion',
     }
 );
 
+/**
+ * @swagger
+ * /auth/deconnexion:
+ *   post:
+ *     summary: Se déconnecter (efface le cookie)
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Déconnecté
+ */
 router.post('/deconnexion', (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,

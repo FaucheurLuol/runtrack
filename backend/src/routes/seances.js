@@ -5,6 +5,38 @@ const authentifier = require('../middleware/auth');
 const { calculerAllures, formatAllure } = require('../services/planGenerator');
 
 // POST /seances/realiser — enregistre une séance réalisée
+/**
+ * @swagger
+ * /seances/realiser:
+ *   post:
+ *     summary: Enregistrer une séance réalisée (déclenche recalibrage si test)
+ *     tags: [Séances]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [plan_id, semaine, numero_seance, duree_reelle, distance_reelle, ressenti]
+ *             properties:
+ *               plan_id: { type: integer }
+ *               semaine: { type: integer }
+ *               numero_seance: { type: integer }
+ *               duree_reelle: { type: integer, description: "En secondes" }
+ *               distance_reelle: { type: number }
+ *               ressenti: { type: integer, minimum: 1, maximum: 5 }
+ *               notes: { type: string, nullable: true }
+ *               date_realisee: { type: string, format: date }
+ *     responses:
+ *       201:
+ *         description: Séance enregistrée
+ *       404:
+ *         description: Séance introuvable
+ *       409:
+ *         description: Séance déjà enregistrée
+ */
 router.post('/realiser', authentifier, async (req, res, next) => {
     const { plan_id, semaine, numero_seance, duree_reelle, distance_reelle, ressenti, notes, date_realisee } = req.body;
 
@@ -154,6 +186,23 @@ router.post('/realiser', authentifier, async (req, res, next) => {
 });
 
 // GET /seances/plan/:planId — toutes les séances avec statut réalisé
+/**
+ * @swagger
+ * /seances/plan/{planId}:
+ *   get:
+ *     summary: Toutes les séances d'un plan
+ *     tags: [Séances]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: planId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Séances groupées par semaine
+ */
 router.get('/plan/:planId', authentifier, async (req, res, next) => {
     const { planId }       = req.params;
     const utilisateur_id   = req.utilisateur.id;
@@ -225,6 +274,27 @@ router.get('/plan/:planId', authentifier, async (req, res, next) => {
 });
 
 // GET /seances/plan/:planId/semaine/:semaine — séances d'une semaine précise
+/**
+ * @swagger
+ * /seances/plan/{planId}/semaine/{semaine}:
+ *   get:
+ *     summary: Séances d'une semaine précise
+ *     tags: [Séances]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: planId
+ *         required: true
+ *         schema: { type: integer }
+ *       - in: path
+ *         name: semaine
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Séances de la semaine
+ */
 router.get('/plan/:planId/semaine/:semaine', authentifier, async (req, res, next) => {
     const { planId, semaine } = req.params;
     const utilisateur_id      = req.utilisateur.id;
