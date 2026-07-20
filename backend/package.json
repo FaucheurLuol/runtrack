@@ -18,10 +18,11 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
     "pg": "^8.22.0",
-   "runtrack-plans": "git+https://github.com/FaucheurLuol/runtrack-plans.git"
+    "runtrack-plans": "git+https://github.com/FaucheurLuol/runtrack-plans.git"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

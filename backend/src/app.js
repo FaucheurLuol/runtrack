@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 require('./db');
 const authRoutes = require('./routes/auth');
 const utilisateursRoutes = require('./routes/utilisateurs');
@@ -13,6 +14,8 @@ const suiviRoutes = require('./routes/suivi');
 const profilRoutes = require('./routes/profil');
 
 const app = express();
+
+app.use(helmet());
 
 // CORS — autorise uniquement le frontend React
 app.use(cors({
