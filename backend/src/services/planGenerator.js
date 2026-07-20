@@ -1,6 +1,8 @@
-const plan_debutant_10km_1s             = require('../plan/plan_debutant_10km_1s');
-const plan_intermediaire_10km_2s        = require('../plan/plan_intermediaire_10km_2s');
-const plan_intermediaire_10km_3s        = require('../plan/plan_intermediaire_10km_3s');
+const {
+    plan_debutant_10km_1s,
+    plan_intermediaire_10km_2s,
+    plan_intermediaire_10km_3s,
+} = require('runtrack-plans');
 
 
 // ============================================================
