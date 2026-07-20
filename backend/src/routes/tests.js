@@ -1,10 +1,35 @@
-const express = require('express');
-const router = express.Router();
-const pool = require('../db');
+const express     = require('express');
+const router      = express.Router();
+const pool        = require('../db');
+const authentifier = require('../middleware/auth');
 
-// GET /tests/utilisateur/:userId — tous les tests d'un utilisateur
-router.get('/utilisateur/:userId', async (req, res, next) => {
+/**
+ * @swagger
+ * /tests/utilisateur/{userId}:
+ *   get:
+ *     summary: Tous les tests d'un utilisateur (soi-même uniquement)
+ *     tags: [Tests]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Liste des tests
+ *       403:
+ *         description: Accès refusé
+ */
+router.get('/utilisateur/:userId', authentifier, async (req, res, next) => {
     const { userId } = req.params;
+
+    if (parseInt(userId) !== req.utilisateur.id) {
+        return res.status(403).json({
+            erreur: 'Accès refusé — vous ne pouvez consulter que vos propres tests'
+        });
+    }
 
     try {
         const result = await pool.query(
@@ -22,18 +47,42 @@ router.get('/utilisateur/:userId', async (req, res, next) => {
     }
 });
 
-// POST /tests — enregistre un nouveau test
-router.post('/', async (req, res, next) => {
-    const { utilisateur_id, distance_km, temps_minutes, date_test } = req.body;
+/**
+ * @swagger
+ * /tests:
+ *   post:
+ *     summary: Enregistre un nouveau test de performance
+ *     tags: [Tests]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [distance_km, temps_minutes, date_test]
+ *             properties:
+ *               distance_km: { type: number, example: 5 }
+ *               temps_minutes: { type: number, example: 23.5 }
+ *               date_test: { type: string, format: date }
+ *     responses:
+ *       201:
+ *         description: Test enregistré
+ *       400:
+ *         description: Champs manquants
+ */
+router.post('/', authentifier, async (req, res, next) => {
+    const utilisateur_id = req.utilisateur.id; // ← toujours l'utilisateur connecté
+    const { distance_km, temps_minutes, date_test } = req.body;
 
-    if (!utilisateur_id || !distance_km || !temps_minutes || !date_test) {
+    if (!distance_km || !temps_minutes || !date_test) {
         return res.status(400).json({
-            erreur: 'utilisateur_id, distance_km, temps_minutes et date_test sont obligatoires'
+            erreur: 'distance_km, temps_minutes et date_test sont obligatoires'
         });
     }
 
     try {
-        // Calcule l'allure en secondes par km automatiquement
         const allure_sec_km = Math.round((temps_minutes * 60) / distance_km);
 
         const result = await pool.query(
@@ -54,14 +103,36 @@ router.post('/', async (req, res, next) => {
     }
 });
 
-// DELETE /tests/:id — supprime un test
-router.delete('/:id', async (req, res, next) => {
+/**
+ * @swagger
+ * /tests/{id}:
+ *   delete:
+ *     summary: Supprime un test (uniquement le sien)
+ *     tags: [Tests]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Test supprimé
+ *       403:
+ *         description: Accès refusé
+ *       404:
+ *         description: Test non trouvé
+ */
+router.delete('/:id', authentifier, async (req, res, next) => {
     const { id } = req.params;
+    const utilisateur_id = req.utilisateur.id;
 
     try {
+        // Vérifie que le test appartient bien à l'utilisateur avant suppression
         const result = await pool.query(
-            'DELETE FROM tests_performance WHERE id = $1 RETURNING id',
-            [id]
+            'DELETE FROM tests_performance WHERE id = $1 AND utilisateur_id = $2 RETURNING id',
+            [id, utilisateur_id]
         );
 
         if (result.rows.length === 0) {
