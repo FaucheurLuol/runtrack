@@ -24,8 +24,6 @@ const profilRoutes = require('./routes/profil');
 
 const app = express();
 
-Sentry.setupExpressErrorHandler(app);
-
 const rateLimit = require('express-rate-limit');
 
 // Rate limiting global — toutes les routes
@@ -78,6 +76,7 @@ app.get('/debug-sentry', (req, res) => {
     throw new Error('Test Sentry backend');
 });
 
+Sentry.setupExpressErrorHandler(app);
 app.use(gestionnaireErreurs);
 
 module.exports = app;
