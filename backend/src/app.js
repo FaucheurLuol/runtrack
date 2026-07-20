@@ -44,6 +44,9 @@ const limiterAuth = rateLimit({
     legacyHeaders: false,
 });
 
+const swaggerUi   = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+
 app.use(helmet());
 
 app.use(limiterGlobal);
@@ -71,6 +74,8 @@ app.use('/profil', profilRoutes);
 app.get('/', (req, res) => {
     res.json({ message: 'Serveur RunTrack opérationnel' });
 });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Surveillance backend RunTrack
 Sentry.setupExpressErrorHandler(app);

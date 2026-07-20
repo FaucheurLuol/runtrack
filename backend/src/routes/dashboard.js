@@ -4,6 +4,22 @@ const pool = require('../db');
 const authentifier = require('../middleware/auth');
 const { formatAllure, PROFILS } = require('../services/planGenerator');
 
+/**
+ * @swagger
+ * /dashboard:
+ *   get:
+ *     summary: Récupère toutes les données du tableau de bord
+ *     tags: [Dashboard]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Données complètes du dashboard
+ *       401:
+ *         description: Non authentifié
+ *       404:
+ *         description: Aucun plan actif
+ */
 router.get('/', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
 

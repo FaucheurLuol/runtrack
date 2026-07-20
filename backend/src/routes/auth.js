@@ -119,6 +119,32 @@ router.post('/inscription',
 );
 
 // POST /auth/connexion
+/**
+ * @swagger
+ * /auth/connexion:
+ *   post:
+ *     summary: Se connecter
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: lucas@runtrack.fr
+ *               password:
+ *                 type: string
+ *                 example: MotDePasse123!
+ *     responses:
+ *       200:
+ *         description: Connexion réussie, cookie httpOnly défini
+ *       401:
+ *         description: Email ou mot de passe incorrect
+ */
 router.post('/connexion',
     [
         body('email')
