@@ -28,8 +28,7 @@ router.post('/inscription',
         body('email')
             .trim()
             .isEmail()
-            .withMessage('Adresse email invalide')
-            .normalizeEmail(),
+            .withMessage('Adresse email invalide'),
         body('password')
             .isLength({ min: 14 })
             .withMessage('Le mot de passe doit contenir au moins 14 caractères')
@@ -125,8 +124,7 @@ router.post('/connexion',
         body('email')
             .trim()
             .isEmail()
-            .withMessage('Adresse email invalide')
-            .normalizeEmail(),
+            .withMessage('Adresse email invalide'),
         body('password')
             .notEmpty()
             .withMessage('Mot de passe requis'),
