@@ -72,10 +72,7 @@ app.get('/', (req, res) => {
     res.json({ message: 'Serveur RunTrack opérationnel' });
 });
 
-app.get('/debug-sentry', (req, res) => {
-    throw new Error('Test Sentry backend');
-});
-
+// Surveillance backend RunTrack
 Sentry.setupExpressErrorHandler(app);
 app.use(gestionnaireErreurs);
 
