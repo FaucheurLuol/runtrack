@@ -1,0 +1,36 @@
+cat > .github/workflows/update-plans.yml << 'EOF'
+name: Update runtrack-plans dependency
+
+on:
+  repository_dispatch:
+    types: [ plans-updated ]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout runtrack
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RUNTRACK_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Update runtrack-plans
+        working-directory: backend
+        run: |
+          npm install github:FaucheurLuol/runtrack-plans
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.RUNTRACK_TOKEN }}
+
+      - name: Commit and push
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add backend/package.json backend/package-lock.json
+          git diff --staged --quiet || git commit -m "chore : mise à jour automatique runtrack-plans"
+          git push
+EOF
