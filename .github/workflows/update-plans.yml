@@ -16,14 +16,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
+
+      - name: Configure npm for GitHub packages
+        run: |
+          git config --global url."https://${{ secrets.RUNTRACK_TOKEN }}@github.com/".insteadOf "https://github.com/"
 
       - name: Update runtrack-plans
         working-directory: backend
-        run: |
-          npm install github:FaucheurLuol/runtrack-plans
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.RUNTRACK_TOKEN }}
+        run: npm install github:FaucheurLuol/runtrack-plans
 
       - name: Commit and push
         run: |
@@ -31,4 +32,4 @@ jobs:
           git config user.email "actions@github.com"
           git add backend/package.json backend/package-lock.json
           git diff --staged --quiet || git commit -m "chore : mise à jour automatique runtrack-plans"
-          git push
+          git push origin main
