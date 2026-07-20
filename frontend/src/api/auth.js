@@ -1,35 +1,27 @@
-import { API_URL } from './config';
+import { API_URL, fetchAvecCookies } from './config';
 
-// Inscription
 export const inscrire = async (donnees) => {
-    const response = await fetch(`${API_URL}/auth/inscription`, {
+    const res  = await fetchAvecCookies(`${API_URL}/auth/inscription`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(donnees)
+        body:   JSON.stringify(donnees),
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.erreur || 'Erreur lors de l\'inscription');
-    }
-
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erreur);
     return data;
 };
 
-// Connexion
 export const connecter = async (email, password) => {
-    const response = await fetch(`${API_URL}/auth/connexion`, {
+    const res  = await fetchAvecCookies(`${API_URL}/auth/connexion`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body:   JSON.stringify({ email, password }),
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.erreur || 'Erreur lors de la connexion');
-    }
-
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erreur);
     return data;
+};
+
+export const deconnecter = async () => {
+    await fetchAvecCookies(`${API_URL}/auth/deconnexion`, {
+        method: 'POST',
+    });
 };

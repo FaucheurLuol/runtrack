@@ -1,50 +1,41 @@
-import { API_URL } from './config';
+import { API_URL, fetchAvecCookies } from './config';
 
-export const recupererProfil = async (token) => {
-    const res  = await fetch(`${API_URL}/profil`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+export const recupererProfil = async () => {
+    const res  = await fetchAvecCookies(`${API_URL}/profil`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erreur);
+    return data;
+};
+
+export const mettreAJourProfil = async (donnees) => {
+    const res  = await fetchAvecCookies(`${API_URL}/profil`, {
+        method: 'PUT',
+        body:   JSON.stringify(donnees),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.erreur);
     return data;
 };
 
-export const mettreAJourProfil = async (token, donnees) => {
-    const res  = await fetch(`${API_URL}/profil`, {
-        method:  'PUT',
-        headers: {
-            'Content-Type':  'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(donnees)
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.erreur);
-    return data;
-};
-
-export const uploadPhoto = async (token, fichier) => {
+export const uploadPhoto = async (fichier) => {
     const formData = new FormData();
     formData.append('photo', fichier);
 
     const res  = await fetch(`${API_URL}/profil/photo`, {
-        method:  'PUT',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body:    formData,
+        method:      'PUT',
+        credentials: 'include',
+        body:        formData,
+        // Pas de Content-Type ici — le navigateur le définit automatiquement avec le boundary multipart
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.erreur);
     return data;
 };
 
-export const changerMotDePasse = async (token, ancien_mdp, nouveau_mdp) => {
-    const res  = await fetch(`${API_URL}/profil/mot-de-passe`, {
-        method:  'PUT',
-        headers: {
-            'Content-Type':  'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ ancien_mdp, nouveau_mdp })
+export const changerMotDePasse = async (ancien_mdp, nouveau_mdp) => {
+    const res  = await fetchAvecCookies(`${API_URL}/profil/mot-de-passe`, {
+        method: 'PUT',
+        body:   JSON.stringify({ ancien_mdp, nouveau_mdp }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.erreur);

@@ -94,9 +94,15 @@ router.post('/inscription',
                 { expiresIn: '7d' }
             );
 
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure:   process.env.NODE_ENV === 'production',
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                maxAge:   7 * 24 * 60 * 60 * 1000, // 7 jours en ms
+            });
+
             res.status(201).json({
                 message: 'Inscription réussie',
-                token,
                 utilisateur: {
                     id:        utilisateur.id,
                     username:  utilisateur.username,
@@ -159,9 +165,15 @@ router.post('/connexion',
                 { expiresIn: '7d' }
             );
 
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure:   process.env.NODE_ENV === 'production',
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+                maxAge:   7 * 24 * 60 * 60 * 1000,
+            });
+
             res.status(200).json({
                 message: 'Connexion réussie',
-                token,
                 utilisateur: {
                     id:        utilisateur.id,
                     username:  utilisateur.username,
@@ -177,5 +189,14 @@ router.post('/connexion',
         }
     }
 );
+
+router.post('/deconnexion', (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure:   process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    });
+    res.json({ message: 'Déconnecté' });
+});
 
 module.exports = router;

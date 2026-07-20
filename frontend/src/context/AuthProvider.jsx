@@ -1,45 +1,35 @@
 import { useState, useCallback } from 'react';
-import { AuthContext } from './AuthContext';
-import { recupererToken, sauvegarderToken, supprimerToken } from '../api/token';
-
-function initialiserUtilisateur() {
-    const token = recupererToken();
-    if (!token) return null;
-
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.exp * 1000 > Date.now()) {
-            const userData = localStorage.getItem('runtrack_user');
-            const donnees  = userData ? JSON.parse(userData) : {};
-            return { ...donnees, id: payload.id, token };
-        }
-        supprimerToken();
-        localStorage.removeItem('runtrack_user');
-        return null;
-    } catch {
-        supprimerToken();
-        localStorage.removeItem('runtrack_user');
-        return null;
-    }
-}
+import { AuthContext }           from './AuthContext';
+import { deconnecter }           from '../api/auth';
 
 export function AuthProvider({ children }) {
-    const [utilisateur,          setUtilisateur]          = useState(initialiserUtilisateur);
+    const [utilisateur,          setUtilisateur]          = useState(null);
     const [deconnexionVolontaire, setDeconnexionVolontaire] = useState(false);
 
-    const connexion = useCallback((token, donneesUtilisateur) => {
-        sauvegarderToken(token);
+    const connexion = useCallback((donneesUtilisateur) => {
+        // Plus de token à stocker — le cookie est géré par le navigateur
         localStorage.setItem('runtrack_user', JSON.stringify(donneesUtilisateur));
-        setDeconnexionVolontaire(false);
-        setUtilisateur({ ...donneesUtilisateur, token });
+        setUtilisateur(donneesUtilisateur);
     }, []);
 
-    const deconnexion = useCallback(() => {
-        supprimerToken();
+    const deconnexion = useCallback(async () => {
+        await deconnecter(); // efface le cookie côté serveur
         localStorage.removeItem('runtrack_user');
         setDeconnexionVolontaire(true);
         setUtilisateur(null);
     }, []);
+
+    // Restaure les données utilisateur depuis localStorage au rechargement
+    useState(() => {
+        const userData = localStorage.getItem('runtrack_user');
+        if (userData) {
+            try {
+                setUtilisateur(JSON.parse(userData));
+            } catch {
+                localStorage.removeItem('runtrack_user');
+            }
+        }
+    });
 
     return (
         <AuthContext.Provider value={{ utilisateur, connexion, deconnexion, deconnexionVolontaire }}>

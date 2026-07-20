@@ -1,19 +1,24 @@
 const jwt = require('jsonwebtoken');
 
 const authentifier = (req, res, next) => {
-    // Le token est envoyé dans le header Authorization
-    const authHeader = req.headers['authorization'];
+    // Lit le token depuis le cookie httpOnly
+    const token = req.cookies?.token;
 
-    // Format attendu : "Bearer eyJhbGci..."
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    // Fallback sur le header Authorization pour Bruno/tests
+    const authHeader = req.headers['authorization'];
+    const tokenHeader = authHeader?.startsWith('Bearer ')
+        ? authHeader.split(' ')[1]
+        : null;
+
+    const tokenFinal = token || tokenHeader;
+
+    if (!tokenFinal) {
         return res.status(401).json({ erreur: 'Token manquant' });
     }
 
-    const token = authHeader.split(' ')[1];
-
     try {
-        const payload = jwt.verify(token, process.env.JWT_SECRET);
-        req.utilisateur = payload; // disponible dans la route suivante
+        const payload = jwt.verify(tokenFinal, process.env.JWT_SECRET);
+        req.utilisateur = payload;
         next();
     } catch (err) {
         return res.status(401).json({ erreur: 'Token invalide ou expiré' });

@@ -1,6 +1,15 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/useAuth';
 
 function Accueil() {
+    const { utilisateur } = useAuth();
+    const navigate        = useNavigate();
+
+    useEffect(() => {
+        if (utilisateur) navigate('/dashboard', { replace: true });
+    }, [utilisateur, navigate]);
+
     return (
         <>
             <main>
