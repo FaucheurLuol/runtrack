@@ -3,9 +3,18 @@ import { useNavigate }         from 'react-router-dom';
 import { genererPlan, recupererMesPlans } from '../api/plans';
 import '../style/dashboard.css';
 
-// Calcule les allures depuis un temps 5km en secondes
-function calculerAllures(temps5km_sec) {
-    const allureRace = Math.round((temps5km_sec / 5) * 1.06);
+const DISTANCES_OBJECTIF_FRONT = {
+    '5km':      5,
+    '10km':     10,
+    'semi':     21.1,
+    'marathon': 42.195,
+};
+
+function calculerAllures(temps_ref_sec, distance_ref_km, objectifChoisi) {
+    const distance_objectif_km = DISTANCES_OBJECTIF_FRONT[objectifChoisi] || 10;
+    const temps_objectif_sec = temps_ref_sec * Math.pow(distance_objectif_km / distance_ref_km, 1.06);
+    const allureRace = Math.round(temps_objectif_sec / distance_objectif_km);
+
     return {
         race:      allureRace,
         threshold: Math.round(allureRace * 1.05),
@@ -94,7 +103,14 @@ function NouveauPlan() {
         const sec   = parseInt(secondes) || 0;
         const total = min * 60 + sec;
         if (total <= 0) return null;
-        const allures = calculerAllures(total);
+
+        const distanceRefFinale = useDistanceLibre
+            ? parseFloat(distanceLibre)
+            : parseFloat(distanceReference);
+
+        if (!distanceRefFinale || distanceRefFinale <= 0) return null;
+
+        const allures = calculerAllures(total, distanceRefFinale, objectif);
         const profil  = determinerProfil(total);
         return { allures, profil, allureRace: allures.race };
     })();
