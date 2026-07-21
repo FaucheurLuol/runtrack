@@ -3,8 +3,8 @@ const {
     plan_intermediaire_5km_2s,
     plan_intermediaire_10km_2s,
     plan_intermediaire_10km_3s,
-    plan_intermediaire_21km_2s,
-    plan_intermediaire_42km_4s
+    plan_intermediaire_semi_2s,
+    plan_intermediaire_marathon_4s
 } = require('runtrack-plans');
 
 
@@ -13,12 +13,12 @@ const {
 // Clé : niveau_objectif_nbSeances
 // ============================================================
 const PLANS = {
-    'debutant_10km_1s':      plan_debutant_10km_1s,
-    'intermediaire_5km_2s':   plan_intermediaire_5km_2s,
-    'intermediaire_10km_2s': plan_intermediaire_10km_2s,
-    'intermediaire_10km_3s': plan_intermediaire_10km_3s,
-    'intermediaire_semi_2s':     plan_intermediaire_21km_2s,
-    'intermediaire_marathon_2s': plan_intermediaire_42km_4s,
+    'debutant_10km_1s':          plan_debutant_10km_1s,
+    'intermediaire_5km_2s':      plan_intermediaire_5km_2s,
+    'intermediaire_10km_2s':     plan_intermediaire_10km_2s,
+    'intermediaire_10km_3s':     plan_intermediaire_10km_3s,
+    'intermediaire_semi_2s':     plan_intermediaire_semi_2s,
+    'intermediaire_marathon_2s': plan_intermediaire_marathon_4s,
 };
 
 // ============================================================
@@ -225,9 +225,10 @@ function genererPlan({ seances_semaine, temps_reference_sec, distance_reference_
 
 // Métadonnées de tous les plans disponibles, dérivées automatiquement des templates
 const PLANS_METADATA = Object.entries(PLANS).map(([cle, template]) => {
+    console.log('Vérification plan:', cle, '→ type:', typeof template, '→ isArray:', Array.isArray(template));
     const parties  = cle.split('_');
     const niveau   = parties[0];
-    const seances  = parseInt(parties[parties.length - 1]); // "2s" → 2
+    const seances  = parseInt(parties[parties.length - 1]);
     const objectif = parties.slice(1, -1).join('_');
     const semaines = Math.max(...template.map(s => s.s));
     return { cle, niveau, objectif, seances, semaines };
