@@ -1,7 +1,10 @@
 const {
     plan_debutant_10km_1s,
+    plan_intermediaire_5km_2s,
     plan_intermediaire_10km_2s,
     plan_intermediaire_10km_3s,
+    plan_intermediaire_21km_2s,
+    plan_intermediaire_42km_4s
 } = require('runtrack-plans');
 
 
@@ -11,8 +14,11 @@ const {
 // ============================================================
 const PLANS = {
     'debutant_10km_1s':      plan_debutant_10km_1s,
+    'intermediaire_5km_2s':   plan_intermediaire_5km_2s,
     'intermediaire_10km_2s': plan_intermediaire_10km_2s,
     'intermediaire_10km_3s': plan_intermediaire_10km_3s,
+    'intermediaire_semi_2s':     plan_intermediaire_21km_2s,
+    'intermediaire_marathon_2s': plan_intermediaire_42km_4s,
 };
 
 // ============================================================

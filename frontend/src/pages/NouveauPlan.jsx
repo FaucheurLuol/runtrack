@@ -75,9 +75,12 @@ function NouveauPlan() {
     const [niveau,         setNiveau]         = useState('intermediaire');
 
     const PLANS_DISPONIBLES = [
-        { niveau: 'debutant',      objectif: '10km', seances: 1 },
-        { niveau: 'intermediaire', objectif: '10km', seances: 2 },
-        { niveau: 'intermediaire', objectif: '10km', seances: 3 },
+        { niveau: 'debutant',      objectif: '10km',     seances: 1 },
+        { niveau: 'intermediaire', objectif: '5km',      seances: 2 },
+        { niveau: 'intermediaire', objectif: '10km',     seances: 2 },
+        { niveau: 'intermediaire', objectif: '10km',     seances: 3 },
+        { niveau: 'intermediaire', objectif: 'semi',     seances: 2 },
+        { niveau: 'intermediaire', objectif: 'marathon', seances: 4 },
     ];
 
     const combinaisonDisponible = PLANS_DISPONIBLES.some(
@@ -425,7 +428,7 @@ function NouveauPlan() {
                     <div className="nouveau-plan-groupe">
                         <span className="label">Séances par semaine</span>
                         <div className="radio-groupe">
-                            {[1, 2, 3].map(n => {
+                            {[1, 2, 3, 4].map(n => {
                                 const disponible = PLANS_DISPONIBLES.some(p => p.niveau === niveau && p.seances === n && p.objectif === objectif);
                                 return (
                                     <label key={n} className={`radio-carte ${seancesSemaine === n ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}>
