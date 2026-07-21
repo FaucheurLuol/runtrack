@@ -3,9 +3,8 @@ const router = express.Router();
 const pool = require('../db');
 const redis = require('../config/redis');
 const authentifier = require('../middleware/auth');
-const { calculerAllures, formatAllure } = require('../services/planGenerator');
+const { formatAllure, calculerAllureRiegel, calculerZonesDepuisAllureRace } = require('../services/planGenerator');
 
-// POST /seances/realiser — enregistre une séance réalisée
 /**
  * @swagger
  * /seances/realiser:
@@ -139,23 +138,34 @@ router.post('/realiser', authentifier, async (req, res, next) => {
 
         // Si c'est un test → recalibrer les allures des séances futures
         if (seance.type === 'test') {
-            // Pour un test 5km : temps = durée réelle en secondes
-            const temps5km_sec    = parseFloat(duree_reelle);
-            const nouvellesAllures = calculerAllures(temps5km_sec);
+            // Récupère l'objectif du plan pour calculer l'allure cible via Riegel
+            const planInfoResult = await pool.query(
+                `SELECT objectif FROM plans_entrainement WHERE id = $1`,
+                [seance.plan_id]
+            );
+            const objectifPlan = planInfoResult.rows[0].objectif;
+
+            // Riegel : temps réel sur distance_reelle → allure cible sur l'objectif du plan
+            const allureRace = calculerAllureRiegel(
+                parseFloat(duree_reelle),
+                parseFloat(distance_reelle),
+                objectifPlan
+            );
+            const nouvellesAllures = calculerZonesDepuisAllureRace(allureRace);
 
             await pool.query(
                 `UPDATE seances
-                 SET allure_sec_km = CASE allure_label
-                     WHEN 'easy'      THEN $1
-                     WHEN 'aerobic'   THEN $2
-                     WHEN 'threshold' THEN $3
-                     WHEN 'race'      THEN $4
-                     WHEN 'vo2'       THEN $5
-                     ELSE allure_sec_km
-                 END
-                 WHERE plan_id = $6
-                 AND semaine   > $7
-                 AND type      = 'normal'`,
+                SET allure_sec_km = CASE allure_label
+                    WHEN 'easy'      THEN $1
+                    WHEN 'aerobic'   THEN $2
+                    WHEN 'threshold' THEN $3
+                    WHEN 'race'      THEN $4
+                    WHEN 'vo2'       THEN $5
+                    ELSE allure_sec_km
+                END
+                WHERE plan_id = $6
+                AND semaine   > $7
+                AND type      = 'normal'`,
                 [
                     nouvellesAllures.easy,
                     nouvellesAllures.aerobic,

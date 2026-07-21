@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const redis = require('../config/redis');
 const authentifier = require('../middleware/auth');
-const { formatAllure, PROFILS } = require('../services/planGenerator');
+const { formatAllure, calculerAllureRiegel, DISTANCES_OBJECTIF, PROFILS } = require('../services/planGenerator');
 
 /**
  * @swagger
@@ -106,8 +106,14 @@ router.get('/', authentifier, async (req, res, next) => {
             ? parseFloat(dernierTest.duree_reelle)
             : plan.temps5km_initial || null;
 
+        // Distance du test — 5km pour les tests intégrés au plan, sinon distance de référence initiale
+        const distanceReference = dernierTest
+            ? parseFloat(dernierTest.distance_reelle)
+            : plan.distance_reference_km || 5;
+
         if (tempsReference) {
-            const allureRace = Math.round((tempsReference / 5) * 1.06);
+            const allureRace = calculerAllureRiegel(tempsReference, distanceReference, plan.objectif);
+
             allures_reference = {
                 easy:      formatAllure(Math.round(allureRace * 1.32)),
                 aerobic:   formatAllure(Math.round(allureRace * 1.20)),
@@ -117,7 +123,9 @@ router.get('/', authentifier, async (req, res, next) => {
             };
             allure_course = formatAllure(allureRace);
 
-            const tempsCible_sec = allureRace * 10;
+            // Temps cible sur la distance de l'objectif (plus 10km fixe)
+            const distanceObjectifKm = DISTANCES_OBJECTIF[plan.objectif] || 10;
+            const tempsCible_sec = Math.round(allureRace * distanceObjectifKm);
             const tempsCible_min = Math.floor(tempsCible_sec / 60);
             const tempsCible_s   = tempsCible_sec % 60;
             temps_cible_10km = `${tempsCible_min}'${tempsCible_s.toString().padStart(2, '0')}"`;
