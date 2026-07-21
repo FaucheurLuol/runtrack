@@ -111,7 +111,11 @@ function NouveauPlan() {
         if (!distanceRefFinale || distanceRefFinale <= 0) return null;
 
         const allures = calculerAllures(total, distanceRefFinale, objectif);
-        const profil  = determinerProfil(total);
+
+        // Convertit vers un équivalent 5km pour déterminer le profil correctement
+        const temps5kmEquivalent = Math.round((allures.race * 5) / 1.06);
+        const profil = determinerProfil(temps5kmEquivalent);
+
         return { allures, profil, allureRace: allures.race };
     })();
 

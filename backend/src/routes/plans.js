@@ -5,7 +5,6 @@ const redis = require('../config/redis');
 const authentifier = require('../middleware/auth');
 const { genererPlan, formatAllure, PROFILS, DISTANCES_OBJECTIF } = require('../services/planGenerator');
 
-// POST /plans/generer — génère et sauvegarde un plan
 /**
  * @swagger
  * /plans/generer:
@@ -23,15 +22,28 @@ const { genererPlan, formatAllure, PROFILS, DISTANCES_OBJECTIF } = require('../s
  *             required: [seances_semaine, date_debut, niveau, objectif]
  *             properties:
  *               seances_semaine: { type: integer, example: 2 }
- *               temps5km_sec: { type: integer, example: 1423, nullable: true }
+ *               temps5km_sec: { type: integer, example: 1423, nullable: true, description: "Temps sur la distance de référence, en secondes" }
+ *               distance_reference_km: { type: number, example: 5, nullable: true, description: "Distance du test de référence (défaut 5km). Minimum selon objectif : 5km→3km, 10km→5km, semi/marathon→10km" }
  *               date_debut: { type: string, format: date, example: 2026-09-01 }
  *               niveau: { type: string, enum: [debutant, intermediaire, avance] }
  *               objectif: { type: string, enum: ['5km', '10km', semi, marathon] }
  *     responses:
  *       201:
  *         description: Plan généré avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message: { type: string }
+ *                 plan_id: { type: integer }
+ *                 avertissement: { type: string, nullable: true, description: "Non-null si distance_reference_km > distance de l'objectif" }
+ *                 profil: { type: string }
+ *                 objectif: { type: string }
+ *                 allures_reference: { type: object }
+ *                 total_seances: { type: integer }
  *       400:
- *         description: Combinaison de plan non disponible
+ *         description: Combinaison de plan non disponible ou distance de référence trop faible
  */
 router.post('/generer', authentifier, async (req, res, next) => {
     const { seances_semaine, temps5km_sec, date_debut, niveau, objectif, distance_reference_km } = req.body;
