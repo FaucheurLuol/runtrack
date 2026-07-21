@@ -214,7 +214,7 @@ function Saisie() {
                             type="number"
                             id="numero"
                             min="1"
-                            max="2"
+                            max="7"
                             value={formNumero}
                             onChange={(e) => setFormNumero(e.target.value)}
                         />
