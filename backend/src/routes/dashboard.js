@@ -118,16 +118,16 @@ router.get('/', authentifier, async (req, res, next) => {
             temps_cible_10km = `${tempsCible_min}'${tempsCible_s.toString().padStart(2, '0')}"`;
 
             if (dernierTest) {
-                // Test réalisé dans le plan
                 dernier_5km = {
                     duree_min: dernierTest.duree_reelle,
                     date:      dernierTest.date_realisee,
+                    distance:  5, // les tests intégrés au plan sont toujours sur 5km
                 };
             } else if (plan.temps5km_initial) {
-                // Temps fourni à la création du plan
                 dernier_5km = {
                     duree_min: plan.temps5km_initial,
                     date:      plan.created_at,
+                    distance:  plan.distance_reference_km || 5,
                 };
             }
         }

@@ -111,7 +111,9 @@ function Dashboard() {
 
                     {/* Carte 4 — Dernier test */}
                     <div className="plan-actif-carte">
-                        <span className="carte-label">Dernier 5km</span>
+                        <span className="carte-label">
+                            Dernier test {plan_actif.dernier_5km ? `(${plan_actif.dernier_5km.distance}km)` : ''}
+                        </span>
                         {plan_actif.dernier_5km ? (
                             <>
                                 <span className="carte-valeur">
