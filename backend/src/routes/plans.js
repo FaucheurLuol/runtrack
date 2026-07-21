@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const redis = require('../config/redis');
 const authentifier = require('../middleware/auth');
 const { genererPlan } = require('../services/planGenerator');
 
@@ -120,6 +121,8 @@ router.post('/generer', authentifier, async (req, res, next) => {
                 ]
             );
         }
+
+        await redis.del(`dashboard:${utilisateur_id}`);
 
         res.status(201).json({
             message: 'Plan généré et sauvegardé',
@@ -274,6 +277,8 @@ router.put('/:id/selectionner', authentifier, async (req, res, next) => {
             [id, utilisateur_id]
         );
 
+        await redis.del(`dashboard:${utilisateur_id}`);
+
         res.json({ message: 'Plan sélectionné', plan_id: parseInt(id) });
 
     } catch (err) {
@@ -335,6 +340,8 @@ router.put('/:id/archiver', authentifier, async (req, res, next) => {
             [id]
         );
 
+        await redis.del(`dashboard:${utilisateur_id}`);
+
         res.json({ message: 'Plan archivé', plan_id: parseInt(id) });
 
     } catch (err) {
@@ -381,6 +388,8 @@ router.put('/:id/reactiver', authentifier, async (req, res, next) => {
              WHERE id = $1`,
             [id]
         );
+
+        await redis.del(`dashboard:${utilisateur_id}`);
 
         res.json({ message: 'Plan réactivé', plan_id: parseInt(id) });
 
