@@ -12,6 +12,7 @@ import NouveauPlan from './pages/NouveauPlan';
 import PlanDetail from './pages/PlanDetail';
 import NotFound from './pages/NotFound';
 import Profil from './pages/Profil';
+import DemandePlan from './pages/DemandePlan';
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
                     <Route path="/nouveau-plan" element={<RouteProtegee><NouveauPlan /></RouteProtegee>} />
                     <Route path="/mes-plans/:id" element={<RouteProtegee><PlanDetail /></RouteProtegee>} />
                     <Route path="/profil" element={<RouteProtegee><Profil /></RouteProtegee>} />
+                    <Route path="/demande-plan" element={<RouteProtegee><DemandePlan /></RouteProtegee>} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
             </Routes>

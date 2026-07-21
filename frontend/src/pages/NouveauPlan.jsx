@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate }         from 'react-router-dom';
-import { genererPlan, recupererMesPlans } from '../api/plans';
+import { genererPlan, recupererMesPlans, recupererPlansDisponibles } from '../api/plans';
 import '../style/dashboard.css';
 
 const DISTANCES_OBJECTIF_FRONT = {
@@ -94,12 +94,26 @@ function NouveauPlan() {
     const [chargement, setChargement] = useState(false);
     const [message,    setMessage]    = useState({ texte: '', type: '' });
 
+    const [plansDisponibles, setPlansDisponibles] = useState([]);
+
     // Charge les plans existants
     useEffect(() => {
         const charger = async () => {
             try {
                 const data = await recupererMesPlans();
                 setADejaUnPlan(data.some(p => p.actif));
+            } catch {
+                // silencieux
+            }
+        };
+        charger();
+    }, []);
+
+    useEffect(() => {
+        const charger = async () => {
+            try {
+                const data = await recupererPlansDisponibles();
+                setPlansDisponibles(data);
             } catch {
                 // silencieux
             }
@@ -468,6 +482,30 @@ function NouveauPlan() {
                         </p>
                     </div>
                 )}
+
+                <section className="dashboard-card">
+                    <h2>Plans actuellement disponibles</h2>
+                    <div className="plans-disponibles-liste">
+                        {plansDisponibles.map(p => (
+                            <div key={p.cle} className="plan-disponible-item">
+                                <span className="plan-disponible-objectif">{p.objectif}</span>
+                                <span className="plan-disponible-detail">
+                                    {p.niveau} · {p.seances} séance{p.seances > 1 ? 's' : ''}/sem · {p.semaines} semaines
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                    <p className="graphique-description" style={{ marginTop: '0.75rem' }}>
+                        Ta combinaison idéale n'y est pas ?
+                    </p>
+                    <button
+                        type="button"
+                        className="btn-annuler"
+                        onClick={() => navigate('/demande-plan')}
+                    >
+                        Demander un plan personnalisé →
+                    </button>
+                </section>
 
                 {/* Bouton */}
                 <div className="saisie-actions">

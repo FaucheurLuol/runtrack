@@ -117,11 +117,27 @@ router.post('/', authentifier, async (req, res, next) => {
 
         // Envoie l'email
         try {
+            const corpsHtml = `
+                <h2>Nouvelle demande de plan</h2>
+                <p><strong>Demande #${demande_id}</strong></p>
+                <ul>
+                    <li><strong>Objectif</strong> : ${objectif}</li>
+                    <li><strong>Temps objectif</strong> : ${Math.floor(temps_objectif_sec / 60)} min</li>
+                    <li><strong>Séances/semaine</strong> : ${seances_semaine}</li>
+                    <li><strong>Nombre de semaines</strong> : ${nombre_semaines}</li>
+                    <li><strong>Jours d'entraînement</strong> : ${jours_entrainement}</li>
+                    <li><strong>Jour de course</strong> : ${jour_course}</li>
+                    <li><strong>Public cible</strong> : ${public_cible}</li>
+                    <li><strong>Particularités</strong> : ${particularites || 'Aucune'}</li>
+                </ul>
+                ${issue_url ? `<p><a href="${issue_url}">Voir l'issue GitHub</a></p>` : ''}
+            `;
+
             await transporter.sendMail({
-                from: process.env.EMAIL_USER,
-                to:   process.env.EMAIL_USER,
+                from:    process.env.EMAIL_USER,
+                to:      process.env.EMAIL_USER,
                 subject: titreIssue,
-                text: corpsIssue + (issue_url ? `\n\nIssue : ${issue_url}` : ''),
+                html:    corpsHtml,
             });
         } catch (mailErr) {
             console.error('Erreur envoi email :', mailErr.message);

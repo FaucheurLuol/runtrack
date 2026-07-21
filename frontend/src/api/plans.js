@@ -50,3 +50,10 @@ export const genererPlan = async (donnees) => {
     if (!res.ok) throw new Error(data.erreur);
     return data;
 };
+
+export const recupererPlansDisponibles = async () => {
+    const res  = await fetchAvecCookies(`${API_URL}/plans/disponibles`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.erreur);
+    return data;
+};

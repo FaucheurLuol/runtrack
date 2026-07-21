@@ -860,6 +860,32 @@ textarea.input-field {
 
 .apercu-allures h2 { margin-top: 0; }
 
+.plans-disponibles-liste {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.plan-disponible-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    background: var(--sand);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--olive-dark);
+}
+
+.plan-disponible-objectif {
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.plan-disponible-detail {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+}
+
 /* ── Profil ─────────────────────────────────────────────────── */
 .profil-header {
     display: flex;

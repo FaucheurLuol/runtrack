@@ -3,7 +3,10 @@ const router = express.Router();
 const pool = require('../db');
 const redis = require('../config/redis');
 const authentifier = require('../middleware/auth');
-const { genererPlan, formatAllure, PROFILS, DISTANCES_OBJECTIF } = require('../services/planGenerator');
+const { 
+    genererPlan, formatAllure, PROFILS, 
+    DISTANCES_OBJECTIF, PLANS_METADATA 
+} = require('../services/planGenerator');
 
 /**
  * @swagger
@@ -243,6 +246,26 @@ router.get('/mes-plans', authentifier, async (req, res, next) => {
 
         res.json(result.rows);
 
+    } catch (err) {
+        next(err);
+    }
+});
+
+/**
+ * @swagger
+ * /plans/disponibles:
+ *   get:
+ *     summary: Liste des combinaisons de plans actuellement disponibles avec leur durée
+ *     tags: [Plans]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Liste des plans disponibles (objectif, niveau, séances, semaines)
+ */
+router.get('/disponibles', authentifier, async (req, res, next) => {
+    try {
+        res.json(PLANS_METADATA);
     } catch (err) {
         next(err);
     }
