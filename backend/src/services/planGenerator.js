@@ -125,6 +125,8 @@ function genererPlan({ seances_semaine, temps5km_sec, distance_reference_km, niv
         );
     }
 
+    const totalSemaines = Math.max(...template.map(s => s.s));
+
     // 2. Distance de référence — 5km par défaut (rétrocompatibilité plans 10km existants)
     const distanceRef = distance_reference_km || 5;
 
@@ -203,7 +205,7 @@ function genererPlan({ seances_semaine, temps5km_sec, distance_reference_km, niv
         objectif:       PROFILS[profil].objectif,
         label_profil:   PROFILS[profil].label,
         seances_semaine,
-        total_semaines: 20,
+        total_semaines: totalSemaines,
         allures_reference: alluresPersonnalisees ? {
             easy:      formatAllure(alluresPersonnalisees.easy),
             aerobic:   formatAllure(alluresPersonnalisees.aerobic),

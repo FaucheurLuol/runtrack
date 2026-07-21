@@ -95,8 +95,8 @@ router.post('/generer', authentifier, async (req, res, next) => {
 
         // Calcule la date de fin (20 semaines)
         const dateDebut = new Date(date_debut);
-        const dateFin   = new Date(dateDebut);
-        dateFin.setDate(dateFin.getDate() + 20 * 7);
+        const dateFin = new Date(dateDebut);
+        dateFin.setDate(dateFin.getDate() + plan.total_semaines * 7);
 
         // Sauvegarde le plan en base
         const planResult = await pool.query(

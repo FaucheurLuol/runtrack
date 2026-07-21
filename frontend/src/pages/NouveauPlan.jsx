@@ -63,6 +63,14 @@ function NouveauPlan() {
     const [dateDebut,      setDateDebut]      = useState(
         new Date().toISOString().split('T')[0]
     );
+    const dateFin = (() => {
+        if (!dateDebut) return null;
+        const debut = new Date(dateDebut);
+        const fin   = new Date(debut);
+        fin.setDate(fin.getDate() + 20 * 7);
+        return fin;
+    })();
+
     const [objectif,       setObjectif]       = useState('10km');
     const [niveau,         setNiveau]         = useState('intermediaire');
 
@@ -441,6 +449,11 @@ function NouveauPlan() {
                             onChange={(e) => setDateDebut(e.target.value)}
                             style={{ maxWidth: '220px' }}
                         />
+                        {dateFin && (
+                            <p className="carte-detail" style={{ marginTop: '0.5rem' }}>
+                                Ton plan se terminera aux alentours du <strong>{dateFin.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</strong> (environ 20 semaines selon le plan choisi)
+                            </p>
+                        )}
                     </div>
                 </section>
 

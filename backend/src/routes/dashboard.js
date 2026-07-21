@@ -55,7 +55,12 @@ router.get('/', authentifier, async (req, res, next) => {
             0,
             Math.floor((aujourd_hui - dateDebut) / (1000 * 60 * 60 * 24 * 7))
         );
-        const semaines_restantes = Math.max(0, 20 - semaines_ecoulees);
+        const totalSemainesResult = await pool.query(
+            `SELECT MAX(semaine) as total FROM seances WHERE plan_id = $1`,
+            [plan.id]
+        );
+        const totalSemainesPlan = totalSemainesResult.rows[0].total || 20;
+        const semaines_restantes = Math.max(0, totalSemainesPlan - semaines_ecoulees);
 
         // Progression globale
         const progressionResult = await pool.query(
