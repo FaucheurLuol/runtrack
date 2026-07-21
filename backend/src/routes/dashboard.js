@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const redis = require('../config/redis');
 const authentifier = require('../middleware/auth');
 const { formatAllure, PROFILS } = require('../services/planGenerator');
 
@@ -22,8 +23,16 @@ const { formatAllure, PROFILS } = require('../services/planGenerator');
  */
 router.get('/', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
+    const cleCache = `dashboard:${utilisateur_id}`;
+
 
     try {
+        // Vérifie le cache d'abord
+        const enCache = await redis.get(cleCache);
+        if (enCache) {
+            return res.json(JSON.parse(enCache));
+        }
+
         // ── 1. Plan actif ──────────────────────────────────────────
         const planResult = await pool.query(
             `SELECT p.* FROM plans_entrainement p
@@ -272,6 +281,9 @@ router.get('/', authentifier, async (req, res, next) => {
             duree_min: plan.temps5km_initial,
             semaine:   'initial',
         } : null;
+
+        // Sauvegarde en cache pour 60 secondes
+        await redis.setEx(cleCache, 60, JSON.stringify(reponse));
 
         // ── Réponse ────────────────────────────────────────────────
         res.json({

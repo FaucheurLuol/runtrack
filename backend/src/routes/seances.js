@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const redis = require('../config/redis');
 const authentifier = require('../middleware/auth');
 const { calculerAllures, formatAllure } = require('../services/planGenerator');
 
@@ -177,6 +178,8 @@ router.post('/realiser', authentifier, async (req, res, next) => {
                 }
             };
         }
+
+        await redis.del(`dashboard:${utilisateur_id}`);
 
         res.status(201).json(reponse);
 

@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
     "pg": "^8.22.0",
+    "redis": "^6.1.0",
     "runtrack-plans": "git+https://github.com/FaucheurLuol/runtrack-plans.git",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1"
