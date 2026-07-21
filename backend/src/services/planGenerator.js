@@ -225,7 +225,6 @@ function genererPlan({ seances_semaine, temps_reference_sec, distance_reference_
 
 // Métadonnées de tous les plans disponibles, dérivées automatiquement des templates
 const PLANS_METADATA = Object.entries(PLANS).map(([cle, template]) => {
-    console.log('Vérification plan:', cle, '→ type:', typeof template, '→ isArray:', Array.isArray(template));
     const parties  = cle.split('_');
     const niveau   = parties[0];
     const seances  = parseInt(parties[parties.length - 1]);
