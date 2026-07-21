@@ -282,11 +282,8 @@ router.get('/', authentifier, async (req, res, next) => {
             semaine:   'initial',
         } : null;
 
-        // Sauvegarde en cache pour 60 secondes
-        await redis.setEx(cleCache, 60, JSON.stringify(reponse));
-
-        // ── Réponse ────────────────────────────────────────────────
-        res.json({
+        // ── Construction de la réponse ──────────────────────────────
+        const reponse = {
             plan_actif: {
                 id:                plan.id,
                 objectif:          plan.objectif,
@@ -298,7 +295,6 @@ router.get('/', authentifier, async (req, res, next) => {
                 semaines_restantes,
                 allure_course,
                 dernier_5km,
-                allure_course,
                 temps_cible_10km,
                 progression: {
                     realisees:  parseInt(prog.seances_realisees),
@@ -332,7 +328,12 @@ router.get('/', authentifier, async (req, res, next) => {
                 streak,
                 meilleure_allure_5km,
             },
-        });
+        };
+
+        // Sauvegarde en cache pour 60 secondes
+        await redis.setEx(cleCache, 60, JSON.stringify(reponse));
+
+        res.json(reponse);
 
     } catch (err) {
         next(err);
