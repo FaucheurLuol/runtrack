@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require('../db');
 const redis = require('../config/redis');
 const authentifier = require('../middleware/auth');
-const { genererPlan } = require('../services/planGenerator');
+const { genererPlan, formatAllure, PROFILS, DISTANCES_OBJECTIF } = require('../services/planGenerator');
 
 // POST /plans/generer — génère et sauvegarde un plan
 /**
@@ -34,23 +34,12 @@ const { genererPlan } = require('../services/planGenerator');
  *         description: Combinaison de plan non disponible
  */
 router.post('/generer', authentifier, async (req, res, next) => {
-    const { seances_semaine, temps5km_sec, date_debut, niveau, objectif } = req.body;
+    const { seances_semaine, temps5km_sec, date_debut, niveau, objectif, distance_reference_km } = req.body;
     const utilisateur_id = req.utilisateur.id;
+
     // Valeurs acceptées
-    const niveauxValides  = ['debutant', 'intermediaire', 'avance'];
-    const objectifsValides = ['5km', '10km', 'semi', 'marathon'];
-
-    if (!seances_semaine || !date_debut) {
-        return res.status(400).json({
-            erreur: 'seances_semaine et date_debut sont obligatoires'
-        });
-    }
-
-    if (![1, 2].includes(seances_semaine)) {
-        return res.status(400).json({
-            erreur: 'seances_semaine doit être 1 ou 2'
-        });
-    }
+    const niveauxValides    = ['debutant', 'intermediaire', 'avance'];
+    const objectifsValides  = ['5km', '10km', 'semi', 'marathon'];
 
     if (!seances_semaine || !date_debut || !niveau || !objectif) {
         return res.status(400).json({
@@ -58,25 +47,43 @@ router.post('/generer', authentifier, async (req, res, next) => {
         });
     }
 
+    if (![1, 2, 3].includes(seances_semaine)) {
+        return res.status(400).json({
+            erreur: 'seances_semaine doit être 1, 2 ou 3'
+        });
+    }
+
     if (!niveauxValides.includes(niveau)) {
-        return res.status(400).json({ 
-            erreur: `Niveau invalide. Valeurs : ${niveauxValides.join(', ')}` 
+        return res.status(400).json({
+            erreur: `Niveau invalide. Valeurs : ${niveauxValides.join(', ')}`
         });
     }
 
     if (!objectifsValides.includes(objectif)) {
-        return res.status(400).json({ 
-            erreur: `Objectif invalide. Valeurs : ${objectifsValides.join(', ')}` 
+        return res.status(400).json({
+            erreur: `Objectif invalide. Valeurs : ${objectifsValides.join(', ')}`
         });
     }
 
     try {
         // Génère le plan
-        const plan = genererPlan({ seances_semaine, temps5km_sec, niveau, objectif });
+        const plan = genererPlan({
+            seances_semaine,
+            temps5km_sec,
+            distance_reference_km,
+            niveau,
+            objectif
+        });
+
+        // Avertissement non bloquant si la distance de référence dépasse l'objectif
+        let avertissement = null;
+        if (distance_reference_km && distance_reference_km > (DISTANCES_OBJECTIF[objectif] || 10)) {
+            avertissement = `Ta distance de référence (${distance_reference_km}km) est supérieure à ton objectif. La prédiction peut être moins précise pour un ${objectif}.`;
+        }
 
         // Calcule la date de fin (20 semaines)
         const dateDebut = new Date(date_debut);
-        const dateFin = new Date(dateDebut);
+        const dateFin   = new Date(dateDebut);
         dateFin.setDate(dateFin.getDate() + 20 * 7);
 
         // Sauvegarde le plan en base
@@ -127,6 +134,7 @@ router.post('/generer', authentifier, async (req, res, next) => {
         res.status(201).json({
             message: 'Plan généré et sauvegardé',
             plan_id,
+            avertissement,
             profil: plan.profil,
             objectif: plan.objectif,
             allures_reference: plan.allures_reference,

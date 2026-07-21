@@ -39,6 +39,10 @@ function formatTempsCible(allureRace) {
 function NouveauPlan() {
     const navigate = useNavigate();
 
+    const [distanceReference, setDistanceReference] = useState('5');
+    const [distanceLibre,     setDistanceLibre]     = useState('');
+    const [useDistanceLibre,  setUseDistanceLibre]  = useState(false);
+
     // Test 5km
     const [aPeuCouru,    setAPeuCouru]    = useState(null);
     const [minutes,      setMinutes]      = useState('');
@@ -116,7 +120,7 @@ function NouveauPlan() {
         e.preventDefault();
 
         if (aPeuCouru === null) {
-            setMessage({ texte: 'Veuillez indiquer si vous avez déjà couru 5km.', type: 'error' });
+            setMessage({ texte: 'Veuillez indiquer si vous avez déjà couru une distance sans t\'arrêter.', type: 'error' });
             return;
         }
 
@@ -134,16 +138,27 @@ function NouveauPlan() {
 
         setChargement(true);
         try {
+            const distanceRefFinale = useDistanceLibre
+                ? parseFloat(distanceLibre)
+                : parseFloat(distanceReference);
+
             const data = await genererPlan({
                 seances_semaine: seancesSemaine,
                 temps5km_sec,
+                distance_reference_km: distanceRefFinale,
                 date_debut: dateDebut,
                 niveau,
                 objectif,
             });
 
-            navigate(`/mes-plans/${data.plan_id}`);
-
+            // Affiche l'avertissement si présent
+            if (data.avertissement) {
+                setMessage({ texte: data.avertissement, type: 'error' });
+                // Ne redirige pas immédiatement, laisse l'utilisateur voir l'avertissement
+                setTimeout(() => navigate(`/mes-plans/${data.plan_id}`), 3000);
+            } else {
+                navigate(`/mes-plans/${data.plan_id}`);
+            }
         } catch (err) {
             if (err.message.includes('Aucun plan disponible')) {
                 setMessage({
@@ -181,10 +196,10 @@ function NouveauPlan() {
             )}
 
             <form onSubmit={handleSubmit} className="nouveau-plan-form">
-                {/* ── Test 5km ── */}
+                {/* ── Ton test ── */}
                 <section className="dashboard-card">
-                    <h2>Ton test 5km</h2>
-                    <p>As-tu déjà couru 5km sans t'arrêter ?</p>
+                    <h2>Ton test de référence</h2>
+                    <p>As-tu déjà couru une distance sans t'arrêter ?</p>
 
                     <div className="radio-groupe">
                         <label className={`radio-carte ${aPeuCouru === true ? 'active' : ''}`}>
@@ -204,6 +219,48 @@ function NouveauPlan() {
                             <span>❌ Non, je débute</span>
                         </label>
                     </div>
+
+                    {aPeuCouru === true && (
+                        <div className="saisie-champ" style={{ marginTop: '1rem' }}>
+                            <label className="label">Distance de référence de ton test</label>
+                            <div className="radio-groupe">
+                                {['3', '5', '10', '21.1'].map(d => (
+                                    <label
+                                        key={d}
+                                        className={`radio-carte ${!useDistanceLibre && distanceReference === d ? 'active' : ''}`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="distanceRef"
+                                            onChange={() => { setDistanceReference(d); setUseDistanceLibre(false); }}
+                                        />
+                                        <span>{d === '21.1' ? 'Semi (21.1km)' : `${d} km`}</span>
+                                    </label>
+                                ))}
+                                <label className={`radio-carte ${useDistanceLibre ? 'active' : ''}`}>
+                                    <input
+                                        type="radio"
+                                        name="distanceRef"
+                                        onChange={() => setUseDistanceLibre(true)}
+                                    />
+                                    <span>Autre distance</span>
+                                </label>
+                            </div>
+
+                                {useDistanceLibre && (
+                                    <input
+                                        className="input-field"
+                                        type="number"
+                                        step="0.1"
+                                        min="1"
+                                        placeholder="Distance en km"
+                                        value={distanceLibre}
+                                        onChange={(e) => setDistanceLibre(e.target.value)}
+                                        style={{ marginTop: '0.75rem', maxWidth: '200px' }}
+                                    />
+                                )}
+                            </div>
+                        )}
 
                     {aPeuCouru === true && (
                         <div className="temps-saisie">

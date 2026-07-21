@@ -38,10 +38,40 @@ const ALLURES_DEBUTANT = {
 };
 
 // ============================================================
-// CALCUL DES ALLURES DEPUIS UN TEMPS 5KM (en secondes)
+// DISTANCES DE RÉFÉRENCE (Riegel)
 // ============================================================
-function calculerAllures(temps5km_sec) {
-    const allureRace = Math.round((temps5km_sec / 5) * 1.06);
+
+// Distance de l'objectif en km
+const DISTANCES_OBJECTIF = {
+    '5km':      5,
+    '10km':     10,
+    'semi':     21.1,
+    'marathon': 42.195,
+};
+
+// Distance minimale acceptée pour le test de référence, selon l'objectif
+const DISTANCE_MIN_REFERENCE = {
+    '5km':      3,
+    '10km':     5,
+    'semi':     10,
+    'marathon': 10,
+};
+
+// ============================================================
+// CALCUL DE L'ALLURE DE COURSE VIA LA FORMULE DE RIEGEL
+// Convertit un temps sur une distance de référence vers l'allure
+// cible sur la distance de l'objectif.
+// ============================================================
+function calculerAllureRiegel(temps_ref_sec, distance_ref_km, objectif) {
+    const distance_objectif_km = DISTANCES_OBJECTIF[objectif] || 10;
+    const temps_objectif_sec = temps_ref_sec * Math.pow(distance_objectif_km / distance_ref_km, 1.06);
+    return Math.round(temps_objectif_sec / distance_objectif_km); // sec/km
+}
+
+// ============================================================
+// CALCUL DES 5 ZONES DEPUIS UNE ALLURE DE COURSE DÉJÀ DÉTERMINÉE
+// ============================================================
+function calculerZonesDepuisAllureRace(allureRace) {
     return {
         race:      allureRace,
         threshold: Math.round(allureRace * 1.05),
@@ -49,6 +79,15 @@ function calculerAllures(temps5km_sec) {
         easy:      Math.round(allureRace * 1.32),
         vo2:       Math.round(allureRace * 0.94),
     };
+}
+
+// ============================================================
+// CALCUL DES ALLURES DEPUIS UN TEMPS 5KM (en secondes)
+// Conservé pour rétrocompatibilité — équivaut à Riegel(distance_ref=5, objectif=10km)
+// ============================================================
+function calculerAllures(temps5km_sec) {
+    const allureRace = Math.round((temps5km_sec / 5) * 1.06);
+    return calculerZonesDepuisAllureRace(allureRace);
 }
 
 // ============================================================
@@ -74,9 +113,9 @@ function formatAllure(sec) {
 // ============================================================
 // GÉNÉRATION DU PLAN
 // ============================================================
-function genererPlan({ seances_semaine, temps5km_sec, niveau, objectif }) {
+function genererPlan({ seances_semaine, temps5km_sec, distance_reference_km, niveau, objectif }) {
 
-     // 1. Construction de la clé et sélection du template
+    // 1. Construction de la clé et sélection du template
     const cle      = `${niveau}_${objectif}_${seances_semaine}s`;
     const template = PLANS[cle];
 
@@ -86,17 +125,33 @@ function genererPlan({ seances_semaine, temps5km_sec, niveau, objectif }) {
         );
     }
 
-    // 2. Calcul des allures personnalisées (si test fourni)
+    // 2. Distance de référence — 5km par défaut (rétrocompatibilité plans 10km existants)
+    const distanceRef = distance_reference_km || 5;
+
+    // Validation de la distance minimale de référence pour cet objectif
+    const distanceMin = DISTANCE_MIN_REFERENCE[objectif] || 5;
+    if (temps5km_sec && distanceRef < distanceMin) {
+        throw new Error(
+            `La distance de référence doit être d'au moins ${distanceMin}km pour un objectif ${objectif}`
+        );
+    }
+
+    // 3. Calcul des allures personnalisées via Riegel (si test fourni)
     const alluresPersonnalisees = temps5km_sec
-        ? calculerAllures(temps5km_sec)
+        ? calculerZonesDepuisAllureRace(calculerAllureRiegel(temps5km_sec, distanceRef, objectif))
         : null;
 
-    // 3. Profil utilisateur
-    const profil = temps5km_sec
-        ? determinerProfil(temps5km_sec)
+    // 4. Profil utilisateur (basé sur l'équivalent temps 5km pour rester cohérent avec les labels existants)
+    // On convertit l'allure obtenue en un temps 5km équivalent pour déterminer le profil
+    const temps5kmEquivalent_sec = alluresPersonnalisees
+        ? Math.round((alluresPersonnalisees.race * 5) / 1.06)
+        : null;
+
+    const profil = temps5kmEquivalent_sec
+        ? determinerProfil(temps5kmEquivalent_sec)
         : 'slow';
 
-    // 4. Injection des allures + calcul durée/distance dans chaque séance
+    // 5. Injection des allures + calcul durée/distance dans chaque séance
     const seances = template.map(seance => {
 
         // Plan débutant : S1-S7 gardent les allures fixes (pas encore de test)
@@ -142,7 +197,7 @@ function genererPlan({ seances_semaine, temps5km_sec, niveau, objectif }) {
         };
     });
 
-    // 5. Retour du plan complet
+    // 6. Retour du plan complet
     return {
         profil,
         objectif:       PROFILS[profil].objectif,
@@ -160,4 +215,14 @@ function genererPlan({ seances_semaine, temps5km_sec, niveau, objectif }) {
     };
 }
 
-module.exports = { genererPlan, calculerAllures, determinerProfil, formatAllure, PROFILS };
+module.exports = {
+    genererPlan,
+    calculerAllures,
+    calculerAllureRiegel,
+    calculerZonesDepuisAllureRace,
+    determinerProfil,
+    formatAllure,
+    PROFILS,
+    DISTANCES_OBJECTIF,
+    DISTANCE_MIN_REFERENCE,
+};
