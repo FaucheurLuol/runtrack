@@ -22,7 +22,7 @@ const { genererPlan, formatAllure, PROFILS, DISTANCES_OBJECTIF } = require('../s
  *             required: [seances_semaine, date_debut, niveau, objectif]
  *             properties:
  *               seances_semaine: { type: integer, example: 2 }
- *               temps5km_sec: { type: integer, example: 1423, nullable: true, description: "Temps sur la distance de référence, en secondes" }
+ *               temps_reference_sec: { type: integer, example: 1423, nullable: true, description: "Temps sur la distance de référence, en secondes" }
  *               distance_reference_km: { type: number, example: 5, nullable: true, description: "Distance du test de référence (défaut 5km). Minimum selon objectif : 5km→3km, 10km→5km, semi/marathon→10km" }
  *               date_debut: { type: string, format: date, example: 2026-09-01 }
  *               niveau: { type: string, enum: [debutant, intermediaire, avance] }
@@ -46,7 +46,7 @@ const { genererPlan, formatAllure, PROFILS, DISTANCES_OBJECTIF } = require('../s
  *         description: Combinaison de plan non disponible ou distance de référence trop faible
  */
 router.post('/generer', authentifier, async (req, res, next) => {
-    const { seances_semaine, temps5km_sec, date_debut, niveau, objectif, distance_reference_km } = req.body;
+    const { seances_semaine, temps_reference_sec, date_debut, niveau, objectif, distance_reference_km } = req.body;
     const utilisateur_id = req.utilisateur.id;
 
     // Valeurs acceptées
@@ -81,7 +81,7 @@ router.post('/generer', authentifier, async (req, res, next) => {
         // Génère le plan
         const plan = genererPlan({
             seances_semaine,
-            temps5km_sec,
+            temps_reference_sec,
             distance_reference_km,
             niveau,
             objectif
@@ -101,10 +101,10 @@ router.post('/generer', authentifier, async (req, res, next) => {
         // Sauvegarde le plan en base
         const planResult = await pool.query(
             `INSERT INTO plans_entrainement
-                (utilisateur_id, objectif, niveau, seances_semaine, date_debut, date_fin, temps5km_initial)
+                (utilisateur_id, objectif, niveau, seances_semaine, date_debut, date_fin, temps_reference_initial)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id`,
-            [utilisateur_id, objectif, niveau, seances_semaine, date_debut, dateFin, temps5km_sec || null]
+            [utilisateur_id, objectif, niveau, seances_semaine, date_debut, dateFin, temps_reference_sec || null]
         );
 
         const plan_id = planResult.rows[0].id;

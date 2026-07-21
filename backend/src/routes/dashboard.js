@@ -99,12 +99,12 @@ router.get('/', authentifier, async (req, res, next) => {
         let allures_reference = null;
         let allure_course     = 'À définir suite au premier test';
         let dernier_5km       = null;
-        let temps_cible_10km  = 'À définir suite au premier test';
+        let temps_cible_objectif  = 'À définir suite au premier test';
 
         // Utilise le dernier test réalisé, sinon le temps initial du plan
         const tempsReference = dernierTest
             ? parseFloat(dernierTest.duree_reelle)
-            : plan.temps5km_initial || null;
+            : plan.temps_reference_initial || null;
 
         // Distance du test — 5km pour les tests intégrés au plan, sinon distance de référence initiale
         const distanceReference = dernierTest
@@ -128,7 +128,7 @@ router.get('/', authentifier, async (req, res, next) => {
             const tempsCible_sec = Math.round(allureRace * distanceObjectifKm);
             const tempsCible_min = Math.floor(tempsCible_sec / 60);
             const tempsCible_s   = tempsCible_sec % 60;
-            temps_cible_10km = `${tempsCible_min}'${tempsCible_s.toString().padStart(2, '0')}"`;
+            temps_cible_objectif = `${tempsCible_min}'${tempsCible_s.toString().padStart(2, '0')}"`;
 
             if (dernierTest) {
                 dernier_5km = {
@@ -136,9 +136,9 @@ router.get('/', authentifier, async (req, res, next) => {
                     date:      dernierTest.date_realisee,
                     distance:  5, // les tests intégrés au plan sont toujours sur 5km
                 };
-            } else if (plan.temps5km_initial) {
+            } else if (plan.temps_reference_initial) {
                 dernier_5km = {
-                    duree_min: plan.temps5km_initial,
+                    duree_min: plan.temps_reference_initial,
                     date:      plan.created_at,
                     distance:  plan.distance_reference_km || 5,
                 };
@@ -288,10 +288,10 @@ router.get('/', authentifier, async (req, res, next) => {
             allure:    formatAllure(meilleureAllureResult.rows[0].allure_reelle_sec),
             duree_min: meilleureAllureResult.rows[0].duree_reelle,
             semaine:   meilleureAllureResult.rows[0].semaine,
-        } : plan.temps5km_initial ? {
+        } : plan.temps_reference_initial ? {
             // Utilise le temps initial du plan si pas encore de test réalisé
-            allure:    formatAllure(Math.round((plan.temps5km_initial / 5) * 1.06)),
-            duree_min: plan.temps5km_initial,
+            allure:    formatAllure(Math.round((plan.temps_reference_initial / 5) * 1.06)),
+            duree_min: plan.temps_reference_initial,
             semaine:   'initial',
         } : null;
 
@@ -308,7 +308,7 @@ router.get('/', authentifier, async (req, res, next) => {
                 semaines_restantes,
                 allure_course,
                 dernier_5km,
-                temps_cible_10km,
+                temps_cible_objectif,
                 progression: {
                     realisees:  parseInt(prog.seances_realisees),
                     total:      parseInt(prog.total_seances),

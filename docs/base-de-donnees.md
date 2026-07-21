@@ -68,7 +68,7 @@ utilisateurs (1)
 | date_debut | DATE | NOT NULL | Début du plan |
 | date_fin | DATE | NOT NULL | Fin du plan (début + 20 semaines) |
 | actif | BOOLEAN | DEFAULT TRUE | Plan actif ou archivé |
-| temps5km_initial | INTEGER | NULL | Temps 5km en secondes à la création |
+| temps_reference_initial | INTEGER | NULL | Temps 5km en secondes à la création |
 | created_at | TIMESTAMP | DEFAULT NOW() | Création |
 
 ---

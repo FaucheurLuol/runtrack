@@ -91,19 +91,19 @@ function calculerZonesDepuisAllureRace(allureRace) {
 // CALCUL DES ALLURES DEPUIS UN TEMPS 5KM (en secondes)
 // Conservé pour rétrocompatibilité — équivaut à Riegel(distance_ref=5, objectif=10km)
 // ============================================================
-function calculerAllures(temps5km_sec) {
-    const allureRace = Math.round((temps5km_sec / 5) * 1.06);
+function calculerAllures(temps_reference_sec) {
+    const allureRace = Math.round((temps_reference_sec / 5) * 1.06);
     return calculerZonesDepuisAllureRace(allureRace);
 }
 
 // ============================================================
 // DÉTERMINER LE PROFIL DEPUIS UN TEMPS 5KM (en secondes)
 // ============================================================
-function determinerProfil(temps5km_sec) {
-    if (temps5km_sec < 1260) return 'fast';
-    if (temps5km_sec < 1320) return 'good';
-    if (temps5km_sec < 1380) return 'base';
-    if (temps5km_sec < 1440) return 'moderate';
+function determinerProfil(temps_reference_sec) {
+    if (temps_reference_sec < 1260) return 'fast';
+    if (temps_reference_sec < 1320) return 'good';
+    if (temps_reference_sec < 1380) return 'base';
+    if (temps_reference_sec < 1440) return 'moderate';
     return 'slow';
 }
 
@@ -119,7 +119,7 @@ function formatAllure(sec) {
 // ============================================================
 // GÉNÉRATION DU PLAN
 // ============================================================
-function genererPlan({ seances_semaine, temps5km_sec, distance_reference_km, niveau, objectif }) {
+function genererPlan({ seances_semaine, temps_reference_sec, distance_reference_km, niveau, objectif }) {
 
     // 1. Construction de la clé et sélection du template
     const cle      = `${niveau}_${objectif}_${seances_semaine}s`;
@@ -138,15 +138,15 @@ function genererPlan({ seances_semaine, temps5km_sec, distance_reference_km, niv
 
     // Validation de la distance minimale de référence pour cet objectif
     const distanceMin = DISTANCE_MIN_REFERENCE[objectif] || 5;
-    if (temps5km_sec && distanceRef < distanceMin) {
+    if (temps_reference_sec && distanceRef < distanceMin) {
         throw new Error(
             `La distance de référence doit être d'au moins ${distanceMin}km pour un objectif ${objectif}`
         );
     }
 
     // 3. Calcul des allures personnalisées via Riegel (si test fourni)
-    const alluresPersonnalisees = temps5km_sec
-        ? calculerZonesDepuisAllureRace(calculerAllureRiegel(temps5km_sec, distanceRef, objectif))
+    const alluresPersonnalisees = temps_reference_sec
+        ? calculerZonesDepuisAllureRace(calculerAllureRiegel(temps_reference_sec, distanceRef, objectif))
         : null;
 
     // 4. Profil utilisateur (basé sur l'équivalent temps 5km pour rester cohérent avec les labels existants)

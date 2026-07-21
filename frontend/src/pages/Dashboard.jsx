@@ -105,7 +105,7 @@ function Dashboard() {
                         <span className="carte-label">Allure course cible</span>
                         <span className="carte-valeur">{plan_actif.allure_course}</span>
                         <p className="carte-detail">
-                            Temps cible 10km : {plan_actif.temps_cible_10km}
+                            Temps cible 10km : {plan_actif.temps_cible_objectif}
                         </p>
                     </div>
 

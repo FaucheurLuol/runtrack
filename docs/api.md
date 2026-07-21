@@ -250,7 +250,7 @@ Données complètes du tableau de bord en un seul appel.
     "seances_semaine": 2,
     "semaines_restantes": 20,
     "allure_course": "5'02\"/km",
-    "temps_cible_10km": "50'20\"",
+    "temps_cible_objectif": "50'20\"",
     "dernier_5km": { "duree_min": 1423, "date": "..." },
     "progression": {
       "realisees": 1,
