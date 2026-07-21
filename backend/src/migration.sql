@@ -93,3 +93,20 @@ CREATE TABLE IF NOT EXISTS seances_realisees (
     created_at        TIMESTAMP DEFAULT NOW(),
     allure_reelle_sec INTEGER
 );
+
+-- Demandes de nouveaux plans
+CREATE TABLE IF NOT EXISTS demandes_plans (
+    id                SERIAL PRIMARY KEY,
+    utilisateur_id    INTEGER REFERENCES utilisateurs(id) ON DELETE SET NULL,
+    objectif          VARCHAR(20)  NOT NULL,
+    temps_objectif_sec INTEGER     NOT NULL,
+    seances_semaine   INTEGER      NOT NULL,
+    nombre_semaines   INTEGER      NOT NULL,
+    jours_entrainement TEXT        NOT NULL,
+    jour_course       VARCHAR(20),
+    public_cible      TEXT         NOT NULL,
+    particularites    TEXT,
+    statut            VARCHAR(20)  DEFAULT 'en_attente',
+    issue_url         VARCHAR(500),
+    created_at        TIMESTAMP    DEFAULT NOW()
+);

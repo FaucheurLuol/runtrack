@@ -223,6 +223,16 @@ function genererPlan({ seances_semaine, temps_reference_sec, distance_reference_
     };
 }
 
+// Métadonnées de tous les plans disponibles, dérivées automatiquement des templates
+const PLANS_METADATA = Object.entries(PLANS).map(([cle, template]) => {
+    const parties  = cle.split('_');
+    const niveau   = parties[0];
+    const seances  = parseInt(parties[parties.length - 1]); // "2s" → 2
+    const objectif = parties.slice(1, -1).join('_');
+    const semaines = Math.max(...template.map(s => s.s));
+    return { cle, niveau, objectif, seances, semaines };
+});
+
 module.exports = {
     genererPlan,
     calculerAllures,
@@ -233,4 +243,5 @@ module.exports = {
     PROFILS,
     DISTANCES_OBJECTIF,
     DISTANCE_MIN_REFERENCE,
+    PLANS_METADATA,
 };
