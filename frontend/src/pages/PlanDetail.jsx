@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { telechargerCsv } from '../utils/exportCsv';
+import { API_URL } from '../api/config';
 import { recupererPlanDetail } from '../api/plans';
 import '../style/dashboard.css';
 
@@ -48,6 +50,29 @@ function PlanDetail() {
     const { plan, semaines, total, realisees } = donnees;
     const progression = Math.round((realisees / total) * 100);
 
+    const handleExportCsv = () => {
+        const lignes = [];
+        Object.values(semaines).forEach(seancesSemaine => {
+            seancesSemaine.forEach(s => {
+                lignes.push({
+                    Semaine:            s.semaine,
+                    Séance:             s.jour,
+                    Phase:              s.phase,
+                    Titre:              s.titre,
+                    'Durée prévue (min)':    s.duree_min || '',
+                    'Distance prévue (km)':  s.distance_km ? parseFloat(s.distance_km).toFixed(2) : '',
+                    'Allure prévue':    s.allure_sec_km ? formatAllure(s.allure_sec_km) : '',
+                    Réalisée:           s.realisee ? 'Oui' : 'Non',
+                    'Durée réelle (min)':    s.duree_reelle ? Math.round(s.duree_reelle / 60) : '',
+                    'Distance réelle (km)':  s.distance_reelle ? parseFloat(s.distance_reelle).toFixed(2) : '',
+                    Ressenti:           s.ressenti || '',
+                    Notes:              s.notes || '',
+                });
+            });
+        });
+        telechargerCsv(`plan-${plan.objectif}-${id}.csv`, lignes);
+    };
+
     return (
         <main className="dashboard">
 
@@ -67,6 +92,19 @@ function PlanDetail() {
                             · Du {new Date(plan.date_debut).toLocaleDateString('fr-FR')}
                             {' '}au {new Date(plan.date_fin).toLocaleDateString('fr-FR')}
                         </p>
+                    </div>
+                    <div className="plan-detail-actions-export">
+                        <button className="btn-annuler" onClick={handleExportCsv}>
+                            Export CSV
+                        </button>
+                        <a
+                            href={`${API_URL}/plans/${id}/export-pdf`}
+                            className="btn-annuler"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Export PDF
+                        </a>
                     </div>
                 </div>
             </div>

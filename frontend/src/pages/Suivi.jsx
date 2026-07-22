@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { telechargerCsv } from '../utils/exportCsv';
+import { API_URL } from '../api/config';
 import { recupererSuivi }      from '../api/suivi';
 import {
     BarChart, Bar, LineChart, Line,
@@ -109,9 +111,39 @@ function Suivi() {
         label:   t.allure_affichage,
     }));
 
+    const handleExportCsv = () => {
+        const lignes = historique.map(s => ({
+            Date:              new Date(s.date).toLocaleDateString('fr-FR'),
+            Semaine:           s.semaine,
+            Titre:             s.titre,
+            Phase:             s.phase,
+            'Durée (min)':     Math.round(s.duree_reelle / 60),
+            'Distance (km)':   s.distance_reelle,
+            'Allure réelle':   s.allure_reelle || '',
+            'Allure prévue':   s.allure_prevue || '',
+            Ressenti:          s.ressenti,
+            Notes:             s.notes || '',
+        }));
+        telechargerCsv('historique-seances.csv', lignes);
+    };
+
     return (
         <main className="dashboard">
             <h1>Suivi des séances</h1>
+
+            <div className="plan-detail-actions-export">
+                <button className="btn-annuler" onClick={handleExportCsv}>
+                    Export CSV historique
+                </button>
+                <a
+                    href={`${API_URL}/suivi/export-pdf`}
+                    className="btn-annuler"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Export PDF résumé
+                </a>
+            </div>
 
             {/* ── Stats globales ──────────────────────────────────── */}
             <div className="stats-grid">
