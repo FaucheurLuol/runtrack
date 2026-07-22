@@ -97,12 +97,7 @@ function PlanDetail() {
                         <button className="btn-annuler" onClick={handleExportCsv}>
                             Export CSV
                         </button>
-                        <a
-                            href={`${API_URL}/plans/${id}/export-pdf`}
-                            className="btn-annuler"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
+                        <a href={`${API_URL}/plans/${id}/export-pdf`} className="btn-annuler" target="_blank" rel="noopener noreferrer">
                             Export PDF
                         </a>
                     </div>

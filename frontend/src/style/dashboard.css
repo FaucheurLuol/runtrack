@@ -15,12 +15,6 @@
     margin-top: 0;
 }
 
-.plan-detail-actions-export {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-
 /* Carte générique */
 .dashboard-card {
     background: var(--sand-light);
@@ -633,6 +627,18 @@ textarea.input-field {
     align-items: flex-start;
     gap: 1rem;
     margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.plan-detail-titre {
+    flex: 1;
+    min-width: 0;
+}
+
+.plan-detail-actions-export {
+    display: flex;
+    gap: 0.75rem;
+    flex-shrink: 0;
 }
 
 .plan-detail-titre h1 {
