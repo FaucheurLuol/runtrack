@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const PDFDocument = require('pdfkit');
 const pool = require('../db');
 const redis = require('../config/redis');
 const authentifier = require('../middleware/auth');
@@ -510,6 +511,135 @@ router.get('/:id/detail', authentifier, async (req, res, next) => {
             total:    seancesResult.rows.length,
             realisees: seancesResult.rows.filter(s => s.realisee).length,
         });
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+/**
+ * @swagger
+ * /plans/{id}/export-pdf:
+ *   get:
+ *     summary: Exporte le plan complet en PDF
+ *     tags: [Plans]
+ *     security:
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: Fichier PDF
+ *         content:
+ *           application/pdf: {}
+ *       404:
+ *         description: Plan non trouvé
+ */
+router.get('/:id/export-pdf', authentifier, async (req, res, next) => {
+    const { id } = req.params;
+    const utilisateur_id = req.utilisateur.id;
+
+    try {
+        const planResult = await pool.query(
+            `SELECT * FROM plans_entrainement WHERE id = $1 AND utilisateur_id = $2`,
+            [id, utilisateur_id]
+        );
+
+        if (planResult.rows.length === 0) {
+            return res.status(404).json({ erreur: 'Plan non trouvé' });
+        }
+
+        const plan = planResult.rows[0];
+
+        const seancesResult = await pool.query(
+            `SELECT s.*, sr.duree_reelle, sr.distance_reelle, sr.ressenti, sr.notes,
+                    CASE WHEN sr.id IS NOT NULL THEN true ELSE false END AS realisee
+             FROM seances s
+             LEFT JOIN seances_realisees sr
+                ON sr.seance_id = s.id AND sr.utilisateur_id = $2
+             WHERE s.plan_id = $1
+             ORDER BY s.semaine, s.jour`,
+            [id, utilisateur_id]
+        );
+
+        const seances = seancesResult.rows;
+
+        // Génère le PDF
+        const doc = new PDFDocument({ margin: 50 });
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="plan-${plan.objectif}-${id}.pdf"`);
+
+        doc.pipe(res);
+
+        // En-tête
+        doc.fontSize(20).font('Helvetica-Bold').text(`Plan d'entraînement — ${plan.objectif}`, { align: 'center' });
+        doc.moveDown(0.3);
+        doc.fontSize(11).font('Helvetica').fillColor('#666')
+            .text(`${plan.niveau} · ${plan.seances_semaine} séance(s)/semaine`, { align: 'center' });
+        doc.text(
+            `Du ${new Date(plan.date_debut).toLocaleDateString('fr-FR')} au ${new Date(plan.date_fin).toLocaleDateString('fr-FR')}`,
+            { align: 'center' }
+        );
+        doc.moveDown(1.5);
+        doc.fillColor('#000');
+
+        // Groupe par semaine
+        const semaines = {};
+        seances.forEach(s => {
+            if (!semaines[s.semaine]) semaines[s.semaine] = [];
+            semaines[s.semaine].push(s);
+        });
+
+        Object.entries(semaines).forEach(([numSemaine, seancesSemaine]) => {
+            // Vérifie s'il faut une nouvelle page
+            if (doc.y > 680) doc.addPage();
+
+            doc.fontSize(14).font('Helvetica-Bold').fillColor('#e3520f')
+                .text(`Semaine ${numSemaine} — ${seancesSemaine[0].phase || ''}`);
+            doc.moveDown(0.3);
+            doc.fillColor('#000');
+
+            seancesSemaine.forEach(seance => {
+                if (doc.y > 700) doc.addPage();
+
+                doc.fontSize(11).font('Helvetica-Bold')
+                    .text(`Séance ${seance.jour} — ${seance.titre || ''}`);
+
+                doc.fontSize(9).font('Helvetica').fillColor('#444')
+                    .text(seance.description || '', { width: 480 });
+
+                const details = [];
+                if (seance.duree_min) details.push(`Durée : ${seance.duree_min} min`);
+                if (seance.distance_km) details.push(`Distance : ${parseFloat(seance.distance_km).toFixed(2)} km`);
+                if (seance.allure_sec_km) {
+                    const min = Math.floor(seance.allure_sec_km / 60);
+                    const sec = Math.round(seance.allure_sec_km % 60);
+                    details.push(`Allure : ${min}'${sec.toString().padStart(2, '0')}"/km`);
+                }
+                if (details.length > 0) {
+                    doc.fontSize(9).fillColor('#666').text(details.join(' · '));
+                }
+
+                if (seance.realisee) {
+                    doc.fontSize(9).fillColor('#8e8448').font('Helvetica-Bold')
+                        .text(`✓ Réalisé — ${seance.duree_reelle ? Math.round(seance.duree_reelle / 60) + ' min' : ''} · ${seance.distance_reelle ? parseFloat(seance.distance_reelle).toFixed(2) + ' km' : ''} · Ressenti ${seance.ressenti}/5`);
+                    if (seance.notes) {
+                        doc.fontSize(8).fillColor('#888').font('Helvetica-Oblique').text(`💬 ${seance.notes}`);
+                    }
+                }
+
+                doc.fillColor('#000').font('Helvetica');
+                doc.moveDown(0.6);
+            });
+
+            doc.moveDown(0.5);
+        });
+
+        doc.end();
 
     } catch (err) {
         next(err);

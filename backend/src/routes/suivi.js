@@ -1,5 +1,6 @@
 const express    = require('express');
 const router     = express.Router();
+const PDFDocument = require('pdfkit');
 const pool       = require('../db');
 const authentifier = require('../middleware/auth');
 const { formatAllure } = require('../services/planGenerator');
@@ -218,6 +219,97 @@ router.get('/', authentifier, async (req, res, next) => {
             progression_tests,
             historique,
         });
+
+    } catch (err) {
+        next(err);
+    }
+});
+
+/**
+ * @swagger
+ * /suivi/export-pdf:
+ *   get:
+ *     summary: Exporte un résumé PDF des statistiques de suivi
+ *     tags: [Suivi]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Fichier PDF
+ *       404:
+ *         description: Aucun plan actif
+ */
+router.get('/export-pdf', authentifier, async (req, res, next) => {
+    const utilisateur_id = req.utilisateur.id;
+
+    try {
+        const planResult = await pool.query(
+            `SELECT p.* FROM plans_entrainement p
+             JOIN utilisateurs u ON u.plan_selectionne_id = p.id
+             WHERE u.id = $1`,
+            [utilisateur_id]
+        );
+
+        if (planResult.rows.length === 0) {
+            return res.status(404).json({ erreur: 'Aucun plan actif' });
+        }
+
+        const plan = planResult.rows[0];
+
+        // Réutilise la même logique de stats que la route GET /suivi
+        const seancesResult = await pool.query(
+            `SELECT sr.date_realisee, sr.duree_reelle, sr.distance_reelle,
+                    sr.allure_reelle_sec, sr.ressenti, sr.notes,
+                    s.titre, s.phase, s.type, s.semaine
+             FROM seances_realisees sr
+             JOIN seances s ON sr.seance_id = s.id
+             WHERE sr.utilisateur_id = $1 AND s.plan_id = $2
+             ORDER BY sr.date_realisee DESC`,
+            [utilisateur_id, plan.id]
+        );
+
+        const realisees = seancesResult.rows;
+        const total_km = realisees.reduce((acc, s) => acc + parseFloat(s.distance_reelle || 0), 0);
+        const total_sec = realisees.reduce((acc, s) => acc + parseFloat(s.duree_reelle || 0), 0);
+
+        const doc = new PDFDocument({ margin: 50 });
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="suivi-${plan.objectif}.pdf"`);
+        doc.pipe(res);
+
+        doc.fontSize(20).font('Helvetica-Bold').text(`Résumé de suivi — ${plan.objectif}`, { align: 'center' });
+        doc.moveDown(0.3);
+        doc.fontSize(11).font('Helvetica').fillColor('#666')
+            .text(`Généré le ${new Date().toLocaleDateString('fr-FR')}`, { align: 'center' });
+        doc.moveDown(1.5);
+        doc.fillColor('#000');
+
+        doc.fontSize(14).font('Helvetica-Bold').fillColor('#e3520f').text('Statistiques globales');
+        doc.fillColor('#000').font('Helvetica').fontSize(11);
+        doc.moveDown(0.5);
+        doc.text(`Total kilomètres parcourus : ${total_km.toFixed(2)} km`);
+        doc.text(`Total temps d'entraînement : ${Math.round(total_sec / 3600 * 10) / 10} h`);
+        doc.text(`Nombre de séances réalisées : ${realisees.length}`);
+        doc.moveDown(1.5);
+
+        doc.fontSize(14).font('Helvetica-Bold').fillColor('#e3520f').text('Historique des séances');
+        doc.fillColor('#000').moveDown(0.5);
+
+        realisees.forEach(s => {
+            if (doc.y > 700) doc.addPage();
+            doc.fontSize(10).font('Helvetica-Bold')
+                .text(`${new Date(s.date_realisee).toLocaleDateString('fr-FR')} — Semaine ${s.semaine} — ${s.titre}`);
+            doc.fontSize(9).font('Helvetica').fillColor('#666')
+                .text(`${Math.round(s.duree_reelle / 60)} min · ${parseFloat(s.distance_reelle).toFixed(2)} km · Ressenti ${s.ressenti}/5`);
+            if (s.notes) {
+                doc.fontSize(8).font('Helvetica-Oblique').fillColor('#888').text(`💬 ${s.notes}`);
+            }
+            doc.fillColor('#000').font('Helvetica');
+            doc.moveDown(0.4);
+        });
+
+        doc.end();
 
     } catch (err) {
         next(err);

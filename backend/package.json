@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
+    "pdfkit": "^0.19.1",
     "pg": "^8.22.0",
     "redis": "^6.1.0",
     "runtrack-plans": "github:FaucheurLuol/runtrack-plans",
