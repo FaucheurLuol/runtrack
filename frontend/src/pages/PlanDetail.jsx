@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { telechargerCsv } from '../utils/exportCsv';
+import { telechargerCsv } from '../utils/exportCSV';
 import { API_URL } from '../api/config';
 import { recupererPlanDetail } from '../api/plans';
 import '../style/dashboard.css';
