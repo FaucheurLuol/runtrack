@@ -30,6 +30,7 @@ function Profil() {
     const [sexe,          setSexe]          = useState('');
     const [raison,        setRaison]        = useState('');
     const [objectifPerso, setObjectifPerso] = useState('');
+    const [fcMaxPerso, setFcMaxPerso]       = useState('');
 
     // Mot de passe
     const [ancienMdp,  setAncienMdp]  = useState('');
@@ -48,12 +49,13 @@ function Profil() {
             try {
                 const data = await recupererProfil();
                 setProfil(data);
-                setNom(data.nom                  || '');
-                setPrenom(data.prenom            || '');
-                setAge(data.age                  || '');
-                setSexe(data.sexe                || '');
-                setRaison(data.raison            || '');
+                setNom(data.nom                      || '');
+                setPrenom(data.prenom                || '');
+                setAge(data.age                      || '');
+                setSexe(data.sexe                    || '');
+                setRaison(data.raison                || '');
                 setObjectifPerso(data.objectif_perso || '');
+                setFcMaxPerso(data.fc_max_perso      || '');
             } catch (err) {
                 setErreur(err.message);
             } finally {
@@ -67,7 +69,9 @@ function Profil() {
         e.preventDefault();
         try {
             const data = await mettreAJourProfil({
-                nom, prenom, age: parseInt(age), sexe, raison, objectif_perso: objectifPerso
+                nom, prenom, age: parseInt(age), sexe, raison, 
+                objectif_perso: objectifPerso, 
+                fc_max_perso: fcMaxPerso ? parseInt(fcMaxPerso) : null,
             });
             setProfil(prev => ({ ...prev, ...data.utilisateur }));
             setMsgProfil({ texte: 'Profil mis à jour avec succès !', type: 'success' });
@@ -203,6 +207,17 @@ function Profil() {
                             value={objectifPerso}
                             onChange={e => setObjectifPerso(e.target.value)}
                             placeholder="Ex: Finir mon premier 10km en moins de 50 minutes d'ici décembre..."
+                        />
+                    </div>
+                    <div className="saisie-champ" style={{ marginTop: '0.75rem' }}>
+                        <label className="label">FC max (optionnel — sinon estimée depuis ton âge)</label>
+                        <input
+                            className="input-field"
+                            type="number"
+                            value={fcMaxPerso}
+                            onChange={(e) => setFcMaxPerso(e.target.value)}
+                            placeholder="ex: 190"
+                            style={{ maxWidth: '150px' }}
                         />
                     </div>
 

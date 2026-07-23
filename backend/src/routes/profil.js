@@ -5,7 +5,6 @@ const pool       = require('../db');
 const authentifier = require('../middleware/auth');
 const { upload, cloudinary } = require('../config/cloudinary');
 
-// GET /profil — récupère le profil
 /**
  * @swagger
  * /profil:
@@ -24,7 +23,7 @@ router.get('/', authentifier, async (req, res, next) => {
     try {
         const result = await pool.query(
             `SELECT id, username, email, nom, prenom, sexe, age,
-                    photo_url, raison, objectif_perso, created_at
+                    photo_url, raison, objectif_perso, fc_max_perso, created_at
              FROM utilisateurs
              WHERE id = $1`,
             [utilisateur_id]
@@ -40,7 +39,6 @@ router.get('/', authentifier, async (req, res, next) => {
     }
 });
 
-// PUT /profil — met à jour le profil
 /**
  * @swagger
  * /profil:
@@ -61,13 +59,14 @@ router.get('/', authentifier, async (req, res, next) => {
  *               sexe: { type: string }
  *               raison: { type: string }
  *               objectif_perso: { type: string }
+ *               fc_max_perso : { type: integer }
  *     responses:
  *       200:
  *         description: Profil mis à jour
  */
 router.put('/', authentifier, async (req, res, next) => {
     const utilisateur_id = req.utilisateur.id;
-    const { nom, prenom, age, sexe, raison, objectif_perso } = req.body;
+    const { nom, prenom, age, sexe, raison, objectif_perso, fc_max_perso } = req.body;
 
     try {
         const result = await pool.query(
@@ -78,6 +77,7 @@ router.put('/', authentifier, async (req, res, next) => {
                  sexe          = COALESCE($4, sexe),
                  raison        = COALESCE($5, raison),
                  objectif_perso = COALESCE($6, objectif_perso),
+                 fc_max_perso = COALESCE($7, fc_max_perso),
                  updated_at    = NOW()
              WHERE id = $7
              RETURNING id, username, email, nom, prenom, age, sexe,
@@ -94,7 +94,6 @@ router.put('/', authentifier, async (req, res, next) => {
     }
 });
 
-// PUT /profil/photo
 /**
  * @swagger
  * /profil/photo:
@@ -175,7 +174,6 @@ router.put('/photo', authentifier, upload.single('photo'), async (req, res, next
     }
 });
 
-// PUT /profil/mot-de-passe — change le mot de passe
 /**
  * @swagger
  * /profil/mot-de-passe:

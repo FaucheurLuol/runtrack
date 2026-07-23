@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
     plan_selectionne_id INTEGER,
     photo_url           VARCHAR(500),
     raison              TEXT,
-    objectif_perso      TEXT
+    objectif_perso      TEXT,
+    fc_max_perso        INTEGER
 );
 
 -- Tests de performance

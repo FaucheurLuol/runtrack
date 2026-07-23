@@ -6,7 +6,8 @@ import { recupererSuivi }      from '../api/suivi';
 import {
     BarChart, Bar, LineChart, Line,
     XAxis, YAxis, CartesianGrid, Tooltip,
-    Legend, ResponsiveContainer, ReferenceLine
+    Legend, ResponsiveContainer, ReferenceLine,
+    Cell
 } from 'recharts';
 import '../style/dashboard.css';
 import '../style/suivi.css';
@@ -285,6 +286,48 @@ function Suivi() {
                                 dot={{ fill: 'var(--olive)', r: 4 }}
                                 activeDot={{ r: 6 }}
                             />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </section>
+            )}
+
+            {/* ── Zones FC ── */}
+            {donnees.zones_fc && donnees.zones_fc.length > 0 && (
+                <section className="dashboard-card">
+                    <h2>Répartition par zone cardiaque</h2>
+                    <p className="graphique-description">
+                        Approximation basée sur la FC moyenne de chaque séance (pas de flux seconde par seconde).
+                    </p>
+                    <ResponsiveContainer width="100%" height={220}>
+                        <BarChart data={donnees.zones_fc} layout="vertical" margin={{ left: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="var(--olive-dark)" opacity={0.3} />
+                            <XAxis type="number" tick={{ fontSize: 11 }} unit=" min" />
+                            <YAxis type="category" dataKey="zone" tick={{ fontSize: 11 }} width={100} />
+                            <Tooltip />
+                            <Bar dataKey="minutes" radius={[0,4,4,0]}>
+                                {donnees.zones_fc.map((entry, i) => (
+                                    <Cell key={i} fill={entry.couleur} />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </section>
+            )}
+
+            {/* ── Évolution cadence ── */}
+            {donnees.evolution_cadence && donnees.evolution_cadence.length > 0 && (
+                <section className="dashboard-card">
+                    <h2>Évolution de la cadence</h2>
+                    <ResponsiveContainer width="100%" height={200}>
+                        <LineChart data={donnees.evolution_cadence.map(c => ({
+                            date: new Date(c.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
+                            cadence: c.cadence,
+                        }))}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="var(--olive-dark)" opacity={0.3} />
+                            <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                            <YAxis tick={{ fontSize: 11 }} unit=" spm" domain={['dataMin - 5', 'dataMax + 5']} />
+                            <Tooltip />
+                            <Line type="monotone" dataKey="cadence" stroke="var(--orange)" strokeWidth={2} dot={{ r: 4 }} />
                         </LineChart>
                     </ResponsiveContainer>
                 </section>

@@ -14,6 +14,20 @@ const FACTEURS_INTENSITE = {
     vo2:       3,
 };
 
+const ZONES_FC = [
+    { nom: 'Récupération', min: 0.50, max: 0.60, couleur: '#8e8448' },
+    { nom: 'Endurance',    min: 0.60, max: 0.70, couleur: '#22c55e' },
+    { nom: 'Tempo',        min: 0.70, max: 0.80, couleur: '#f08418' },
+    { nom: 'Seuil',        min: 0.80, max: 0.90, couleur: '#e3520f' },
+    { nom: 'VO2max',       min: 0.90, max: 1.01, couleur: '#c0390a' },
+];
+
+function determinerZoneFc(fcMoyenne, fcMax) {
+    if (!fcMoyenne || !fcMax) return null;
+    const ratio = fcMoyenne / fcMax;
+    return ZONES_FC.find(z => ratio >= z.min && ratio < z.max)?.nom || ZONES_FC[ZONES_FC.length - 1].nom;
+}
+
 /**
  * @swagger
  * /suivi:
@@ -46,6 +60,13 @@ router.get('/', authentifier, async (req, res, next) => {
 
         const plan = planResult.rows[0];
 
+        const utilisateurResult = await pool.query(
+            `SELECT fc_max_perso, age FROM utilisateurs WHERE id = $1`,
+            [utilisateur_id]
+        );
+        const { fc_max_perso, age } = utilisateurResult.rows[0];
+        const fcMaxReference = fc_max_perso || (age ? 220 - age : 190);
+
         // ── Séances prévues avec réalisations ─────────────────────
         const seancesResult = await pool.query(
             `SELECT
@@ -60,6 +81,8 @@ router.get('/', authentifier, async (req, res, next) => {
                 sr.ressenti,
                 sr.notes,
                 sr.date_realisee,
+                sr.fc_moyenne,
+                sr.cadence_moyenne,
                 false AS bonus,
                 CASE WHEN sr.id IS NOT NULL THEN true ELSE false END AS realisee
             FROM seances s
@@ -89,6 +112,8 @@ router.get('/', authentifier, async (req, res, next) => {
                 ressenti,
                 notes,
                 date_realisee,
+                fc_moyenne,
+                cadence_moyenne,
                 true          AS bonus,
                 true          AS realisee
             FROM seances_realisees
@@ -98,6 +123,35 @@ router.get('/', authentifier, async (req, res, next) => {
         );
 
         const seances = [...seancesResult.rows, ...bonusResult.rows];
+
+        // ── Zones FC (approximation via FC moyenne par séance) ────
+        const zonesFcMap = {};
+        ZONES_FC.forEach(z => { zonesFcMap[z.nom] = { minutes: 0, couleur: z.couleur }; });
+
+        seances.filter(s => s.realisee).forEach(s => {
+            if (s.fc_moyenne) {
+                const zone = determinerZoneFc(s.fc_moyenne, fcMaxReference);
+                if (zone) zonesFcMap[zone].minutes += parseFloat(s.duree_reelle || 0) / 60;
+            }
+        });
+
+        const zones_fc = Object.entries(zonesFcMap)
+            .map(([nom, data]) => ({
+                zone:    nom,
+                minutes: Math.round(data.minutes),
+                couleur: data.couleur,
+            }))
+            .filter(z => z.minutes > 0);
+
+        // ── Évolution de la cadence ────────────────────────────────
+        const evolution_cadence = seances
+            .filter(s => s.realisee && s.cadence_moyenne)
+            .sort((a, b) => new Date(a.date_realisee) - new Date(b.date_realisee))
+            .map(s => ({
+                date:    s.date_realisee,
+                cadence: s.cadence_moyenne,
+                titre:   s.titre,
+            }));
 
         // ── Stats globales ────────────────────────────────────────
         const realisees = seances.filter(s => s.realisee);
@@ -173,8 +227,11 @@ router.get('/', authentifier, async (req, res, next) => {
                 if (seance.ressenti) sem.ressentis.push(seance.ressenti);
                 if (seance.allure_reelle_sec) sem.allures_reelles.push(seance.allure_reelle_sec);
 
-                // Charge = durée × facteur intensité
-                const facteur = FACTEURS_INTENSITE[seance.allure_label] || 1;
+                let facteur = FACTEURS_INTENSITE[seance.allure_label] || 1;
+                if (seance.fc_moyenne && fcMaxReference) {
+                    const ratioFc = seance.fc_moyenne / fcMaxReference;
+                    facteur = Math.max(1, ratioFc * 3.5);
+                }
                 // Charge = durée en MINUTES × facteur intensité
                 sem.charge += (parseFloat(seance.duree_reelle || 0) / 60) * facteur;
             }
@@ -248,6 +305,8 @@ router.get('/', authentifier, async (req, res, next) => {
             par_semaine,
             progression_tests,
             historique,
+            zones_fc,
+            evolution_cadence,
         });
 
     } catch (err) {
