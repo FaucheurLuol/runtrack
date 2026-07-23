@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS seances (
 -- Séances réalisées
 CREATE TABLE IF NOT EXISTS seances_realisees (
     id                SERIAL PRIMARY KEY,
-    seance_id         INTEGER NOT NULL REFERENCES seances(id) ON DELETE CASCADE,
+    seance_id         INTEGER REFERENCES seances(id) ON DELETE CASCADE,
     utilisateur_id    INTEGER NOT NULL REFERENCES utilisateurs(id) ON DELETE CASCADE,
     date_realisee     DATE    NOT NULL,
     duree_reelle      INTEGER,
@@ -92,13 +92,13 @@ CREATE TABLE IF NOT EXISTS seances_realisees (
     ressenti          INTEGER CHECK (ressenti BETWEEN 1 AND 5),
     notes             TEXT,
     created_at        TIMESTAMP DEFAULT NOW(),
-    allure_reelle_sec INTEGER
-    plan_id         INTEGER REFERENCES plans_entrainement(id) ON DELETE CASCADE,
-    titre           VARCHAR(150),
-    source          VARCHAR(20) DEFAULT 'manuel',
-    fc_moyenne      INTEGER,
-    fc_max          INTEGER,
-    cadence_moyenne INTEGER,
+    allure_reelle_sec INTEGER,
+    plan_id           INTEGER REFERENCES plans_entrainement(id) ON DELETE CASCADE,
+    titre             VARCHAR(150),
+    source            VARCHAR(20) DEFAULT 'manuel',
+    fc_moyenne        INTEGER,
+    fc_max            INTEGER,
+    cadence_moyenne   INTEGER
 );
 
 -- Demandes de nouveaux plans
