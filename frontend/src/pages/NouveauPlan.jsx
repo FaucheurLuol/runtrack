@@ -60,11 +60,15 @@ function NouveauPlan() {
 
     // Préférences
     const [seancesSemaine, setSeancesSemaine] = useState(2);
-    const [nombreSemaines, setNombreSemaines] = useState(20);
+    const [nombreSemainesChoisi, setNombreSemainesChoisi] = useState(null);
     const [objectif,       setObjectif]       = useState('10km');
     const [dateDebut,      setDateDebut]      = useState(
         new Date().toISOString().split('T')[0]
     );
+
+    const nombreSemaines = (nombreSemainesChoisi && semainesOptions.includes(nombreSemainesChoisi))
+        ? nombreSemainesChoisi
+        : (semainesOptions[0] ?? null);
 
     // Date de fin — calculée dynamiquement selon le nombre de semaines choisi
     const dateFin = (() => {
@@ -89,6 +93,13 @@ function NouveauPlan() {
     const combinaisonDisponible = plansDisponibles.some(
         p => p.objectif === objectif && p.seances === seancesSemaine && p.semaines === nombreSemaines
     );
+
+    // Calcule dynamiquement les durées disponibles pour l'objectif + séances choisis
+    const semainesOptions = [...new Set(
+        plansDisponibles
+            .filter(p => p.objectif === objectif && p.seances === seancesSemaine)
+            .map(p => p.semaines)
+    )].sort((a, b) => a - b);
 
     // Charge les plans existants de l'utilisateur
     useEffect(() => {
@@ -429,24 +440,24 @@ function NouveauPlan() {
                     {/* Nombre de semaines */}
                     <div className="nouveau-plan-groupe">
                         <span className="label">Nombre de semaines</span>
-                        <div className="radio-groupe">
-                            {[16, 20, 24].map(n => {
-                                const disponible = plansDisponibles.some(
-                                    p => p.objectif === objectif && p.seances === seancesSemaine && p.semaines === n
-                                );
-                                return (
-                                    <label key={n} className={`radio-carte ${nombreSemaines === n ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}>
+                        {semainesOptions.length === 0 ? (
+                            <p className="graphique-description">
+                                Aucune durée disponible pour cette combinaison objectif/séances.
+                            </p>
+                        ) : (
+                            <div className="radio-groupe">
+                                {semainesOptions.map(n => (
+                                    <label key={n} className={`radio-carte ${nombreSemaines === n ? 'active' : ''}`}>
                                         <input
                                             type="radio"
                                             name="nombreSemaines"
-                                            disabled={!disponible}
-                                            onChange={() => disponible && setNombreSemaines(n)}
+                                            onChange={() => setNombreSemainesChoisi(n)}
                                         />
-                                        <span>{n} semaines{!disponible && ' (bientôt)'}</span>
+                                        <span>{n} semaines</span>
                                     </label>
-                                );
-                            })}
-                        </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Date de début */}
