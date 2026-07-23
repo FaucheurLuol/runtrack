@@ -52,7 +52,7 @@ function NouveauPlan() {
     const [distanceLibre,     setDistanceLibre]     = useState('');
     const [useDistanceLibre,  setUseDistanceLibre]  = useState(false);
 
-    // Test 5km
+    // Test de référence
     const [aPeuCouru,    setAPeuCouru]    = useState(null);
     const [minutes,      setMinutes]      = useState('');
     const [secondes,     setSecondes]     = useState('');
@@ -60,43 +60,37 @@ function NouveauPlan() {
 
     // Préférences
     const [seancesSemaine, setSeancesSemaine] = useState(2);
+    const [nombreSemaines, setNombreSemaines] = useState(20);
+    const [objectif,       setObjectif]       = useState('10km');
     const [dateDebut,      setDateDebut]      = useState(
         new Date().toISOString().split('T')[0]
     );
+
+    // Date de fin — calculée dynamiquement selon le nombre de semaines choisi
     const dateFin = (() => {
         if (!dateDebut) return null;
         const debut = new Date(dateDebut);
         const fin   = new Date(debut);
-        fin.setDate(fin.getDate() + 20 * 7);
+        fin.setDate(fin.getDate() + nombreSemaines * 7);
         return fin;
     })();
 
-    const [objectif,       setObjectif]       = useState('10km');
-    const [niveau,         setNiveau]         = useState('intermediaire');
+    // Plans réellement disponibles (chargés depuis l'API)
+    const [plansDisponibles, setPlansDisponibles] = useState([]);
 
-    const PLANS_DISPONIBLES = [
-        { niveau: 'debutant',      objectif: '10km',     seances: 1 },
-        { niveau: 'intermediaire', objectif: '5km',      seances: 2 },
-        { niveau: 'intermediaire', objectif: '10km',     seances: 2 },
-        { niveau: 'intermediaire', objectif: '10km',     seances: 3 },
-        { niveau: 'intermediaire', objectif: 'semi',     seances: 2 },
-        { niveau: 'intermediaire', objectif: 'marathon', seances: 4 },
-    ];
-
-    const combinaisonDisponible = PLANS_DISPONIBLES.some(
-        p => p.niveau === niveau && p.seances === seancesSemaine && p.objectif === objectif
-    );
-
-    // Plans existants (pour l'avertissement)
+    // Plans existants (pour l'avertissement "tu as déjà un plan actif")
     const [aDejaUnPlan, setADejaUnPlan] = useState(false);
 
     // UI
     const [chargement, setChargement] = useState(false);
     const [message,    setMessage]    = useState({ texte: '', type: '' });
 
-    const [plansDisponibles, setPlansDisponibles] = useState([]);
+    // Combinaison actuellement sélectionnée est-elle disponible ?
+    const combinaisonDisponible = plansDisponibles.some(
+        p => p.objectif === objectif && p.seances === seancesSemaine && p.semaines === nombreSemaines
+    );
 
-    // Charge les plans existants
+    // Charge les plans existants de l'utilisateur
     useEffect(() => {
         const charger = async () => {
             try {
@@ -109,6 +103,7 @@ function NouveauPlan() {
         charger();
     }, []);
 
+    // Charge les combinaisons de plans disponibles
     useEffect(() => {
         const charger = async () => {
             try {
@@ -165,7 +160,7 @@ function NouveauPlan() {
         e.preventDefault();
 
         if (aPeuCouru === null) {
-            setMessage({ texte: 'Veuillez indiquer si vous avez déjà couru une distance sans t\'arrêter.', type: 'error' });
+            setMessage({ texte: "Veuillez indiquer si vous avez déjà couru une distance sans t'arrêter.", type: 'error' });
             return;
         }
 
@@ -189,17 +184,15 @@ function NouveauPlan() {
 
             const data = await genererPlan({
                 seances_semaine: seancesSemaine,
+                nombre_semaines: nombreSemaines,
                 temps5km_sec,
                 distance_reference_km: distanceRefFinale,
                 date_debut: dateDebut,
-                niveau,
                 objectif,
             });
 
-            // Affiche l'avertissement si présent
             if (data.avertissement) {
                 setMessage({ texte: data.avertissement, type: 'error' });
-                // Ne redirige pas immédiatement, laisse l'utilisateur voir l'avertissement
                 setTimeout(() => navigate(`/mes-plans/${data.plan_id}`), 3000);
             } else {
                 navigate(`/mes-plans/${data.plan_id}`);
@@ -207,8 +200,7 @@ function NouveauPlan() {
         } catch (err) {
             if (err.message.includes('Aucun plan disponible')) {
                 setMessage({
-                    texte: `Cette combinaison n'est pas encore disponible. 
-                            Essaie une autre combinaison niveau / séances par semaine.`,
+                    texte: `Cette combinaison n'est pas encore disponible pour ${objectif} · ${seancesSemaine} séance(s)/sem · ${nombreSemaines} semaines.`,
                     type: 'error'
                 });
             } else {
@@ -292,20 +284,20 @@ function NouveauPlan() {
                                 </label>
                             </div>
 
-                                {useDistanceLibre && (
-                                    <input
-                                        className="input-field"
-                                        type="number"
-                                        step="0.1"
-                                        min="1"
-                                        placeholder="Distance en km"
-                                        value={distanceLibre}
-                                        onChange={(e) => setDistanceLibre(e.target.value)}
-                                        style={{ marginTop: '0.75rem', maxWidth: '200px' }}
-                                    />
-                                )}
-                            </div>
-                        )}
+                            {useDistanceLibre && (
+                                <input
+                                    className="input-field"
+                                    type="number"
+                                    step="0.1"
+                                    min="1"
+                                    placeholder="Distance en km"
+                                    value={distanceLibre}
+                                    onChange={(e) => setDistanceLibre(e.target.value)}
+                                    style={{ marginTop: '0.75rem', maxWidth: '200px' }}
+                                />
+                            )}
+                        </div>
+                    )}
 
                     {aPeuCouru === true && (
                         <div className="temps-saisie">
@@ -358,7 +350,7 @@ function NouveauPlan() {
                         <div className="info-debutant">
                             <p>
                                 Pas de problème — ton plan débutera avec des allures adaptées aux débutants.
-                                Après ton premier test intégré au plan (semaine 8), tes allures seront
+                                Après ton premier test intégré au plan, tes allures seront
                                 recalibrées automatiquement.
                             </p>
                         </div>
@@ -407,31 +399,11 @@ function NouveauPlan() {
                         <span className="label">Objectif</span>
                         <div className="radio-groupe">
                             {['5km', '10km', 'semi', 'marathon'].map(obj => {
-                                const disponible = PLANS_DISPONIBLES.some(p => p.objectif === obj);
+                                const disponible = plansDisponibles.some(p => p.objectif === obj);
                                 return (
                                     <label key={obj} className={`radio-carte ${objectif === obj ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}>
                                         <input type="radio" name="objectif" disabled={!disponible} onChange={() => disponible && setObjectif(obj)} />
                                         <span>{obj === 'semi' ? 'Semi-marathon' : obj === 'marathon' ? 'Marathon' : obj}{!disponible && ' (bientôt)'}</span>
-                                    </label>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Niveau */}
-                    <div className="nouveau-plan-groupe">
-                        <span className="label">Niveau</span>
-                        <div className="radio-groupe">
-                            {[
-                                { value: 'debutant',      label: 'Débutant' },
-                                { value: 'intermediaire', label: 'Intermédiaire' },
-                                { value: 'avance',        label: 'Avancé' },
-                            ].map(n => {
-                                const disponible = PLANS_DISPONIBLES.some(p => p.niveau === n.value && p.objectif === objectif);
-                                return (
-                                    <label key={n.value} className={`radio-carte ${niveau === n.value ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}>
-                                        <input type="radio" name="niveau" disabled={!disponible} onChange={() => disponible && setNiveau(n.value)} />
-                                        <span>{n.label}{!disponible && ' (bientôt)'}</span>
                                     </label>
                                 );
                             })}
@@ -443,11 +415,34 @@ function NouveauPlan() {
                         <span className="label">Séances par semaine</span>
                         <div className="radio-groupe">
                             {[1, 2, 3, 4].map(n => {
-                                const disponible = PLANS_DISPONIBLES.some(p => p.niveau === niveau && p.seances === n && p.objectif === objectif);
+                                const disponible = plansDisponibles.some(p => p.objectif === objectif && p.seances === n);
                                 return (
                                     <label key={n} className={`radio-carte ${seancesSemaine === n ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}>
                                         <input type="radio" name="seances" disabled={!disponible} onChange={() => disponible && setSeancesSemaine(n)} />
                                         <span>{n} séance{n > 1 ? 's' : ''} / semaine{!disponible && ' (bientôt)'}</span>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Nombre de semaines */}
+                    <div className="nouveau-plan-groupe">
+                        <span className="label">Nombre de semaines</span>
+                        <div className="radio-groupe">
+                            {[16, 20, 24].map(n => {
+                                const disponible = plansDisponibles.some(
+                                    p => p.objectif === objectif && p.seances === seancesSemaine && p.semaines === n
+                                );
+                                return (
+                                    <label key={n} className={`radio-carte ${nombreSemaines === n ? 'active' : ''} ${!disponible ? 'disabled' : ''}`}>
+                                        <input
+                                            type="radio"
+                                            name="nombreSemaines"
+                                            disabled={!disponible}
+                                            onChange={() => disponible && setNombreSemaines(n)}
+                                        />
+                                        <span>{n} semaines{!disponible && ' (bientôt)'}</span>
                                     </label>
                                 );
                             })}
@@ -468,7 +463,9 @@ function NouveauPlan() {
                         />
                         {dateFin && (
                             <p className="carte-detail" style={{ marginTop: '0.5rem' }}>
-                                Ton plan se terminera aux alentours du <strong>{dateFin.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</strong> (environ 20 semaines selon le plan choisi)
+                                Ton plan se terminera le{' '}
+                                <strong>{dateFin.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>
+                                {' '}({nombreSemaines} semaines)
                             </p>
                         )}
                     </div>
@@ -477,8 +474,7 @@ function NouveauPlan() {
                 {!combinaisonDisponible && (
                     <div className="form-message error" style={{ maxWidth: '100%' }}>
                         <p>
-                            Cette combinaison n'est pas encore disponible.
-                            Plans actuels : Débutant 1 séance · Intermédiaire 2 ou 3 séances · sur 10km.
+                            Cette combinaison n'est pas encore disponible pour {objectif} · {seancesSemaine} séance(s)/sem · {nombreSemaines} semaines.
                         </p>
                     </div>
                 )}
@@ -490,7 +486,7 @@ function NouveauPlan() {
                             <div key={p.cle} className="plan-disponible-item">
                                 <span className="plan-disponible-objectif">{p.objectif}</span>
                                 <span className="plan-disponible-detail">
-                                    {p.niveau} · {p.seances} séance{p.seances > 1 ? 's' : ''}/sem · {p.semaines} semaines
+                                    {p.seances} séance{p.seances > 1 ? 's' : ''}/sem · {p.semaines} semaines
                                 </span>
                             </div>
                         ))}
