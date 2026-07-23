@@ -24,6 +24,7 @@
     "express-basic-auth": "^1.2.1",
     "express-rate-limit": "^8.6.0",
     "express-validator": "^7.3.2",
+    "fit-file-parser": "^3.1.0",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
@@ -33,7 +34,8 @@
     "redis": "^6.1.0",
     "runtrack-plans": "github:FaucheurLuol/runtrack-plans",
     "swagger-jsdoc": "^6.3.0",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "jest": "^30.4.2",

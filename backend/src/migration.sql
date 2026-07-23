@@ -92,6 +92,12 @@ CREATE TABLE IF NOT EXISTS seances_realisees (
     notes             TEXT,
     created_at        TIMESTAMP DEFAULT NOW(),
     allure_reelle_sec INTEGER
+    plan_id         INTEGER REFERENCES plans_entrainement(id) ON DELETE CASCADE,
+    titre           VARCHAR(150),
+    source          VARCHAR(20) DEFAULT 'manuel',
+    fc_moyenne      INTEGER,
+    fc_max          INTEGER,
+    cadence_moyenne INTEGER,
 );
 
 -- Demandes de nouveaux plans
