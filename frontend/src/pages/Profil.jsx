@@ -52,6 +52,7 @@ function Profil() {
     const [afficherSuppression, setAfficherSuppression] = useState(false);
     const [motDePasseSuppression, setMotDePasseSuppression] = useState('');
     const [msgRgpd, setMsgRgpd] = useState({ texte: '', type: '' });
+    const [confirmationTexte, setConfirmationTexte] = useState('');
 
     const { mettreAJourUtilisateur } = useAuth();
     const { deconnexion } = useAuth();
@@ -327,7 +328,7 @@ function Profil() {
                     </div>
                 </form>
             </section>
-            
+
             {/* ── RGPD ─────────────────────────────────────────── */}
             <section className="dashboard-card">
                 <h2>Mes données</h2>
@@ -361,7 +362,10 @@ function Profil() {
                 ) : (
                     <form onSubmit={handleSupprimerCompte} style={{ marginTop: '1rem' }}>
                         <div className="form-message error" style={{ maxWidth: '100%' }}>
-                            <p>Cette action est irréversible. Toutes tes données seront définitivement supprimées.</p>
+                            <p>
+                                ⚠️ Cette action est <strong>définitive et irréversible</strong>. Tous tes plans,
+                                séances, statistiques et ton profil seront supprimés pour toujours.
+                            </p>
                         </div>
                         <div className="saisie-champ" style={{ marginTop: '0.75rem' }}>
                             <label className="label">Confirme avec ton mot de passe</label>
@@ -372,11 +376,31 @@ function Profil() {
                                 onChange={(e) => setMotDePasseSuppression(e.target.value)}
                             />
                         </div>
+                        <div className="saisie-champ" style={{ marginTop: '0.75rem' }}>
+                            <label className="label">
+                                Tape <strong>SUPPRIMER</strong> pour confirmer
+                            </label>
+                            <input
+                                className="input-field"
+                                type="text"
+                                value={confirmationTexte}
+                                onChange={(e) => setConfirmationTexte(e.target.value)}
+                                placeholder="SUPPRIMER"
+                            />
+                        </div>
                         <div className="saisie-actions" style={{ marginTop: '0.75rem' }}>
-                            <button type="submit" className="btn-saisie" style={{ background: 'var(--orange)' }}>
+                            <button
+                                type="submit"
+                                className="btn-saisie"
+                                style={{ background: 'var(--orange)' }}
+                                disabled={confirmationTexte !== 'SUPPRIMER'}
+                            >
                                 Confirmer la suppression définitive
                             </button>
-                            <button type="button" className="btn-annuler" onClick={() => setAfficherSuppression(false)}>
+                            <button type="button" className="btn-annuler" onClick={() => {
+                                setAfficherSuppression(false);
+                                setConfirmationTexte('');
+                            }}>
                                 Annuler
                             </button>
                         </div>
