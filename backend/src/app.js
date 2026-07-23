@@ -23,6 +23,7 @@ const suiviRoutes = require('./routes/suivi');
 const profilRoutes = require('./routes/profil');
 const demandesRoutes = require('./routes/demandes');
 const activitesRoutes = require('./routes/activites');
+const rgpdRoutes = require('./routes/rgpd');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -76,6 +77,7 @@ app.use('/suivi', suiviRoutes);
 app.use('/profil', profilRoutes);
 app.use('/demandes-plans', demandesRoutes);
 app.use('/activites', activitesRoutes);
+app.use('/rgpd', rgpdRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Serveur RunTrack opérationnel' });
