@@ -119,38 +119,41 @@ function formatAllure(sec) {
 // ============================================================
 // GÉNÉRATION DU PLAN
 // ============================================================
-function genererPlan({ seances_semaine, temps_reference_sec, distance_reference_km, niveau, objectif }) {
+function genererPlan({ seances_semaine, nombre_semaines, temps5km_sec, distance_reference_km, objectif }) {
 
-    // 1. Construction de la clé et sélection du template
-    const cle      = `${niveau}_${objectif}_${seances_semaine}s`;
-    const template = PLANS[cle];
+    // Recherche du template par objectif + séances + durée totale (niveau déduit automatiquement)
+    const planTrouve = PLANS_METADATA.find(p =>
+        p.objectif === objectif &&
+        p.seances === seances_semaine &&
+        p.semaines === nombre_semaines
+    );
 
-    if (!template) {
+    if (!planTrouve) {
         throw new Error(
-            `Aucun plan disponible pour : ${niveau} · ${objectif} · ${seances_semaine} séance(s)/semaine`
+            `Aucun plan disponible pour : ${objectif} · ${seances_semaine} séance(s)/semaine · ${nombre_semaines} semaines`
         );
     }
 
-    const totalSemaines = Math.max(...template.map(s => s.s));
+    const template = PLANS[planTrouve.cle];
+    const niveau   = planTrouve.niveau; // déduit automatiquement, stocké pour référence
 
     // 2. Distance de référence — 5km par défaut (rétrocompatibilité plans 10km existants)
     const distanceRef = distance_reference_km || 5;
 
     // Validation de la distance minimale de référence pour cet objectif
     const distanceMin = DISTANCE_MIN_REFERENCE[objectif] || 5;
-    if (temps_reference_sec && distanceRef < distanceMin) {
+    if (temps5km_sec && distanceRef < distanceMin) {
         throw new Error(
             `La distance de référence doit être d'au moins ${distanceMin}km pour un objectif ${objectif}`
         );
     }
 
     // 3. Calcul des allures personnalisées via Riegel (si test fourni)
-    const alluresPersonnalisees = temps_reference_sec
-        ? calculerZonesDepuisAllureRace(calculerAllureRiegel(temps_reference_sec, distanceRef, objectif))
+    const alluresPersonnalisees = temps5km_sec
+        ? calculerZonesDepuisAllureRace(calculerAllureRiegel(temps5km_sec, distanceRef, objectif))
         : null;
 
-    // 4. Profil utilisateur (basé sur l'équivalent temps 5km pour rester cohérent avec les labels existants)
-    // On convertit l'allure obtenue en un temps 5km équivalent pour déterminer le profil
+    // 4. Profil utilisateur (basé sur l'équivalent temps 5km)
     const temps5kmEquivalent_sec = alluresPersonnalisees
         ? Math.round((alluresPersonnalisees.race * 5) / 1.06)
         : null;
@@ -161,35 +164,27 @@ function genererPlan({ seances_semaine, temps_reference_sec, distance_reference_
 
     // 5. Injection des allures + calcul durée/distance dans chaque séance
     const seances = template.map(seance => {
-
-        // Plan débutant : S1-S7 gardent les allures fixes (pas encore de test)
         const estAvantPremierTest = seances_semaine === 1 && seance.s < 8;
 
         const allures = (estAvantPremierTest || !alluresPersonnalisees)
             ? ALLURES_DEBUTANT
             : alluresPersonnalisees;
 
-        // Les séances test et race n'ont pas d'allure calculée
         const allureSec = (seance.type === 'test' || seance.type === 'race')
             ? null
             : allures[seance.allure] ?? null;
 
-        // Calcul de la durée
         let duree_min = null;
         if (seance.type !== 'test' && seance.type !== 'race') {
             if (seance.dist && allureSec) {
-                // Séance continue : distance × allure → durée
                 duree_min = Math.round((seance.dist * allureSec) / 60);
             } else if (seance.duree_travail) {
-                // Séance fractionnée : durée de travail fixe
                 duree_min = seance.duree_travail;
             }
         }
 
-        // Calcul de la distance pour les séances fractionnées
         let distance_km = seance.dist ?? null;
         if (!seance.dist && seance.duree_travail && allureSec) {
-            // Distance = durée travail (en sec) / allure (sec/km)
             distance_km = Math.round((seance.duree_travail * 60 / allureSec) * 100) / 100;
         }
 
@@ -199,19 +194,18 @@ function genererPlan({ seances_semaine, temps_reference_sec, distance_reference_
             allure_sec:       allureSec,
             duree_min,
             distance_km,
-            allure_affichage: allureSec
-                ? formatAllure(allureSec)
-                : 'Effort maximal',
+            allure_affichage: allureSec ? formatAllure(allureSec) : 'Effort maximal',
         };
     });
 
     // 6. Retour du plan complet
     return {
+        niveau, // déduit automatiquement, plus un choix utilisateur
         profil,
         objectif:       PROFILS[profil].objectif,
         label_profil:   PROFILS[profil].label,
         seances_semaine,
-        total_semaines: totalSemaines,
+        total_semaines: nombre_semaines,
         allures_reference: alluresPersonnalisees ? {
             easy:      formatAllure(alluresPersonnalisees.easy),
             aerobic:   formatAllure(alluresPersonnalisees.aerobic),

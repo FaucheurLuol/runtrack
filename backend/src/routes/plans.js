@@ -23,56 +23,34 @@ const {
  *         application/json:
  *           schema:
  *             type: object
- *             required: [seances_semaine, date_debut, niveau, objectif]
+ *             required: [seances_semaine, nombre_semaines, date_debut, objectif]
  *             properties:
  *               seances_semaine: { type: integer, example: 2 }
- *               temps_reference_sec: { type: integer, example: 1423, nullable: true, description: "Temps sur la distance de référence, en secondes" }
- *               distance_reference_km: { type: number, example: 5, nullable: true, description: "Distance du test de référence (défaut 5km). Minimum selon objectif : 5km→3km, 10km→5km, semi/marathon→10km" }
- *               date_debut: { type: string, format: date, example: 2026-09-01 }
- *               niveau: { type: string, enum: [debutant, intermediaire, avance] }
+ *               nombre_semaines: { type: integer, example: 20, description: "Durée totale du plan en semaines" }
+ *               temps5km_sec: { type: integer, example: 1423, nullable: true }
+ *               distance_reference_km: { type: number, example: 5, nullable: true }
+ *               date_debut: { type: string, format: date }
  *               objectif: { type: string, enum: ['5km', '10km', semi, marathon] }
  *     responses:
  *       201:
- *         description: Plan généré avec succès
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message: { type: string }
- *                 plan_id: { type: integer }
- *                 avertissement: { type: string, nullable: true, description: "Non-null si distance_reference_km > distance de l'objectif" }
- *                 profil: { type: string }
- *                 objectif: { type: string }
- *                 allures_reference: { type: object }
- *                 total_seances: { type: integer }
+ *         description: Plan généré (niveau déduit automatiquement du template disponible)
  *       400:
- *         description: Combinaison de plan non disponible ou distance de référence trop faible
+ *         description: Aucun plan disponible pour cette combinaison objectif/séances/semaines
  */
 router.post('/generer', authentifier, async (req, res, next) => {
-    const { seances_semaine, temps_reference_sec, date_debut, niveau, objectif, distance_reference_km } = req.body;
+    const { seances_semaine, nombre_semaines, temps5km_sec, date_debut, objectif, distance_reference_km } = req.body;
     const utilisateur_id = req.utilisateur.id;
 
-    // Valeurs acceptées
-    const niveauxValides    = ['debutant', 'intermediaire', 'avance'];
-    const objectifsValides  = ['5km', '10km', 'semi', 'marathon'];
+    const objectifsValides = ['5km', '10km', 'semi', 'marathon'];
 
-    if (!seances_semaine || !date_debut || !niveau || !objectif) {
+    if (!seances_semaine || !nombre_semaines || !date_debut || !objectif) {
         return res.status(400).json({
-            erreur: 'seances_semaine, date_debut, niveau et objectif sont obligatoires'
+            erreur: 'seances_semaine, nombre_semaines, date_debut et objectif sont obligatoires'
         });
     }
 
-    if (![1, 2, 3].includes(seances_semaine)) {
-        return res.status(400).json({
-            erreur: 'seances_semaine doit être 1, 2 ou 3'
-        });
-    }
-
-    if (!niveauxValides.includes(niveau)) {
-        return res.status(400).json({
-            erreur: `Niveau invalide. Valeurs : ${niveauxValides.join(', ')}`
-        });
+    if (![1, 2, 3, 4].includes(seances_semaine)) {
+        return res.status(400).json({ erreur: 'seances_semaine doit être 1, 2, 3 ou 4' });
     }
 
     if (!objectifsValides.includes(objectif)) {
@@ -82,46 +60,38 @@ router.post('/generer', authentifier, async (req, res, next) => {
     }
 
     try {
-        // Génère le plan
         const plan = genererPlan({
             seances_semaine,
-            temps_reference_sec,
+            nombre_semaines,
+            temps5km_sec,
             distance_reference_km,
-            niveau,
             objectif
         });
 
-        // Avertissement non bloquant si la distance de référence dépasse l'objectif
         let avertissement = null;
         if (distance_reference_km && distance_reference_km > (DISTANCES_OBJECTIF[objectif] || 10)) {
             avertissement = `Ta distance de référence (${distance_reference_km}km) est supérieure à ton objectif. La prédiction peut être moins précise pour un ${objectif}.`;
         }
 
-        // Calcule la date de fin (20 semaines)
         const dateDebut = new Date(date_debut);
-        const dateFin = new Date(dateDebut);
+        const dateFin   = new Date(dateDebut);
         dateFin.setDate(dateFin.getDate() + plan.total_semaines * 7);
 
-        // Sauvegarde le plan en base
         const planResult = await pool.query(
             `INSERT INTO plans_entrainement
                 (utilisateur_id, objectif, niveau, seances_semaine, date_debut, date_fin, temps_reference_initial)
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id`,
-            [utilisateur_id, objectif, niveau, seances_semaine, date_debut, dateFin, temps_reference_sec || null]
+            [utilisateur_id, objectif, plan.niveau, seances_semaine, date_debut, dateFin, temps5km_sec || null]
         );
 
         const plan_id = planResult.rows[0].id;
 
-        // Devient automatiquement le plan sélectionné
         await pool.query(
-            `UPDATE utilisateurs
-            SET plan_selectionne_id = $1
-            WHERE id = $2`,
+            `UPDATE utilisateurs SET plan_selectionne_id = $1 WHERE id = $2`,
             [plan_id, utilisateur_id]
         );
 
-        // Sauvegarde chaque séance
         for (const seance of plan.seances) {
             await pool.query(
                 `INSERT INTO seances
@@ -129,18 +99,9 @@ router.post('/generer', authentifier, async (req, res, next) => {
                     duree_min, distance_km, allure_label, allure_sec_km, jour_semaine)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
                 [
-                    plan_id,
-                    seance.s,
-                    seance.n,
-                    seance.phase,
-                    seance.type,
-                    seance.title,
-                    seance.detail,
-                    seance.duree_min || null,
-                    seance.dist || null,
-                    seance.allure_label,
-                    seance.allure_sec,
-                    seance.dayOff,
+                    plan_id, seance.s, seance.n, seance.phase, seance.type,
+                    seance.title, seance.detail, seance.duree_min || null,
+                    seance.dist || null, seance.allure_label, seance.allure_sec, seance.dayOff,
                 ]
             );
         }
@@ -151,6 +112,7 @@ router.post('/generer', authentifier, async (req, res, next) => {
             message: 'Plan généré et sauvegardé',
             plan_id,
             avertissement,
+            niveau: plan.niveau,
             profil: plan.profil,
             objectif: plan.objectif,
             allures_reference: plan.allures_reference,
