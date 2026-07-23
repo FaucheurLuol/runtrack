@@ -1,22 +1,16 @@
 import { NavLink, useNavigate, Link } from 'react-router-dom';
 import {
-    LayoutDashboard,
-    PenLine,
-    TrendingUp,
-    ClipboardList,
-    PlusCircle,
-    LogOut,
-    Upload
+    LayoutDashboard, PenLine, TrendingUp,
+    ClipboardList, PlusCircle, LogOut
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
 
 const LIENS = [
-    { to: '/dashboard',    label: 'Dashboard',        icone: LayoutDashboard },
-    { to: '/saisie',       label: 'Saisie des séances', icone: PenLine        },
-    { to: '/importer-activite', label: 'Importer activité', icone: Upload     },
-    { to: '/suivi',        label: 'Suivi des séances',  icone: TrendingUp     },
-    { to: '/mes-plans',    label: 'Mes plans',          icone: ClipboardList  },
-    { to: '/nouveau-plan', label: 'Nouveau plan',       icone: PlusCircle     },
+    { to: '/dashboard',    label: 'Dashboard',          icone: LayoutDashboard },
+    { to: '/saisie',       label: 'Saisie des séances', icone: PenLine         },
+    { to: '/suivi',        label: 'Suivi des séances',  icone: TrendingUp      },
+    { to: '/mes-plans',    label: 'Mes plans',          icone: ClipboardList   },
+    { to: '/nouveau-plan', label: 'Nouveau plan',       icone: PlusCircle      },
 ];
 
 function Sidebar({ ouverte, fermer }) {

@@ -13,7 +13,6 @@ import PlanDetail from './pages/PlanDetail';
 import NotFound from './pages/NotFound';
 import Profil from './pages/Profil';
 import DemandePlan from './pages/DemandePlan';
-import ImporterActivite from './pages/ImporterActivite';
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
 import CGU from './pages/CGU';
 import MentionsLegales from './pages/MentionsLegales';
@@ -37,7 +36,6 @@ function App() {
                     <Route path="/mes-plans/:id" element={<RouteProtegee><PlanDetail /></RouteProtegee>} />
                     <Route path="/profil" element={<RouteProtegee><Profil /></RouteProtegee>} />
                     <Route path="/demande-plan" element={<RouteProtegee><DemandePlan /></RouteProtegee>} />
-                    <Route path="/importer-activite" element={<RouteProtegee><ImporterActivite /></RouteProtegee>} />
                     <Route path="*" element={<NotFound />} />
                 </Route>
             </Routes>
