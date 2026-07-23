@@ -101,7 +101,7 @@ function NouveauPlan() {
     const combinaisonDisponible = plansDisponibles.some(
         p => p.objectif === objectif && p.seances === seancesSemaine && p.semaines === nombreSemaines
     );
-    
+
     // Charge les plans existants de l'utilisateur
     useEffect(() => {
         const charger = async () => {
@@ -492,16 +492,21 @@ function NouveauPlan() {
                 )}
 
                 <section className="dashboard-card">
-                    <h2>Plans actuellement disponibles</h2>
+                    <h2>Plans actuellement disponibles pour {objectif}</h2>
                     <div className="plans-disponibles-liste">
-                        {plansDisponibles.map(p => (
-                            <div key={p.cle} className="plan-disponible-item">
-                                <span className="plan-disponible-objectif">{p.objectif}</span>
-                                <span className="plan-disponible-detail">
-                                    {p.seances} séance{p.seances > 1 ? 's' : ''}/sem · {p.semaines} semaines
-                                </span>
-                            </div>
-                        ))}
+                        {plansDisponibles
+                            .filter(p => p.objectif === objectif)
+                            .map(p => (
+                                <div key={p.cle} className="plan-disponible-item">
+                                    <span className="plan-disponible-objectif">{p.objectif}</span>
+                                    <span className="plan-disponible-detail">
+                                        {p.seances} séance{p.seances > 1 ? 's' : ''}/sem · {p.semaines} semaines
+                                    </span>
+                                </div>
+                            ))}
+                        {plansDisponibles.filter(p => p.objectif === objectif).length === 0 && (
+                            <p className="graphique-description">Aucun plan disponible pour cet objectif pour le moment.</p>
+                        )}
                     </div>
                     <p className="graphique-description" style={{ marginTop: '0.75rem' }}>
                         Ta combinaison idéale n'y est pas ?
