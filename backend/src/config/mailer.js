@@ -1,14 +1,5 @@
-const nodemailer = require('nodemailer');
-const dns = require('dns');
+const { Resend } = require('resend');
 
-dns.setDefaultResultOrder('ipv4first'); // Force IPv4, évite les erreurs ENETUNREACH sur Railway
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_APP_PASSWORD,
-    },
-});
-
-module.exports = transporter;
+module.exports = resend;

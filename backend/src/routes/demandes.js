@@ -3,7 +3,7 @@ const router  = express.Router();
 const pool    = require('../db');
 const authentifier = require('../middleware/auth');
 const { PLANS_METADATA } = require('../services/planGenerator');
-const transporter = require('../config/mailer');
+const resend = require('../config/mailer');
 
 /**
  * @swagger
@@ -138,8 +138,8 @@ router.post('/', authentifier, async (req, res, next) => {
             ${issue_url ? `<p><a href="${issue_url}">Voir l'issue GitHub</a></p>` : ''}
         `;
 
-        transporter.sendMail({
-            from:    process.env.EMAIL_USER,
+        resend.emails.send({
+            from:    'RunTrack <onboarding@resend.dev>', 
             to:      process.env.EMAIL_USER,
             subject: titreIssue,
             html:    corpsHtml,
