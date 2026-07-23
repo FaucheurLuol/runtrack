@@ -127,6 +127,7 @@ router.post('/inscription',
                 secure:   process.env.NODE_ENV === 'production',
                 sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 maxAge:   7 * 24 * 60 * 60 * 1000, // 7 jours en ms
+                path:     '/',
             });
 
             res.status(201).json({
@@ -224,6 +225,7 @@ router.post('/connexion',
                 secure:   process.env.NODE_ENV === 'production',
                 sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 maxAge:   7 * 24 * 60 * 60 * 1000,
+                path:     '/',
             });
 
             res.status(200).json({
@@ -260,6 +262,7 @@ router.post('/deconnexion', (req, res) => {
         httpOnly: true,
         secure:   process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        path:     '/',
     });
     res.json({ message: 'Déconnecté' });
 });
