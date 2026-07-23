@@ -25,6 +25,7 @@ const demandesRoutes = require('./routes/demandes');
 const activitesRoutes = require('./routes/activites');
 
 const app = express();
+app.set('trust proxy', 1);
 
 const rateLimit = require('express-rate-limit');
 

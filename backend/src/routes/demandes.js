@@ -115,37 +115,36 @@ router.post('/', authentifier, async (req, res, next) => {
             console.error('Erreur création issue GitHub :', ghErr.message);
         }
 
-        // Envoie l'email
-        try {
-            const corpsHtml = `
-                <h2>Nouvelle demande de plan</h2>
-                <p><strong>Demande #${demande_id}</strong></p>
-                <ul>
-                    <li><strong>Objectif</strong> : ${objectif}</li>
-                    <li><strong>Temps objectif</strong> : ${Math.floor(temps_objectif_sec / 60)} min</li>
-                    <li><strong>Séances/semaine</strong> : ${seances_semaine}</li>
-                    <li><strong>Nombre de semaines</strong> : ${nombre_semaines}</li>
-                    <li><strong>Jours d'entraînement</strong> : ${jours_entrainement}</li>
-                    <li><strong>Jour de course</strong> : ${jour_course}</li>
-                    <li><strong>Public cible</strong> : ${public_cible}</li>
-                    <li><strong>Particularités</strong> : ${particularites || 'Aucune'}</li>
-                </ul>
-                ${issue_url ? `<p><a href="${issue_url}">Voir l'issue GitHub</a></p>` : ''}
-            `;
-
-            await transporter.sendMail({
-                from:    process.env.EMAIL_USER,
-                to:      process.env.EMAIL_USER,
-                subject: titreIssue,
-                html:    corpsHtml,
-            });
-        } catch (mailErr) {
-            console.error('Erreur envoi email :', mailErr.message);
-        }
-
+        // Envoie la réponse immédiatement, sans attendre l'email
         res.status(201).json({
             match: false,
             message: 'Ta demande a été envoyée ! Tu seras notifié une fois le plan créé.',
+        });
+
+        // Envoie l'email en tâche de fond (n'affecte plus le temps de réponse)
+        const corpsHtml = `
+            <h2>Nouvelle demande de plan</h2>
+            <p><strong>Demande #${demande_id}</strong></p>
+            <ul>
+                <li><strong>Objectif</strong> : ${objectif}</li>
+                <li><strong>Temps objectif</strong> : ${Math.floor(temps_objectif_sec / 60)} min</li>
+                <li><strong>Séances/semaine</strong> : ${seances_semaine}</li>
+                <li><strong>Nombre de semaines</strong> : ${nombre_semaines}</li>
+                <li><strong>Jours d'entraînement</strong> : ${jours_entrainement}</li>
+                <li><strong>Jour de course</strong> : ${jour_course}</li>
+                <li><strong>Public cible</strong> : ${public_cible}</li>
+                <li><strong>Particularités</strong> : ${particularites || 'Aucune'}</li>
+            </ul>
+            ${issue_url ? `<p><a href="${issue_url}">Voir l'issue GitHub</a></p>` : ''}
+        `;
+
+        transporter.sendMail({
+            from:    process.env.EMAIL_USER,
+            to:      process.env.EMAIL_USER,
+            subject: titreIssue,
+            html:    corpsHtml,
+        }).catch(mailErr => {
+            console.error('Erreur envoi email :', mailErr.message);
         });
 
     } catch (err) {
