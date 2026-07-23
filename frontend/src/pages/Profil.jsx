@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/useAuth';
 import {
@@ -6,6 +7,7 @@ import {
     uploadPhoto,
     changerMotDePasse
 } from '../api/profil';
+import { exporterDonnees, supprimerCompte } from '../api/rgpd';
 import '../style/dashboard.css';
 
 const RAISONS = [
@@ -45,7 +47,14 @@ function Profil() {
 
     const [uploadEnCours, setUploadEnCours] = useState(false);
 
+    // RGPD
+    const navigate = useNavigate();
+    const [afficherSuppression, setAfficherSuppression] = useState(false);
+    const [motDePasseSuppression, setMotDePasseSuppression] = useState('');
+    const [msgRgpd, setMsgRgpd] = useState({ texte: '', type: '' });
+
     const { mettreAJourUtilisateur } = useAuth();
+    const { deconnexion } = useAuth();
 
     useEffect(() => {
         const charger = async () => {
@@ -114,6 +123,37 @@ function Profil() {
             setConfirmMdp('');
         } catch (err) {
             setMsgMdp({ texte: err.message, type: 'error' });
+        }
+    };
+
+    const handleExporterDonnees = async () => {
+        try {
+            const blob = await exporterDonnees();
+            const url  = URL.createObjectURL(blob);
+            const lien = document.createElement('a');
+            lien.href = url;
+            lien.download = 'mes-donnees-runtrack.json';
+            document.body.appendChild(lien);
+            lien.click();
+            document.body.removeChild(lien);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            setMsgRgpd({ texte: err.message, type: 'error' });
+        }
+    };
+
+    const handleSupprimerCompte = async (e) => {
+        e.preventDefault();
+        if (!motDePasseSuppression) {
+            setMsgRgpd({ texte: 'Mot de passe requis pour confirmer.', type: 'error' });
+            return;
+        }
+        try {
+            await supprimerCompte(motDePasseSuppression);
+            await deconnexion();
+            navigate('/');
+        } catch (err) {
+            setMsgRgpd({ texte: err.message, type: 'error' });
         }
     };
 
@@ -286,6 +326,62 @@ function Profil() {
                         </button>
                     </div>
                 </form>
+            </section>
+            
+            {/* ── RGPD ─────────────────────────────────────────── */}
+            <section className="dashboard-card">
+                <h2>Mes données</h2>
+
+                {msgRgpd.texte && (
+                    <div className={`form-message ${msgRgpd.type}`} style={{ maxWidth: '100%' }}>
+                        <p>{msgRgpd.texte}</p>
+                    </div>
+                )}
+
+                <p className="graphique-description">
+                    Conformément au RGPD, tu peux exporter toutes tes données personnelles
+                    ou supprimer définitivement ton compte à tout moment.
+                </p>
+
+                <div className="saisie-actions" style={{ marginTop: '1rem' }}>
+                    <button type="button" className="btn-annuler" onClick={handleExporterDonnees}>
+                        Exporter mes données →
+                    </button>
+                </div>
+
+                {!afficherSuppression ? (
+                    <button
+                        type="button"
+                        className="btn-annuler"
+                        style={{ marginTop: '1rem', borderColor: 'var(--orange)', color: 'var(--orange)' }}
+                        onClick={() => setAfficherSuppression(true)}
+                    >
+                        Supprimer mon compte
+                    </button>
+                ) : (
+                    <form onSubmit={handleSupprimerCompte} style={{ marginTop: '1rem' }}>
+                        <div className="form-message error" style={{ maxWidth: '100%' }}>
+                            <p>Cette action est irréversible. Toutes tes données seront définitivement supprimées.</p>
+                        </div>
+                        <div className="saisie-champ" style={{ marginTop: '0.75rem' }}>
+                            <label className="label">Confirme avec ton mot de passe</label>
+                            <input
+                                className="input-field"
+                                type="password"
+                                value={motDePasseSuppression}
+                                onChange={(e) => setMotDePasseSuppression(e.target.value)}
+                            />
+                        </div>
+                        <div className="saisie-actions" style={{ marginTop: '0.75rem' }}>
+                            <button type="submit" className="btn-saisie" style={{ background: 'var(--orange)' }}>
+                                Confirmer la suppression définitive
+                            </button>
+                            <button type="button" className="btn-annuler" onClick={() => setAfficherSuppression(false)}>
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                )}
             </section>
         </main>
     );
