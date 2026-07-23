@@ -22,6 +22,7 @@ const dashboardRoutes = require('./routes/dashboard');
 const suiviRoutes = require('./routes/suivi');
 const profilRoutes = require('./routes/profil');
 const demandesRoutes = require('./routes/demandes');
+const activitesRoutes = require('./routes/activites');
 
 const app = express();
 
@@ -73,6 +74,7 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/suivi', suiviRoutes);
 app.use('/profil', profilRoutes);
 app.use('/demandes-plans', demandesRoutes);
+app.use('/activites', activitesRoutes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Serveur RunTrack opérationnel' });
