@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { inscrire } from '../api/auth';
 import { useAuth } from '../context/useAuth';
 
@@ -19,6 +19,7 @@ function Inscription() {
     const firstnameRegex = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/~`])[A-Za-z\d!@#$%^&*()_\-+={}[\]|\\:;"'<>,.?/~`]{14,}$/;
     const [chargement, setChargement] = useState(false);
+    const [cguAcceptees, setCguAcceptees] = useState(false);
 
     const { connexion } = useAuth();
     const navigate = useNavigate();
@@ -71,6 +72,11 @@ function Inscription() {
 
         if (password !== confirmPassword) {
             afficherErreur('Les mots de passe ne correspondent pas.');
+            return;
+        }
+
+        if (!cguAcceptees) {
+            afficherErreur('Vous devez accepter les CGU et la politique de confidentialité.');
             return;
         }
 
@@ -175,6 +181,24 @@ function Inscription() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                 />
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginTop: '1.1rem' }}>
+                    <input
+                        type="checkbox"
+                        id="cgu"
+                        checked={cguAcceptees}
+                        onChange={(e) => setCguAcceptees(e.target.checked)}
+                        style={{ marginTop: '0.2rem' }}
+                    />
+                    <label htmlFor="cgu" style={{ fontSize: '0.85rem', textTransform: 'none', color: 'var(--ink-soft)', fontWeight: '400' }}>
+                        J'accepte les{' '}
+                        <Link to="/cgu" target="_blank" style={{ textDecoration: 'underline' }}>CGU</Link>
+                        {' '}et la{' '}
+                        <Link to="/confidentialite" target="_blank" style={{ textDecoration: 'underline' }}>
+                            politique de confidentialité
+                        </Link>
+                    </label>
+                </div>
 
                 <input className="btn" type="submit" value="S'inscrire" disabled={chargement} />
                 <input className="btn" type="reset" value="Réinitialiser" />
