@@ -1,6 +1,6 @@
 const {
-    plan_debutant_10km_1s,
     plan_intermediaire_5km_2s,
+    plan_debutant_10km_1s,
     plan_intermediaire_10km_2s,
     plan_intermediaire_10km_3s,
     plan_intermediaire_semi_2s,
@@ -13,8 +13,8 @@ const {
 // Clé : niveau_objectif_nbSeances
 // ============================================================
 const PLANS = {
-    'debutant_10km_1s':          plan_debutant_10km_1s,
     'intermediaire_5km_2s':      plan_intermediaire_5km_2s,
+    'debutant_10km_1s':          plan_debutant_10km_1s,
     'intermediaire_10km_2s':     plan_intermediaire_10km_2s,
     'intermediaire_10km_3s':     plan_intermediaire_10km_3s,
     'intermediaire_semi_2s':     plan_intermediaire_semi_2s,
