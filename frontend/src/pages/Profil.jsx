@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useAuth } from '../context/useAuth';
 import {
     recupererProfil,
     mettreAJourProfil,
@@ -44,6 +45,8 @@ function Profil() {
 
     const [uploadEnCours, setUploadEnCours] = useState(false);
 
+    const { mettreAJourUtilisateur } = useAuth();
+
     useEffect(() => {
         const charger = async () => {
             try {
@@ -88,6 +91,7 @@ function Profil() {
         try {
             const data = await uploadPhoto(fichier);
             setProfil(prev => ({ ...prev, photo_url: data.photo_url }));
+            mettreAJourUtilisateur({ photo_url: data.photo_url }); // ← ajoute cette ligne
             setMsgPhoto({ texte: 'Photo mise à jour !', type: 'success' });
         } catch (err) {
             setMsgPhoto({ texte: err.message, type: 'error' });

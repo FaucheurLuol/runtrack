@@ -23,6 +23,14 @@ export function AuthProvider({ children }) {
         setUtilisateur(donneesUtilisateur);
     }, []);
 
+    const mettreAJourUtilisateur = useCallback((nouvellesDonnees) => {
+        setUtilisateur(prev => {
+            const maj = { ...prev, ...nouvellesDonnees };
+            localStorage.setItem('runtrack_user', JSON.stringify(maj));
+            return maj;
+        });
+    }, []);
+
     const deconnexion = useCallback(async () => {
         await deconnecter();
         localStorage.removeItem('runtrack_user');
@@ -31,7 +39,7 @@ export function AuthProvider({ children }) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ utilisateur, connexion, deconnexion, deconnexionVolontaire }}>
+        <AuthContext.Provider value={{ utilisateur, connexion, deconnexion, deconnexionVolontaire, mettreAJourUtilisateur }}>
             {children}
         </AuthContext.Provider>
     );
