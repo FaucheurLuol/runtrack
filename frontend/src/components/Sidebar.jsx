@@ -5,13 +5,15 @@ import {
     TrendingUp,
     ClipboardList,
     PlusCircle,
-    LogOut
+    LogOut,
+    Upload
 } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
 
 const LIENS = [
     { to: '/dashboard',    label: 'Dashboard',        icone: LayoutDashboard },
     { to: '/saisie',       label: 'Saisie des séances', icone: PenLine        },
+    { to: '/importer-activite', label: 'Importer activité', icone: Upload     },
     { to: '/suivi',        label: 'Suivi des séances',  icone: TrendingUp     },
     { to: '/mes-plans',    label: 'Mes plans',          icone: ClipboardList  },
     { to: '/nouveau-plan', label: 'Nouveau plan',       icone: PlusCircle     },
