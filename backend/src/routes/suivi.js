@@ -46,7 +46,7 @@ router.get('/', authentifier, async (req, res, next) => {
 
         const plan = planResult.rows[0];
 
-        // ── Toutes les séances avec réalisations ──────────────────
+        // ── Séances prévues avec réalisations ─────────────────────
         const seancesResult = await pool.query(
             `SELECT
                 s.id, s.semaine, s.jour, s.type, s.titre, s.phase,
@@ -60,16 +60,44 @@ router.get('/', authentifier, async (req, res, next) => {
                 sr.ressenti,
                 sr.notes,
                 sr.date_realisee,
+                false AS bonus,
                 CASE WHEN sr.id IS NOT NULL THEN true ELSE false END AS realisee
-             FROM seances s
-             LEFT JOIN seances_realisees sr
+            FROM seances s
+            LEFT JOIN seances_realisees sr
                 ON sr.seance_id = s.id AND sr.utilisateur_id = $2
-             WHERE s.plan_id = $1
-             ORDER BY s.semaine, s.jour`,
+            WHERE s.plan_id = $1
+            ORDER BY s.semaine, s.jour`,
             [plan.id, utilisateur_id]
         );
 
-        const seances = seancesResult.rows;
+        // ── Séances bonus (hors plan, importées ou saisies librement) ──
+        const bonusResult = await pool.query(
+            `SELECT
+                NULL::integer AS id,
+                NULL::integer AS semaine,
+                NULL::integer AS jour,
+                'bonus'       AS type,
+                titre,
+                'Bonus'       AS phase,
+                NULL::integer AS duree_prevue,
+                NULL::numeric AS distance_prevue,
+                NULL::integer AS allure_prevue_sec,
+                NULL::varchar AS allure_label,
+                duree_reelle,
+                distance_reelle,
+                allure_reelle_sec,
+                ressenti,
+                notes,
+                date_realisee,
+                true          AS bonus,
+                true          AS realisee
+            FROM seances_realisees
+            WHERE plan_id = $1 AND utilisateur_id = $2 AND seance_id IS NULL
+            ORDER BY date_realisee DESC`,
+            [plan.id, utilisateur_id]
+        );
+
+        const seances = [...seancesResult.rows, ...bonusResult.rows];
 
         // ── Stats globales ────────────────────────────────────────
         const realisees = seances.filter(s => s.realisee);
@@ -116,6 +144,7 @@ router.get('/', authentifier, async (req, res, next) => {
         const semaines = {};
         for (const seance of seances) {
             const s = seance.semaine;
+            if (s === null) continue;
             if (!semaines[s]) {
                 semaines[s] = {
                     semaine:            s,

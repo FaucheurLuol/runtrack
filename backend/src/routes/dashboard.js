@@ -62,22 +62,31 @@ router.get('/', authentifier, async (req, res, next) => {
         const totalSemainesPlan = totalSemainesResult.rows[0].total || 20;
         const semaines_restantes = Math.max(0, totalSemainesPlan - semaines_ecoulees);
 
-        // Progression globale
+        // Progression du plan (uniquement les séances prévues du plan — reste inchangé)
         const progressionResult = await pool.query(
             `SELECT
-                COUNT(s.id)                           AS total_seances,
-                COUNT(sr.id)                          AS seances_realisees,
-                COALESCE(SUM(sr.distance_reelle), 0)  AS km_totaux,
-                COALESCE(AVG(sr.ressenti), 0)         AS ressenti_moyen,
-                COALESCE(SUM(sr.duree_reelle), 0)     AS total_minutes
-             FROM seances s
-             LEFT JOIN seances_realisees sr
+                COUNT(s.id)  AS total_seances,
+                COUNT(sr.id) AS seances_realisees
+            FROM seances s
+            LEFT JOIN seances_realisees sr
                 ON sr.seance_id = s.id AND sr.utilisateur_id = $2
-             WHERE s.plan_id = $1`,
+            WHERE s.plan_id = $1`,
             [plan.id, utilisateur_id]
         );
 
-        const prog = progressionResult.rows[0];
+        // KPI globaux (toutes les activités du plan : prévues ET bonus)
+        const kpiGlobauxResult = await pool.query(
+            `SELECT
+                COALESCE(SUM(distance_reelle), 0) AS km_totaux,
+                COALESCE(AVG(ressenti), 0)        AS ressenti_moyen,
+                COALESCE(SUM(duree_reelle), 0)    AS total_minutes
+            FROM seances_realisees
+            WHERE plan_id = $1 AND utilisateur_id = $2`,
+            [plan.id, utilisateur_id]
+        );
+
+        const prog    = progressionResult.rows[0];
+        const kpiGlob = kpiGlobauxResult.rows[0];
 
         // Dernier test réalisé
         const dernierTestResult = await pool.query(
@@ -312,12 +321,10 @@ router.get('/', authentifier, async (req, res, next) => {
                 progression: {
                     realisees:  parseInt(prog.seances_realisees),
                     total:      parseInt(prog.total_seances),
-                    pourcentage: Math.round(
-                        (prog.seances_realisees / prog.total_seances) * 100
-                    ),
-                    km_totaux:      parseFloat(prog.km_totaux).toFixed(2),
-                    ressenti_moyen: parseFloat(prog.ressenti_moyen).toFixed(1),
-                    total_heures:   Math.round(parseFloat(prog.total_minutes) / 3600 * 10) / 10,
+                    pourcentage: Math.round((prog.seances_realisees / prog.total_seances) * 100),
+                    km_totaux:      parseFloat(kpiGlob.km_totaux).toFixed(2),
+                    ressenti_moyen: parseFloat(kpiGlob.ressenti_moyen).toFixed(1),
+                    total_heures:   Math.round(parseFloat(kpiGlob.total_minutes) / 3600 * 10) / 10,
                 },
             },
             prochaine_seance: prochaine ? {
