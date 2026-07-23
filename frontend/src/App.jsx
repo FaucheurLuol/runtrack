@@ -14,6 +14,9 @@ import NotFound from './pages/NotFound';
 import Profil from './pages/Profil';
 import DemandePlan from './pages/DemandePlan';
 import ImporterActivite from './pages/ImporterActivite';
+import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
+import CGU from './pages/CGU';
+import MentionsLegales from './pages/MentionsLegales';
 
 function App() {
     return (
@@ -23,6 +26,9 @@ function App() {
                     <Route path="/"             element={<Accueil />} />
                     <Route path="/inscription"  element={<Inscription />} />
                     <Route path="/connexion"    element={<Connexion />} />
+                    <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
+                    <Route path="/cgu" element={<CGU />} />
+                    <Route path="/mentions-legales" element={<MentionsLegales />} />
                     <Route path="/dashboard"    element={<RouteProtegee><Dashboard /></RouteProtegee>} />
                     <Route path="/saisie"       element={<RouteProtegee><Saisie /></RouteProtegee>} />
                     <Route path="/suivi"        element={<RouteProtegee><Suivi /></RouteProtegee>} />
