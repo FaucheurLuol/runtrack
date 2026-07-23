@@ -175,7 +175,8 @@ router.get('/', authentifier, async (req, res, next) => {
 
                 // Charge = durée × facteur intensité
                 const facteur = FACTEURS_INTENSITE[seance.allure_label] || 1;
-                sem.charge += parseFloat(seance.duree_reelle || 0) * facteur;
+                // Charge = durée en MINUTES × facteur intensité
+                sem.charge += (parseFloat(seance.duree_reelle || 0) / 60) * facteur;
             }
         }
 
