@@ -66,19 +66,6 @@ function NouveauPlan() {
         new Date().toISOString().split('T')[0]
     );
 
-    const nombreSemaines = (nombreSemainesChoisi && semainesOptions.includes(nombreSemainesChoisi))
-        ? nombreSemainesChoisi
-        : (semainesOptions[0] ?? null);
-
-    // Date de fin — calculée dynamiquement selon le nombre de semaines choisi
-    const dateFin = (() => {
-        if (!dateDebut) return null;
-        const debut = new Date(dateDebut);
-        const fin   = new Date(debut);
-        fin.setDate(fin.getDate() + nombreSemaines * 7);
-        return fin;
-    })();
-
     // Plans réellement disponibles (chargés depuis l'API)
     const [plansDisponibles, setPlansDisponibles] = useState([]);
 
@@ -89,11 +76,6 @@ function NouveauPlan() {
     const [chargement, setChargement] = useState(false);
     const [message,    setMessage]    = useState({ texte: '', type: '' });
 
-    // Combinaison actuellement sélectionnée est-elle disponible ?
-    const combinaisonDisponible = plansDisponibles.some(
-        p => p.objectif === objectif && p.seances === seancesSemaine && p.semaines === nombreSemaines
-    );
-
     // Calcule dynamiquement les durées disponibles pour l'objectif + séances choisis
     const semainesOptions = [...new Set(
         plansDisponibles
@@ -101,6 +83,25 @@ function NouveauPlan() {
             .map(p => p.semaines)
     )].sort((a, b) => a - b);
 
+    // Nombre de semaines réellement utilisé
+    const nombreSemaines = (nombreSemainesChoisi && semainesOptions.includes(nombreSemainesChoisi))
+        ? nombreSemainesChoisi
+        : (semainesOptions[0] ?? null);
+
+    // Date de fin — calculée dynamiquement selon le nombre de semaines choisi
+    const dateFin = (() => {
+        if (!dateDebut || !nombreSemaines) return null;
+        const debut = new Date(dateDebut);
+        const fin   = new Date(debut);
+        fin.setDate(fin.getDate() + nombreSemaines * 7);
+        return fin;
+    })();
+
+    // Combinaison actuellement sélectionnée est-elle disponible ?
+    const combinaisonDisponible = plansDisponibles.some(
+        p => p.objectif === objectif && p.seances === seancesSemaine && p.semaines === nombreSemaines
+    );
+    
     // Charge les plans existants de l'utilisateur
     useEffect(() => {
         const charger = async () => {
