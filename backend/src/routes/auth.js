@@ -131,6 +131,7 @@ router.post('/inscription',
 
             res.status(201).json({
                 message: 'Inscription réussie',
+                token, // ← ajouté pour l'app mobile (le web continue d'utiliser le cookie)
                 utilisateur: {
                     id:        utilisateur.id,
                     username:  utilisateur.username,
@@ -227,6 +228,7 @@ router.post('/connexion',
 
             res.status(200).json({
                 message: 'Connexion réussie',
+                token, // ← ajouté pour l'app mobile (le web continue d'utiliser le cookie)
                 utilisateur: {
                     id:        utilisateur.id,
                     username:  utilisateur.username,
