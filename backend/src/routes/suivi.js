@@ -168,7 +168,7 @@ router.get('/', authentifier, async (req, res, next) => {
             if (seance.realisee) {
                 sem.seances_realisees++;
                 sem.km_reels       += parseFloat(seance.distance_reelle || 0);
-                sem.minutes_reelles += parseFloat(seance.duree_reelle   || 0);
+                sem.minutes_reelles += parseFloat(seance.duree_reelle || 0) / 60;
 
                 if (seance.ressenti) sem.ressentis.push(seance.ressenti);
                 if (seance.allure_reelle_sec) sem.allures_reelles.push(seance.allure_reelle_sec);
