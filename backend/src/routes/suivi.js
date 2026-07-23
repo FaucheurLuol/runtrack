@@ -290,11 +290,14 @@ router.get('/export-pdf', authentifier, async (req, res, next) => {
         const seancesResult = await pool.query(
             `SELECT sr.date_realisee, sr.duree_reelle, sr.distance_reelle,
                     sr.allure_reelle_sec, sr.ressenti, sr.notes,
-                    s.titre, s.phase, s.type, s.semaine
-             FROM seances_realisees sr
-             JOIN seances s ON sr.seance_id = s.id
-             WHERE sr.utilisateur_id = $1 AND s.plan_id = $2
-             ORDER BY sr.date_realisee DESC`,
+                    COALESCE(s.titre, sr.titre)   AS titre,
+                    COALESCE(s.phase, 'Bonus')    AS phase,
+                    COALESCE(s.type, 'bonus')     AS type,
+                    s.semaine
+            FROM seances_realisees sr
+            LEFT JOIN seances s ON sr.seance_id = s.id
+            WHERE sr.utilisateur_id = $1 AND sr.plan_id = $2
+            ORDER BY sr.date_realisee DESC`,
             [utilisateur_id, plan.id]
         );
 
@@ -328,6 +331,7 @@ router.get('/export-pdf', authentifier, async (req, res, next) => {
 
         realisees.forEach(s => {
             if (doc.y > 700) doc.addPage();
+            const libelleSemaine = s.semaine ? `Semaine ${s.semaine}` : 'Séance bonus';
             doc.fontSize(10).font('Helvetica-Bold')
                 .text(`${new Date(s.date_realisee).toLocaleDateString('fr-FR')} — Semaine ${s.semaine} — ${s.titre}`);
             doc.fontSize(9).font('Helvetica').fillColor('#666')
